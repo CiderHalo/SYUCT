@@ -1,8 +1,4 @@
-import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/build/pdf.min.mjs";
-
-const PDFJS_BASE = "https://cdn.jsdelivr.net/npm/pdfjs-dist@5.7.284/";
-pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_BASE}build/pdf.worker.min.mjs`;
-
+const PDFJS_VERSION = "6.2.108";
 const params = new URLSearchParams(location.search);
 const requestedFile = params.get("file") || "";
 const requestedTitle = params.get("title") || "PDF 在线预览";
@@ -17,12 +13,14 @@ const elements = {
   stage: document.getElementById("viewerStage"),
   errorPanel: document.getElementById("errorPanel"),
   errorMessage: document.getElementById("errorMessage"),
+  pageShell: document.getElementById("pageShell"),
   canvas: document.getElementById("pdfCanvas"),
   pageInput: document.getElementById("pageInput"),
   pageCount: document.getElementById("pageCount"),
   previous: document.getElementById("previousButton"),
   next: document.getElementById("nextButton"),
   download: document.getElementById("downloadButton"),
+  openOriginal: document.getElementById("openOriginalButton"),
   fallbackDownload: document.getElementById("fallbackDownload"),
   retry: document.getElementById("retryButton"),
   back: document.getElementById("backButton"),
@@ -32,30 +30,39 @@ const elements = {
   main: document.querySelector(".viewer-main"),
 };
 
+let pdfjsLib = null;
 let pdfDocument = null;
 let currentPage = 1;
 let zoomFactor = 1;
 let renderTask = null;
 let loadTask = null;
+let filePath = "";
 let fileUrl = null;
 let resizeTimer = null;
+let renderSequence = 0;
 
-function resolveSafePdfUrl(value) {
-  if (!value) throw new Error("缺少 PDF 文件地址。");
-  const url = new URL(value, location.href);
-  if (url.origin !== location.origin) throw new Error("只允许预览本站文件。");
-  if (!url.pathname.toLowerCase().endsWith(".pdf")) throw new Error("文件不是 PDF 格式。");
-  return url;
+function localAsset(relativePath) {
+  return new URL(relativePath, import.meta.url).href;
 }
 
-function updateButtons() {
-  const count = pdfDocument?.numPages || 1;
-  elements.pageInput.value = String(currentPage);
-  elements.pageInput.max = String(count);
-  elements.pageCount.textContent = `/ ${count}`;
-  elements.previous.disabled = currentPage <= 1;
-  elements.next.disabled = currentPage >= count;
-  elements.meta.textContent = pdfDocument ? `第 ${currentPage} / ${count} 页 · ${Math.round(zoomFactor * 100)}%` : "正在加载文档";
+function normalizeLocalPdf(value) {
+  if (!value) throw new Error("缺少 PDF 文件地址。");
+  const siteBase = new URL("./", location.href);
+  const url = new URL(value, siteBase);
+  if (url.origin !== location.origin || !url.pathname.startsWith(siteBase.pathname)) {
+    throw new Error("只允许预览本站文件。");
+  }
+  let relative;
+  try {
+    relative = decodeURIComponent(url.pathname.slice(siteBase.pathname.length)).replace(/^\/+/, "");
+  } catch {
+    throw new Error("PDF 文件地址编码无效。");
+  }
+  if (!relative.startsWith("docs/") || relative.includes("..") || !relative.toLowerCase().endsWith(".pdf")) {
+    throw new Error("文件地址无效或不是 PDF 格式。");
+  }
+  url.hash = "";
+  return { relative, url };
 }
 
 function showLoading(title, text = "") {
@@ -66,12 +73,27 @@ function showLoading(title, text = "") {
   if (text) elements.statusText.textContent = text;
 }
 
+function humanizeError(error) {
+  const message = String(error?.message || error || "");
+  if (/Failed to fetch dynamically imported module|Importing a module script failed|pdf\.min\.mjs|404/i.test(message)) {
+    return "本地 PDF.js 文件尚未部署完成。请检查 GitHub Actions 中的“Vendor local PDF.js”是否已运行成功，并确认仓库里存在 assets/pdfjs/pdf.min.mjs。";
+  }
+  if (/Missing PDF|Unexpected server response|InvalidPDFException|PDF header not found/i.test(message)) {
+    return "PDF 文件无法读取，可能是文件未完整上传、访问地址错误或文档本身损坏。";
+  }
+  if (/PasswordException/i.test(message)) {
+    return "这份 PDF 需要密码，或输入的密码不正确。";
+  }
+  return message || "文档暂时无法预览，请直接打开或下载原文件。";
+}
+
 function showError(error) {
   console.error(error);
   elements.statusPanel.hidden = true;
   elements.stage.hidden = true;
   elements.errorPanel.hidden = false;
-  elements.errorMessage.textContent = error?.message || "文档暂时无法预览，请下载原文件查看。";
+  elements.errorMessage.textContent = humanizeError(error);
+  elements.meta.textContent = "本地预览不可用";
 }
 
 function availableWidth() {
@@ -79,75 +101,145 @@ function availableWidth() {
   return Math.max(280, Math.min(viewport - (viewport < 720 ? 20 : 52), 1180));
 }
 
+function updateButtons() {
+  const count = pdfDocument?.numPages || 1;
+  elements.pageInput.value = String(currentPage);
+  elements.pageInput.max = String(count);
+  elements.pageCount.textContent = `/ ${count}`;
+  elements.previous.disabled = !pdfDocument || currentPage <= 1;
+  elements.next.disabled = !pdfDocument || currentPage >= count;
+  elements.meta.textContent = pdfDocument
+    ? `第 ${currentPage} / ${count} 页 · ${Math.round(zoomFactor * 100)}% · 本地 PDF.js`
+    : "正在加载文档";
+}
+
+function updateAddressBar() {
+  const nextUrl = new URL(location.href);
+  nextUrl.searchParams.set("file", filePath);
+  nextUrl.searchParams.set("title", requestedTitle);
+  nextUrl.searchParams.set("page", String(currentPage));
+  history.replaceState(null, "", nextUrl);
+}
+
+async function loadPdfJs() {
+  showLoading("正在准备本地 PDF 阅读器", "首次打开会加载本站内的阅读器与工作线程，之后浏览器会缓存。不会连接 jsDelivr、unpkg 等外部 CDN。");
+  elements.progress.style.width = "10%";
+  try {
+    pdfjsLib = await import(`./pdfjs/pdf.min.mjs?v=${PDFJS_VERSION}`);
+  } catch (error) {
+    throw new Error(`本地 PDF.js 加载失败：${error?.message || error}`);
+  }
+  pdfjsLib.GlobalWorkerOptions.workerSrc = localAsset(`./pdfjs/pdf.worker.min.mjs?v=${PDFJS_VERSION}`);
+  elements.progress.style.width = "20%";
+}
+
 async function renderPage(pageNumber, { keepPosition = false } = {}) {
   if (!pdfDocument) return;
+  const sequence = ++renderSequence;
   const safePage = Math.min(Math.max(Number(pageNumber) || 1, 1), pdfDocument.numPages);
   currentPage = safePage;
   updateButtons();
+
   if (renderTask) {
     try { renderTask.cancel(); } catch {}
   }
   elements.stage.hidden = false;
   elements.statusPanel.hidden = true;
   elements.errorPanel.hidden = true;
-  elements.canvas.style.opacity = "0.45";
-
-  const page = await pdfDocument.getPage(currentPage);
-  const baseViewport = page.getViewport({ scale: 1 });
-  const fitScale = availableWidth() / baseViewport.width;
-  const cssScale = Math.min(Math.max(fitScale * zoomFactor, 0.35), 3.2);
-  const viewport = page.getViewport({ scale: cssScale });
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-  const canvas = elements.canvas;
-  const context = canvas.getContext("2d", { alpha: false });
-
-  canvas.width = Math.floor(viewport.width * pixelRatio);
-  canvas.height = Math.floor(viewport.height * pixelRatio);
-  canvas.style.width = `${Math.floor(viewport.width)}px`;
-  canvas.style.height = `${Math.floor(viewport.height)}px`;
-
-  renderTask = page.render({
-    canvasContext: context,
-    viewport,
-    transform: pixelRatio === 1 ? null : [pixelRatio, 0, 0, pixelRatio, 0, 0],
-    intent: "display",
-  });
+  elements.pageShell.classList.add("is-rendering");
 
   try {
+    const page = await pdfDocument.getPage(currentPage);
+    if (sequence !== renderSequence) return;
+
+    const baseViewport = page.getViewport({ scale: 1 });
+    const fitScale = availableWidth() / baseViewport.width;
+    const cssScale = Math.min(Math.max(fitScale * zoomFactor, 0.25), 4);
+    const viewport = page.getViewport({ scale: cssScale });
+
+    const maxCanvasPixels = 16_000_000;
+    const requestedPixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    const safePixelRatio = Math.max(
+      1,
+      Math.min(requestedPixelRatio, Math.sqrt(maxCanvasPixels / Math.max(1, viewport.width * viewport.height))),
+    );
+
+    const canvas = elements.canvas;
+    const context = canvas.getContext("2d", { alpha: false });
+    if (!context) throw new Error("当前浏览器无法创建 PDF 画布。");
+
+    canvas.width = Math.max(1, Math.floor(viewport.width * safePixelRatio));
+    canvas.height = Math.max(1, Math.floor(viewport.height * safePixelRatio));
+    canvas.style.width = `${Math.floor(viewport.width)}px`;
+    canvas.style.height = `${Math.floor(viewport.height)}px`;
+
+    renderTask = page.render({
+      canvasContext: context,
+      viewport,
+      transform: safePixelRatio === 1 ? null : [safePixelRatio, 0, 0, safePixelRatio, 0, 0],
+      intent: "display",
+    });
     await renderTask.promise;
-    elements.canvas.style.opacity = "1";
-    if (!keepPosition) elements.main.scrollTo({ top: 0, behavior: "instant" });
-    history.replaceState(null, "", `${location.pathname}?file=${encodeURIComponent(requestedFile)}&title=${encodeURIComponent(requestedTitle)}&page=${currentPage}`);
-    if (currentPage < pdfDocument.numPages) pdfDocument.getPage(currentPage + 1).catch(() => {});
+    if (sequence !== renderSequence) return;
+
+    elements.pageShell.classList.remove("is-rendering");
+    if (!keepPosition) elements.main.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    updateAddressBar();
+
+    if (currentPage < pdfDocument.numPages) {
+      pdfDocument.getPage(currentPage + 1).catch(() => {});
+    }
   } catch (error) {
-    if (error?.name !== "RenderingCancelledException") showError(error);
+    if (error?.name !== "RenderingCancelledException" && sequence === renderSequence) showError(error);
   }
 }
 
 async function loadDocument() {
   try {
-    fileUrl = resolveSafePdfUrl(requestedFile);
+    const resolved = normalizeLocalPdf(requestedFile);
+    filePath = resolved.relative;
+    fileUrl = resolved.url;
     elements.title.textContent = requestedTitle;
     document.title = `${requestedTitle} · 在线预览`;
-    elements.download.href = fileUrl.href;
-    elements.fallbackDownload.href = fileUrl.href;
-    showLoading("正在加载 PDF", "较大的文档会按需读取；翻页时只渲染当前页面，避免占用过多内存。");
-    elements.progress.style.width = "7%";
+    for (const link of [elements.download, elements.openOriginal, elements.fallbackDownload]) {
+      link.href = fileUrl.href;
+    }
+
+    await loadPdfJs();
+    showLoading("正在读取 PDF", "较大的文档会按需读取；阅读器只渲染当前页，降低手机内存占用。");
 
     loadTask = pdfjsLib.getDocument({
       url: fileUrl.href,
-      cMapUrl: `${PDFJS_BASE}cmaps/`,
+      cMapUrl: localAsset("./pdfjs/cmaps/"),
       cMapPacked: true,
-      standardFontDataUrl: `${PDFJS_BASE}standard_fonts/`,
-      wasmUrl: `${PDFJS_BASE}wasm/`,
+      iccUrl: localAsset("./pdfjs/iccs/"),
+      standardFontDataUrl: localAsset("./pdfjs/standard_fonts/"),
+      wasmUrl: localAsset("./pdfjs/wasm/"),
       enableXfa: true,
       isEvalSupported: false,
     });
+
     loadTask.onProgress = ({ loaded, total }) => {
-      const percent = total ? Math.max(7, Math.min(94, loaded / total * 100)) : 35;
+      const fraction = total ? loaded / total : 0.35;
+      const percent = Math.max(20, Math.min(96, 20 + fraction * 76));
       elements.progress.style.width = `${percent}%`;
-      if (total) elements.statusText.textContent = `正在读取文档：${Math.round(loaded / 1024 / 1024 * 10) / 10} / ${Math.round(total / 1024 / 1024 * 10) / 10} MB`;
+      if (total) {
+        const loadedMb = Math.round((loaded / 1024 / 1024) * 10) / 10;
+        const totalMb = Math.round((total / 1024 / 1024) * 10) / 10;
+        elements.statusText.textContent = `正在读取文档：${loadedMb} / ${totalMb} MB`;
+      }
     };
+
+    loadTask.onPassword = (updatePassword, reason) => {
+      const isRetry = reason === pdfjsLib.PasswordResponses.INCORRECT_PASSWORD;
+      const password = window.prompt(isRetry ? "密码不正确，请重新输入 PDF 密码：" : "这份 PDF 受密码保护，请输入密码：");
+      if (password === null) {
+        showError(new Error("已取消输入 PDF 密码。"));
+        return;
+      }
+      updatePassword(password);
+    };
+
     pdfDocument = await loadTask.promise;
     elements.progress.style.width = "100%";
     const initialPage = Math.min(Math.max(Number(params.get("page")) || 1, 1), pdfDocument.numPages);
@@ -163,7 +255,7 @@ function changePage(delta) {
 }
 
 function changeZoom(multiplier) {
-  zoomFactor = Math.min(Math.max(zoomFactor * multiplier, 0.55), 2.5);
+  zoomFactor = Math.min(Math.max(zoomFactor * multiplier, 0.5), 3);
   renderPage(currentPage, { keepPosition: true });
 }
 
@@ -221,4 +313,10 @@ window.addEventListener("resize", () => {
   }, 180);
 });
 
+window.addEventListener("pagehide", () => {
+  try { renderTask?.cancel(); } catch {}
+  try { loadTask?.destroy(); } catch {}
+});
+
+updateButtons();
 loadDocument();
