@@ -6,10 +6,28 @@
   <meta name="description" content="沈阳化工大学校园地图、体育课场地地图和校园实景。">
   <meta name="theme-color" content="#075ca8">
   <title>校园地图 · 沈阳化工大学校园指南</title>
-  <link rel="stylesheet" href="assets/styles.css">
+  <link href="assets/styles-v110.css" rel="stylesheet"/>
 </head>
 <body data-page="map.html">
-  <header id="topbar" class="topbar"></header>
+  <header class="topbar" id="topbar">
+<button class="icon-btn menu-btn" id="menuBtn" aria-label="打开菜单">☰</button>
+<a class="brand" href="index.html" aria-label="返回首页">
+<span class="brand-mark brand-mark-logo"><img src="assets/syuct-badge.png" alt="沈阳化工大学校徽"/></span>
+<span class="brand-name">沈化校园指南</span>
+</a>
+<span class="topbar-spacer"></span>
+<div class="topbar-actions">
+<button class="icon-btn" id="themeBtn" aria-label="切换深浅色">◐</button>
+<button class="topbar-search" id="searchBtn" aria-label="打开站内搜索"><span>⌕</span><span class="topbar-search-label">搜索校园资料</span><kbd>Ctrl K</kbd></button>
+<div class="quick-links" id="quickLinks">
+<button class="icon-btn quick-links-button" id="quickLinksButton" type="button" aria-label="打开快捷链接" aria-haspopup="menu" aria-expanded="false"><span aria-hidden="true">↗</span></button>
+<div class="quick-links-menu" id="quickLinksMenu" role="menu" aria-label="快捷链接">
+<a href="https://www.syuct.edu.cn/" target="_blank" rel="noreferrer" role="menuitem"><span><strong>学校官网</strong><small>沈阳化工大学官方网站</small></span><b aria-hidden="true">↗</b></a>
+<a href="https://github.com/hanchuang0303/SYUCT" target="_blank" rel="noreferrer" role="menuitem"><span><strong>GitHub 仓库</strong><small>查看源码与更新记录</small></span><b aria-hidden="true">↗</b></a>
+</div>
+</div>
+</div>
+</header>
   <aside id="sidebar" class="sidebar"></aside>
   <div id="backdrop" class="backdrop"></div>
   <div class="page-shell">
@@ -73,6 +91,6 @@
   </div>
   <div id="searchOverlay" class="search-overlay"></div>
   <div id="lightbox" class="lightbox" aria-hidden="true"></div>
-  <script src="assets/app.js"></script>
+  <script defer src="assets/app-v110.js"></script>
 </body>
 </html>
