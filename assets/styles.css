@@ -255,3 +255,15 @@ html[data-theme="dark"] .timeline .highlight{background:#173549}
   .quick-list a{grid-template-columns:35px 1fr}
   .quick-list em{grid-column:2}
 }
+
+/* v1.2 PDF online preview actions */
+.resource-actions,.download-actions{display:flex;flex-wrap:wrap;align-items:center;gap:11px}
+.resource-actions .secondary-link{color:var(--muted)}
+.download-actions{justify-content:flex-end}
+.download-actions .download-button{position:static}
+.download-actions .download-secondary{color:var(--primary);border:1px solid var(--border);background:var(--surface)}
+.download-actions .preview-button{background:linear-gradient(135deg,var(--primary),var(--primary-2))}
+@media(max-width:650px){
+  .download-actions{grid-column:2;justify-content:flex-start}
+  .download-actions .download-button{width:auto}
+}
