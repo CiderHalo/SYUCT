@@ -1,0 +1,1 @@
+# 沈阳化工大学校园指南\n\nSYUCT Campus Guide v1.0\n\nQQ群：1170264357

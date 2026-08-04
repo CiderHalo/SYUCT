@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>沈阳化工大学校园指南</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header>
+<h1>沈阳化工大学校园指南</h1>
+<p>新生入学 · 学业资料 · 办事流程 · 校园生活</p>
+</header>
+
+<main>
+<div class="hero">
+<h2>SYUCT Campus Guide</h2>
+<p>面向沈阳化工大学学生的校园信息整理站</p>
+<button onclick="openQQ()">加入交流群</button>
+</div>
+
+<div class="cards">
+<div>🎓 新生入学<br>报到、缴费、身份认证</div>
+<div>🗺️ 校园地图<br>教学楼、宿舍、食堂导航</div>
+<div>🔐 数字校园<br>统一身份认证、WebVPN、CARSI</div>
+<div>📚 学业资料<br>培养方案、真题、课程资料</div>
+<div>🏫 办事大厅<br>选课、重修、毕业手续</div>
+<div>🌆 校园生活<br>体育、图书馆、经验分享</div>
+</div>
+</main>
+
+<div id="qq" class="modal" onclick="closeQQ()">
+<div class="box" onclick="event.stopPropagation()">
+<h3>沈阳化工大学交流群</h3>
+<img src="assets/qq-group.png">
+<p>QQ群：1170264357</p>
+</div>
+</div>
+
+<script>
+function openQQ(){qq.style.display="flex"}
+function closeQQ(){qq.style.display="none"}
+</script>
+</body>
+</html>
