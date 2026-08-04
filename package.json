@@ -1,6 +1,6 @@
 {
   "name": "syuct-campus-guide",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "description": "Static campus guide with a locally vendored PDF.js reader.",
   "scripts": {
