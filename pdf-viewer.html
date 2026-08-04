@@ -56,6 +56,22 @@
   </footer>
 
   <noscript>需要启用 JavaScript 才能在线预览 PDF。你仍可以下载原文件。</noscript>
-  <script type="module" src="assets/pdf-viewer.mjs?v=170"></script>
+  <script>
+    window.__pdfViewerStarted = false;
+    window.setTimeout(function () {
+      if (window.__pdfViewerStarted) return;
+      var statusPanel = document.getElementById("statusPanel");
+      var viewerStage = document.getElementById("viewerStage");
+      var errorPanel = document.getElementById("errorPanel");
+      var errorMessage = document.getElementById("errorMessage");
+      if (statusPanel) statusPanel.hidden = true;
+      if (viewerStage) viewerStage.hidden = true;
+      if (errorPanel) errorPanel.hidden = false;
+      if (errorMessage) {
+        errorMessage.textContent = "阅读器入口脚本没有成功加载。请确认当前部署中存在 assets/pdf-viewer.js，并刷新 EdgeOne 缓存。";
+      }
+    }, 12000);
+  </script>
+  <script type="module" src="assets/pdf-viewer.js?v=180"></script>
 </body>
 </html>
