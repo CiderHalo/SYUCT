@@ -1,4 +1,5 @@
 const PDFJS_VERSION = "6.2.108";
+const READER_BUILD = "1.7.0";
 const params = new URLSearchParams(location.search);
 const requestedFile = params.get("file") || "";
 const requestedTitle = params.get("title") || "PDF 在线预览";
@@ -75,8 +76,8 @@ function showLoading(title, text = "") {
 
 function humanizeError(error) {
   const message = String(error?.message || error || "");
-  if (/Failed to fetch dynamically imported module|Importing a module script failed|pdf\.min\.mjs|404/i.test(message)) {
-    return "本地 PDF.js 文件尚未部署完成。请检查 GitHub Actions 中的“Vendor local PDF.js”是否已运行成功，并确认仓库里存在 assets/pdfjs/pdf.min.mjs。";
+  if (/Failed to fetch dynamically imported module|Importing a module script failed|pdf\.min\.(mjs|js)|加载超时|404/i.test(message)) {
+    return "本地 PDF.js 文件尚未进入当前部署。请确认仓库中存在 assets/pdfjs/pdf.min.js 和 pdf.worker.min.js，然后在 EdgeOne 重新部署 main 分支的最新提交。";
   }
   if (/Missing PDF|Unexpected server response|InvalidPDFException|PDF header not found/i.test(message)) {
     return "PDF 文件无法读取，可能是文件未完整上传、访问地址错误或文档本身损坏。";
@@ -121,15 +122,37 @@ function updateAddressBar() {
   history.replaceState(null, "", nextUrl);
 }
 
+function withTimeout(promise, milliseconds, message) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), milliseconds);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 async function loadPdfJs() {
-  showLoading("正在准备本地 PDF 阅读器", "首次打开会加载本站内的阅读器与工作线程，之后浏览器会缓存。不会连接 jsDelivr、unpkg 等外部 CDN。");
+  showLoading(
+    "正在准备本地 PDF 阅读器",
+    "正在加载本站内的 PDF 阅读组件。首次打开稍慢，之后浏览器会缓存。",
+  );
   elements.progress.style.width = "10%";
+
+  // EdgeOne 对常规 .js 的静态资源兼容性更稳定，因此发布时将
+  // PDF.js 的 ES Module 内容同时保存为 .js，并以模块方式导入。
+  const moduleUrl = localAsset(`./pdfjs/pdf.min.js?v=${PDFJS_VERSION}-${READER_BUILD}`);
   try {
-    pdfjsLib = await import(`./pdfjs/pdf.min.mjs?v=${PDFJS_VERSION}`);
+    pdfjsLib = await withTimeout(
+      import(moduleUrl),
+      20000,
+      "本地 PDF.js 加载超时。当前 EdgeOne 部署可能还没有包含 assets/pdfjs/pdf.min.js。",
+    );
   } catch (error) {
     throw new Error(`本地 PDF.js 加载失败：${error?.message || error}`);
   }
-  pdfjsLib.GlobalWorkerOptions.workerSrc = localAsset(`./pdfjs/pdf.worker.min.mjs?v=${PDFJS_VERSION}`);
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = localAsset(
+    `./pdfjs/pdf.worker.min.js?v=${PDFJS_VERSION}-${READER_BUILD}`,
+  );
   elements.progress.style.width = "20%";
 }
 

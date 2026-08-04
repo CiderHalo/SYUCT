@@ -49,8 +49,13 @@ const workerModule = await requireSource("pdf.worker.min.mjs", [
   path.join(packageRoot, "build", "pdf.worker.min.mjs"),
 ]);
 
+// Keep the original .mjs files, and also publish identical ES modules with a
+// .js extension. Some static hosts/CDN configurations handle .js MIME types
+// more consistently than .mjs. Both files remain JavaScript ES modules.
 await copyFile(pdfModule, path.join(targetRoot, "pdf.min.mjs"));
 await copyFile(workerModule, path.join(targetRoot, "pdf.worker.min.mjs"));
+await copyFile(pdfModule, path.join(targetRoot, "pdf.min.js"));
+await copyFile(workerModule, path.join(targetRoot, "pdf.worker.min.js"));
 
 const resourceGroups = {
   cmaps: [path.join(packageRoot, "cmaps"), path.join(packageRoot, "web", "cmaps")],
@@ -75,6 +80,8 @@ const manifest = {
   runtimeFiles: [
     "pdf.min.mjs",
     "pdf.worker.min.mjs",
+    "pdf.min.js",
+    "pdf.worker.min.js",
     "cmaps/",
     "iccs/",
     "standard_fonts/",

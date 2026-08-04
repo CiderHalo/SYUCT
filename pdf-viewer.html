@@ -4,9 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#075ca8">
-  <meta name="robots" content="noindex">
   <title>PDF 在线预览 · 沈阳化工大学校园指南</title>
-  <link rel="stylesheet" href="assets/pdf-viewer.css?v=14">
+  <link rel="stylesheet" href="assets/pdf-viewer.css">
 </head>
 <body>
   <header class="viewer-toolbar">
@@ -26,24 +25,23 @@
   <main class="viewer-main">
     <section id="statusPanel" class="status-panel" aria-live="polite">
       <div class="spinner" aria-hidden="true"></div>
-      <strong id="statusTitle">正在准备本地 PDF 阅读器</strong>
-      <span id="statusText">阅读器、工作线程和字体资源都由本站提供。</span>
+      <strong id="statusTitle">正在准备本地阅读器</strong>
+      <span id="statusText">预览资源由本站直接提供，不再连接外部 PDF 组件。</span>
       <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
     </section>
 
     <section id="viewerStage" class="viewer-stage" hidden>
       <div id="pageShell" class="page-shell">
-        <canvas id="pdfCanvas" aria-label="PDF 页面"></canvas>
+        <canvas id="pdfCanvas" aria-label="PDF 页面预览"></canvas>
       </div>
     </section>
 
     <section id="errorPanel" class="error-panel" hidden>
       <strong>在线预览没有加载成功</strong>
-      <p id="errorMessage">本地阅读器可能尚未部署完成，你仍可以查看或下载原文件。</p>
+      <p id="errorMessage">本地预览资源可能尚未部署完成，你仍可以下载原文件查看。</p>
       <div class="error-actions">
         <button id="retryButton" class="primary-button" type="button">重新加载</button>
-        <a id="openOriginalButton" class="secondary-button" href="#" target="_blank" rel="noreferrer">直接打开原文件</a>
-        <a id="fallbackDownload" class="secondary-button" href="#" download>下载原文件</a>
+        <a id="fallbackDownload" class="secondary-button" href="#" download>下载原文件查看</a>
       </div>
     </section>
   </main>
@@ -58,6 +56,6 @@
   </footer>
 
   <noscript>需要启用 JavaScript 才能在线预览 PDF。你仍可以下载原文件。</noscript>
-  <script type="module" src="assets/pdf-viewer.mjs?v=14"></script>
+  <script type="module" src="assets/pdf-viewer.mjs?v=170"></script>
 </body>
 </html>
