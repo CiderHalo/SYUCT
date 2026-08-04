@@ -1,45 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>沈阳化工大学校园指南</title>
-<link rel="stylesheet" href="assets/style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="沈阳化工大学非官方校园指南，整理新生入学、校园地图、数字校园、学业资料与办事流程。">
+  <meta name="theme-color" content="#075ca8">
+  <title>首页 · 沈阳化工大学校园指南</title>
+  <link rel="stylesheet" href="assets/styles.css">
 </head>
-<body>
-<header>
-<h1>沈阳化工大学校园指南</h1>
-<p>新生入学 · 学业资料 · 办事流程 · 校园生活</p>
-</header>
+<body data-page="index.html">
+  <header id="topbar" class="topbar"></header>
+  <aside id="sidebar" class="sidebar"></aside>
+  <div id="backdrop" class="backdrop"></div>
+  <div class="page-shell">
+    <main class="main">
+      
+<section class="hero hero-photo">
+  <div class="hero-content">
+    <div class="hero-kicker">学生共建 · SYUCT CAMPUS GUIDE</div>
+    <h1>沈阳化工大学<br><span>校园指南</span></h1>
+    <p>把分散的新生通知、学业资料、办事表格和校园经验，整理成一条更容易查找的路径。</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="freshman.html">从新生指南开始</a>
+      <button class="btn btn-secondary" type="button" data-open-group-modal>加入交流群</button>
+    </div>
+    <div class="hero-meta">
+      <span>非官方学生共建站</span><span>资料整理至 2026-08</span><span>GitHub Pages</span>
+    </div>
+  </div>
+</section>
 
-<main>
-<div class="hero">
-<h2>SYUCT Campus Guide</h2>
-<p>面向沈阳化工大学学生的校园信息整理站</p>
-<button onclick="openQQ()">加入交流群</button>
-</div>
+<section class="stats">
+  <div class="stat"><strong>9 月 3 日</strong><span>2026 级新生报到</span></div>
+  <div class="stat"><strong>9.5—9.18</strong><span>新生军训</span></div>
+  <div class="stat"><strong>9 月 21 日</strong><span>新生开始上课</span></div>
+  <div class="stat"><strong>34 项</strong><span>首批核心资料</span></div>
+  <div class="stat"><strong>2 张</strong><span>校园导航地图</span></div>
+  <div class="stat"><strong>1170264357</strong><span>学生交流群</span></div>
+</section>
 
-<div class="cards">
-<div>🎓 新生入学<br>报到、缴费、身份认证</div>
-<div>🗺️ 校园地图<br>教学楼、宿舍、食堂导航</div>
-<div>🔐 数字校园<br>统一身份认证、WebVPN、CARSI</div>
-<div>📚 学业资料<br>培养方案、真题、课程资料</div>
-<div>🏫 办事大厅<br>选课、重修、毕业手续</div>
-<div>🌆 校园生活<br>体育、图书馆、经验分享</div>
-</div>
-</main>
+<section class="section">
+  <div class="section-head">
+    <div class="eyebrow">核心入口</div>
+    <h2>按你的问题直接进入</h2>
+    <p class="section-lead">每张卡片都可以点击，不必在几十份文件中反复翻找。</p>
+  </div>
+  <div class="portal-grid"><a class="portal-card" href="freshman.html">
+      <div class="portal-icon">🎓</div>
+      <div><h3>新生入学</h3><p>报到、缴费、账号激活、军训和新生材料。</p><span>第一次来学校 →</span></div>
+    </a><a class="portal-card" href="map.html">
+      <div class="portal-icon">🗺️</div>
+      <div><h3>校园地图</h3><p>高清总图、体育课专用图和常用地点导航。</p><span>找楼、找场馆 →</span></div>
+    </a><a class="portal-card" href="digital.html">
+      <div class="portal-icon">🔐</div>
+      <div><h3>数字校园</h3><p>统一身份认证、WebVPN、CARSI 与图书馆服务。</p><span>解决账号和网络 →</span></div>
+    </a><a class="portal-card" href="academics.html">
+      <div class="portal-icon">📚</div>
+      <div><h3>学业资料</h3><p>培养方案、选修要求、微专业与课程真题。</p><span>查课程、找资料 →</span></div>
+    </a><a class="portal-card" href="services.html">
+      <div class="portal-icon">🏫</div>
+      <div><h3>办事大厅</h3><p>重修、查卷、奖学金、毕业与论文手续。</p><span>找表格、走流程 →</span></div>
+    </a><a class="portal-card" href="campus.html">
+      <div class="portal-icon">🌿</div>
+      <div><h3>校园生活</h3><p>校历、体育、图书馆、学生规定和校园相册。</p><span>日常学习生活 →</span></div>
+    </a></div>
+</section>
 
-<div id="qq" class="modal" onclick="closeQQ()">
-<div class="box" onclick="event.stopPropagation()">
-<h3>沈阳化工大学交流群</h3>
-<img src="assets/qq-group.png">
-<p>QQ群：1170264357</p>
-</div>
-</div>
+<section class="section feature-split">
+  <div class="feature-copy">
+    <div class="eyebrow">常用入口</div>
+    <h2>先解决最容易卡住的四件事</h2>
+    <div class="quick-list">
+      <a href="digital.html#identity"><strong>01</strong><span>激活统一身份认证</span><em>账号与企业微信</em></a>
+      <a href="map.html#sports-map"><strong>02</strong><span>找到体育课场地</span><em>两张地图对照</em></a>
+      <a href="academics.html#exams"><strong>03</strong><span>下载课程真题</span><em>高数 2、大学物理 1</em></a>
+      <a href="services.html#graduation"><strong>04</strong><span>查毕业与论文流程</span><em>自查、模板与查重</em></a>
+    </div>
+  </div>
+  <a class="map-preview" href="map.html">
+    <img src="assets/campus-map.jpg" alt="沈阳化工大学校园地图">
+    <span>打开完整校园地图 →</span>
+  </a>
+</section>
 
-<script>
-function openQQ(){qq.style.display="flex"}
-function closeQQ(){qq.style.display="none"}
-</script>
+<section class="section">
+  <div class="section-head">
+    <div class="eyebrow">校园一览</div>
+    <h2>在资料之外，也看看真实的校园</h2>
+  </div>
+  <div class="gallery-grid">
+    <button class="gallery-item gallery-wide" data-lightbox="assets/hero-campus.jpg" aria-label="查看校园道路大图"><img src="assets/hero-campus.jpg" alt="沈阳化工大学校园道路"></button>
+    <button class="gallery-item" data-lightbox="assets/gallery-dorm-night.jpg" aria-label="查看宿舍夜景大图"><img src="assets/gallery-dorm-night.jpg" alt="学生宿舍夜景"></button>
+    <button class="gallery-item" data-lightbox="assets/gallery-campus-night.jpg" aria-label="查看校园夜景大图"><img src="assets/gallery-campus-night.jpg" alt="校园雕塑夜景"></button>
+  </div>
+</section>
+
+<section class="community-strip">
+  <div><div class="eyebrow">交流与共建</div><h2>资料有遗漏，欢迎一起补全</h2><p>QQ群 1170264357。入群可获取更新，也可以提交经验、表格和纠错。</p></div>
+  <button class="btn btn-accent" type="button" data-open-group-modal>查看加群二维码</button>
+</section>
+
+<footer class="site-footer">
+  <span>非官方学生共建站，请以学校当年正式通知为准。</span>
+  <span><a href="https://www.syuct.edu.cn/" target="_blank" rel="noreferrer">学校官网 ↗</a> · <a href="https://github.com/hanchuang0303/SYUCT" target="_blank" rel="noreferrer">GitHub 仓库 ↗</a></span>
+</footer>
+
+    </main>
+  </div>
+  <div id="searchOverlay" class="search-overlay"></div>
+  <div id="lightbox" class="lightbox" aria-hidden="true"></div>
+  <script src="assets/app.js"></script>
 </body>
 </html>
