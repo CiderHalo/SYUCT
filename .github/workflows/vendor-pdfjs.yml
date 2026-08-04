@@ -1,1 +1,57 @@
+name: Vendor local PDF.js
 
+on:
+  push:
+    branches: [main]
+    paths:
+      - package.json
+      - scripts/vendor-pdfjs.mjs
+      - .github/workflows/vendor-pdfjs.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: vendor-local-pdfjs
+  cancel-in-progress: false
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pinned PDF.js package
+        run: npm install --ignore-scripts --omit=optional --no-audit --no-fund --package-lock=false
+
+      - name: Copy browser runtime into the site
+        run: npm run vendor:pdfjs
+
+      - name: Commit local PDF.js files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A assets
+          if git diff --cached --quiet; then
+            echo "Local PDF.js files are already up to date."
+            exit 0
+          fi
+          git commit -m "chore: vendor local PDF.js 6.2.108 [skip ci]"
+          git push
+
+      - name: Request GitHub Pages rebuild
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "/repos/${GITHUB_REPOSITORY}/pages/builds"
