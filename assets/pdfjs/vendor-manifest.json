@@ -2,10 +2,12 @@
   "package": "pdfjs-dist",
   "version": "6.2.108",
   "build": "legacy",
-  "generatedAt": "2026-08-04T15:13:59.943Z",
+  "generatedAt": "2026-08-04T16:10:05.044Z",
   "runtimeFiles": [
     "pdf.min.mjs",
     "pdf.worker.min.mjs",
+    "pdf.min.js",
+    "pdf.worker.min.js",
     "cmaps/",
     "iccs/",
     "standard_fonts/",
