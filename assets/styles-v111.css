@@ -365,3 +365,13 @@ html[data-theme="dark"] .timeline .highlight{background:#173549}
   .brand-name-mobile{display:block}
   .brand-name{overflow:visible;text-overflow:clip;white-space:nowrap}
 }
+
+/* v1.14 — five-image homepage gallery */
+.gallery-grid-featured{grid-auto-rows:230px}
+.gallery-grid-featured .gallery-item{height:230px}
+.gallery-grid-featured .gallery-feature{grid-column:span 2;grid-row:span 2;height:auto}
+@media(max-width:650px){
+  .gallery-grid-featured{grid-template-columns:repeat(2,1fr);grid-auto-rows:auto}
+  .gallery-grid-featured .gallery-item{height:185px}
+  .gallery-grid-featured .gallery-feature{grid-column:span 2;grid-row:auto;height:235px}
+}

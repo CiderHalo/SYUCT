@@ -8,7 +8,7 @@
 
 把分散的新生通知、校园地图、学业资料、办事表格和校园经验，整理成一条更容易查找的路径。
 
-**当前版本：v1.13** · **41 份资料** · **2 张校园导航地图** · **7 张校园实景照片**
+**当前版本：v1.14** · **41 份资料** · **2 张校园导航地图** · **13 张校园实景照片**
 
 [访问主站](https://www.syuct.top/) · [GitHub Pages 备用入口](https://hanchuang0303.github.io/SYUCT/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html)
 
@@ -30,12 +30,12 @@
 | 备用站 | <https://hanchuang0303.github.io/SYUCT/> | GitHub Pages 备用入口 |
 | 源码仓库 | <https://github.com/hanchuang0303/SYUCT> | 查看源码、提交 Issue 或 Pull Request |
 
-## v1.13 更新
+## v1.14 更新
 
-- 根目录 `README.md` 更新到当前项目状态，并将 `www.syuct.top` 设为主站入口。
-- 首页“校园一览”中的体育场倒影缩略图，替换为校园夜景与城市天际线照片。
-- 完整校园相册仍保留体育场倒影等全部 7 张照片，可从首页按钮直接跳转查看。
-- 继续保留 GitHub Pages 作为备用访问入口。
+- 校园相册新增 6 张照片，现共收录 13 张校园实景。
+- 首页精选区由 3 张扩展为 5 张，新增“雪中校园牌坊”和“图书馆晚霞”。
+- 首页公益站介绍补充“由学生整理，为学生服务”。
+- 所有新图均采用本地资源与懒加载，不依赖外部图床。
 
 完整版本记录见 [`project-docs/updates/README.md`](project-docs/updates/README.md)。
 
