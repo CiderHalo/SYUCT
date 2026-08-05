@@ -1,0 +1,57 @@
+name: Build local Office previews
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/*.doc"
+      - "docs/*.docx"
+      - "docs/*.xls"
+      - "docs/*.xlsx"
+      - "scripts/build-office-previews.py"
+      - ".github/workflows/build-office-previews.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: build-local-office-previews
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install LibreOffice and CJK fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libreoffice-writer libreoffice-calc fonts-noto-cjk poppler-utils
+
+      - name: Generate local PDF previews
+        run: python3 scripts/build-office-previews.py
+
+      - name: Commit generated previews
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/previews assets/office-preview-manifest.json
+          if git diff --cached --quiet; then
+            echo "Office previews are already up to date."
+            exit 0
+          fi
+          git commit -m "chore: rebuild local Office previews [skip ci]"
+          git push
+
+      - name: Request GitHub Pages rebuild
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "/repos/${GITHUB_REPOSITORY}/pages/builds"
