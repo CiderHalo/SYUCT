@@ -1,9 +1,10 @@
 window.__pdfViewerStarted = true;
 const PDFJS_VERSION = "6.2.108";
-const READER_BUILD = "1.8.0";
+const READER_BUILD = "1.17.0";
 const params = new URLSearchParams(location.search);
 const requestedFile = params.get("file") || "";
 const requestedTitle = params.get("title") || "PDF 在线预览";
+const requestedSource = params.get("source") || "";
 
 const elements = {
   title: document.getElementById("documentTitle"),
@@ -39,11 +40,33 @@ let renderTask = null;
 let loadTask = null;
 let filePath = "";
 let fileUrl = null;
+let sourceFileUrl = null;
+let isOfficePreview = false;
 let resizeTimer = null;
 let renderSequence = 0;
 
 function localAsset(relativePath) {
   return new URL(relativePath, import.meta.url).href;
+}
+
+function normalizeLocalDownload(value) {
+  if (!value) return null;
+  const siteBase = new URL("./", location.href);
+  const url = new URL(value, siteBase);
+  if (url.origin !== location.origin || !url.pathname.startsWith(siteBase.pathname)) {
+    throw new Error("原文件地址必须是本站文件。");
+  }
+  let relative;
+  try {
+    relative = decodeURIComponent(url.pathname.slice(siteBase.pathname.length)).replace(/^\/+/, "");
+  } catch {
+    throw new Error("原文件地址编码无效。");
+  }
+  if (!relative.startsWith("docs/") || relative.includes("..")) {
+    throw new Error("原文件地址无效。");
+  }
+  url.hash = "";
+  return { relative, url };
 }
 
 function normalizeLocalPdf(value) {
@@ -110,7 +133,7 @@ function updateButtons() {
   elements.previous.disabled = !pdfDocument || currentPage <= 1;
   elements.next.disabled = !pdfDocument || currentPage >= count;
   elements.meta.textContent = pdfDocument
-    ? `第 ${currentPage} / ${count} 页 · ${Math.round(zoomFactor * 100)}% · 本地 PDF.js`
+    ? `第 ${currentPage} / ${count} 页 · ${Math.round(zoomFactor * 100)}% · ${isOfficePreview ? "本地 Office 转换预览" : "本地 PDF.js"}`
     : "正在加载文档";
 }
 
@@ -222,10 +245,13 @@ async function loadDocument() {
     const resolved = normalizeLocalPdf(requestedFile);
     filePath = resolved.relative;
     fileUrl = resolved.url;
+    const resolvedSource = normalizeLocalDownload(requestedSource);
+    sourceFileUrl = resolvedSource?.url || fileUrl;
+    isOfficePreview = Boolean(resolvedSource);
     elements.title.textContent = requestedTitle;
     document.title = `${requestedTitle} · 在线预览`;
     for (const link of [elements.download, elements.fallbackDownload].filter(Boolean)) {
-      link.href = fileUrl.href;
+      link.href = sourceFileUrl.href;
     }
 
     await loadPdfJs();

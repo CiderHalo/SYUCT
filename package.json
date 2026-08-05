@@ -1,8 +1,8 @@
 {
   "name": "syuct-campus-guide",
-  "version": "1.7.0",
+  "version": "1.17.0",
   "private": true,
-  "description": "Static campus guide with a locally vendored PDF.js reader.",
+  "description": "Static campus guide with locally hosted PDF.js and local Office-to-PDF previews.",
   "scripts": {
     "vendor:pdfjs": "node scripts/vendor-pdfjs.mjs"
   },

@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-05T06:44:30.803099Z",
+  "generator": "LibreOffice PDF export",
+  "supportedSourceFormats": [
+    "doc",
+    "docx",
+    "xls",
+    "xlsx"
+  ],
+  "entries": {
+    "docs/campus-run-exemption.doc": {
+      "preview": "docs/previews/campus-run-exemption.pdf",
+      "format": "doc",
+      "sourceBytes": 19456,
+      "previewBytes": 125614,
+      "pages": 2
+    },
+    "docs/certificate-proxy.doc": {
+      "preview": "docs/previews/certificate-proxy.pdf",
+      "format": "doc",
+      "sourceBytes": 15360,
+      "previewBytes": 63002,
+      "pages": 2
+    },
+    "docs/chaoxing-library-guide.docx": {
+      "preview": "docs/previews/chaoxing-library-guide.pdf",
+      "format": "docx",
+      "sourceBytes": 925317,
+      "previewBytes": 515979,
+      "pages": 10
+    },
+    "docs/classroom-video-review-application.docx": {
+      "preview": "docs/previews/classroom-video-review-application.pdf",
+      "format": "docx",
+      "sourceBytes": 15947,
+      "previewBytes": 81820,
+      "pages": 2
+    },
+    "docs/code-tables.xls": {
+      "preview": "docs/previews/code-tables.pdf",
+      "format": "xls",
+      "sourceBytes": 1536000,
+      "previewBytes": 16722348,
+      "pages": 185
+    },
+    "docs/deferred-exam-application.doc": {
+      "preview": "docs/previews/deferred-exam-application.pdf",
+      "format": "doc",
+      "sourceBytes": 34816,
+      "previewBytes": 69878,
+      "pages": 1
+    },
+    "docs/electives-2026-2027.xlsx": {
+      "preview": "docs/previews/electives-2026-2027.pdf",
+      "format": "xlsx",
+      "sourceBytes": 103304,
+      "previewBytes": 529841,
+      "pages": 9
+    },
+    "docs/engineering-management-plan-2025.docx": {
+      "preview": "docs/previews/engineering-management-plan-2025.pdf",
+      "format": "docx",
+      "sourceBytes": 520393,
+      "previewBytes": 2504423,
+      "pages": 28
+    },
+    "docs/exam-review-form.doc": {
+      "preview": "docs/previews/exam-review-form.pdf",
+      "format": "doc",
+      "sourceBytes": 30208,
+      "previewBytes": 55197,
+      "pages": 2
+    },
+    "docs/graduation-self-check.docx": {
+      "preview": "docs/previews/graduation-self-check.pdf",
+      "format": "docx",
+      "sourceBytes": 1361674,
+      "previewBytes": 987934,
+      "pages": 4
+    },
+    "docs/hometown-groups.xlsx": {
+      "preview": "docs/previews/hometown-groups.pdf",
+      "format": "xlsx",
+      "sourceBytes": 12634,
+      "previewBytes": 94492,
+      "pages": 3
+    },
+    "docs/info-engineering-electives-2025.docx": {
+      "preview": "docs/previews/info-engineering-electives-2025.pdf",
+      "format": "docx",
+      "sourceBytes": 18308,
+      "previewBytes": 91780,
+      "pages": 2
+    },
+    "docs/off-campus-e-resources.docx": {
+      "preview": "docs/previews/off-campus-e-resources.pdf",
+      "format": "docx",
+      "sourceBytes": 799239,
+      "previewBytes": 728560,
+      "pages": 4
+    },
+    "docs/open-lab-application.doc": {
+      "preview": "docs/previews/open-lab-application.pdf",
+      "format": "doc",
+      "sourceBytes": 33792,
+      "previewBytes": 48413,
+      "pages": 2
+    },
+    "docs/party-activist-form.xls": {
+      "preview": "docs/previews/party-activist-form.pdf",
+      "format": "xls",
+      "sourceBytes": 15360,
+      "previewBytes": 78687,
+      "pages": 3
+    },
+    "docs/pe-health-course-application.docx": {
+      "preview": "docs/previews/pe-health-course-application.pdf",
+      "format": "docx",
+      "sourceBytes": 13314,
+      "previewBytes": 68783,
+      "pages": 1
+    },
+    "docs/scholarship-application-guide.docx": {
+      "preview": "docs/previews/scholarship-application-guide.pdf",
+      "format": "docx",
+      "sourceBytes": 330093,
+      "previewBytes": 242734,
+      "pages": 4
+    },
+    "docs/special-course-selection-form.doc": {
+      "preview": "docs/previews/special-course-selection-form.pdf",
+      "format": "doc",
+      "sourceBytes": 22016,
+      "previewBytes": 70243,
+      "pages": 1
+    },
+    "docs/student-record-change-application-2020.docx": {
+      "preview": "docs/previews/student-record-change-application-2020.pdf",
+      "format": "docx",
+      "sourceBytes": 15132,
+      "previewBytes": 93264,
+      "pages": 2
+    },
+    "docs/thesis-plagiarism-check-2026.docx": {
+      "preview": "docs/previews/thesis-plagiarism-check-2026.pdf",
+      "format": "docx",
+      "sourceBytes": 18445,
+      "previewBytes": 187183,
+      "pages": 4
+    },
+    "docs/thesis-template-2023.doc": {
+      "preview": "docs/previews/thesis-template-2023.pdf",
+      "format": "doc",
+      "sourceBytes": 442153,
+      "previewBytes": 906859,
+      "pages": 35
+    },
+    "docs/wifi7-transition-notice.docx": {
+      "preview": "docs/previews/wifi7-transition-notice.pdf",
+      "format": "docx",
+      "sourceBytes": 11190,
+      "previewBytes": 68707,
+      "pages": 1
+    }
+  }
+}

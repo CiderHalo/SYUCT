@@ -8,7 +8,7 @@
 
 把分散的新生通知、校园地图、学业资料、办事表格和校园经验，整理成一条更容易查找的路径。
 
-**当前版本：v1.14** · **41 份资料** · **2 张校园导航地图** · **13 张校园实景照片**
+**当前版本：v1.17** · **41 份资料** · **22 份 Office 本地预览** · **2 张校园导航地图** · **13 张校园实景照片**
 
 [访问主站](https://www.syuct.top/) · [GitHub Pages 备用入口](https://hanchuang0303.github.io/SYUCT/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html)
 
@@ -30,12 +30,12 @@
 | 备用站 | <https://hanchuang0303.github.io/SYUCT/> | GitHub Pages 备用入口 |
 | 源码仓库 | <https://github.com/hanchuang0303/SYUCT> | 查看源码、提交 Issue 或 Pull Request |
 
-## v1.14 更新
+## v1.17 更新
 
-- 校园相册新增 6 张照片，现共收录 13 张校园实景。
-- 首页精选区由 3 张扩展为 5 张，新增“雪中校园牌坊”和“图书馆晚霞”。
-- 首页公益站介绍补充“由学生整理，为学生服务”。
-- 所有新图均采用本地资源与懒加载，不依赖外部图床。
+- 22 份 Word、Excel 文件新增本站本地在线预览，覆盖 `.doc`、`.docx`、`.xls`、`.xlsx`。
+- Office 文件先由 LibreOffice 转换为本地 PDF，再使用本站 PDF.js 阅读，不经过第三方在线文档服务。
+- 预览页的“下载原文件”仍会下载原始 Word 或 Excel 文件。
+- 新增自动转换工作流；后续向 `docs/` 上传 Office 文件后，可自动生成预览并重新部署。
 
 完整版本记录见 [`project-docs/updates/README.md`](project-docs/updates/README.md)。
 
@@ -60,6 +60,7 @@
 - 响应式站点标题：桌面端显示完整共创版名称，手机端显示简化名称
 - PDF.js 完全本地托管，不依赖 jsDelivr、unpkg 等外部 CDN
 - PDF 支持在线阅读、缩放、翻页和原文件下载
+- Word、Excel 支持本站本地转换预览，原文件仍可直接下载
 - 首页校园实景预览可一键跳转到完整校园相册
 - 原始资料集中存放在 `docs/`，维护说明与版本记录集中存放在 `project-docs/`
 
@@ -69,11 +70,13 @@
 SYUCT/
 ├── .github/
 │   └── workflows/
-│       └── vendor-pdfjs.yml       # 自动维护本地 PDF.js
+│       ├── vendor-pdfjs.yml       # 自动维护本地 PDF.js
+│       └── build-office-previews.yml # 自动转换 Word / Excel 预览
 ├── assets/
 │   ├── pdfjs/                     # GitHub Actions 写入的 PDF.js 运行文件
-│   ├── app-v111.js                # 全站交互逻辑
-│   ├── styles-v111.css            # 全站样式
+│   ├── office-preview-manifest.json # Office 原文件与预览 PDF 映射
+│   ├── app-v117.js                # 全站交互与 Office 预览按钮
+│   ├── styles-v117.css            # 全站样式
 │   ├── pdf-viewer.js              # PDF 阅读器入口
 │   ├── pdf-viewer.css             # PDF 阅读器样式
 │   ├── syuct-community-icon.png   # 学生共创图标与 favicon
@@ -81,11 +84,13 @@ SYUCT/
 │   ├── sports-map.png             # 体育课专用地图
 │   └── gallery-*.jpg              # 校园相册图片
 ├── docs/                          # PDF、Word、Excel 等原始资料
+│   └── previews/                  # Word、Excel 转换后的本地 PDF 预览
 ├── project-docs/
 │   ├── updates/                   # 各版本更新记录
 │   └── maintenance/               # PDF.js 等维护说明
 ├── scripts/
-│   └── vendor-pdfjs.mjs           # PDF.js 本地化脚本
+│   ├── vendor-pdfjs.mjs           # PDF.js 本地化脚本
+│   └── build-office-previews.py   # Word、Excel 转本地 PDF
 ├── index.html                     # 首页
 ├── freshman.html                  # 新生入学
 ├── map.html                       # 校园地图
@@ -131,13 +136,19 @@ Vendor local PDF.js
 
 本地 PDF.js 已经安装，后续新增 PDF 不需要生成页面图片或维护预览清单。
 
-### 新增 Word、Excel 或其他文件
+### 新增 Word 或 Excel
 
-将文件上传到 `docs/`，并在对应页面添加下载链接：
+1. 将 `.doc`、`.docx`、`.xls` 或 `.xlsx` 文件上传到 `docs/`。
+2. 在对应页面添加指向原文件的普通下载链接：
 
 ```html
 <a href="docs/example.docx" download>下载资料</a>
 ```
+
+3. `Build local Office previews` 工作流会自动生成 `docs/previews/example.pdf` 并更新预览清单。
+4. 全站脚本会自动在原下载链接旁加入“在线预览”，不需要手写预览链接。
+
+转换预览适合阅读与查找；需要填写、修改或精确核对格式时，请下载原文件。
 
 ### 新增校园照片
 
@@ -173,7 +184,7 @@ DNS 解析记录和目标值以 EdgeOne 控制台当前提示为准。网站本�
 目录：/ (root)
 ```
 
-网站不需要执行 `npm run build`。`package.json` 仅用于固定和维护本地 PDF.js。
+网站不需要执行 `npm run build`。`package.json` 仅用于固定和维护本地 PDF.js；Office 预览由独立 GitHub Actions 工作流生成。
 
 ## 参与共建
 
