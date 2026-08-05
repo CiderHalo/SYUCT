@@ -84,6 +84,8 @@ img{max-width:100%;display:block}
 .hero h1{margin:22px 0 15px;font-size:clamp(44px,6vw,78px);line-height:1.06;letter-spacing:-.055em}
 .hero h1 span{color:#8ed7ff}
 .hero p{max-width:670px;margin:0;color:rgba(255,255,255,.88);font-size:clamp(17px,2vw,21px)}
+.hero-description{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.hero-description small{display:block;color:rgba(255,255,255,.62);font-size:.76em;font-weight:600;line-height:1.55;letter-spacing:.045em}
 .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
 .hero-meta{display:flex;flex-wrap:wrap;gap:9px 18px;margin-top:26px;color:rgba(255,255,255,.68);font-size:12px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:46px;padding:0 19px;border:1px solid transparent;border-radius:12px;font-weight:800;cursor:pointer;transition:.18s}
@@ -273,6 +275,8 @@ html[data-theme="dark"] .timeline .highlight{background:#173549}
   .quick-links-menu{top:calc(100% + 10px)}
   .hero{min-height:500px;padding:42px 24px;border-radius:22px}
   .hero h1{font-size:45px}
+  .hero-description{gap:7px}
+  .hero-description small{font-size:.72em;color:rgba(255,255,255,.58)}
   .stats{grid-template-columns:repeat(2,1fr);margin:-26px 10px 55px}
   .stat{min-height:102px}
   .portal-grid{grid-template-columns:1fr}
