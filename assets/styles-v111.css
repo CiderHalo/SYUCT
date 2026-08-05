@@ -99,6 +99,16 @@ img{max-width:100%;display:block}
 .stat span{display:block;margin-top:8px;color:var(--muted);font-size:12px}
 .section{margin:76px 0;scroll-margin-top:92px}
 .section-head{margin-bottom:26px}
+.section-head-with-action{display:flex;align-items:flex-end;justify-content:space-between;gap:28px}
+.gallery-jump-button{display:inline-flex;align-items:center;gap:12px;min-width:242px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--primary) 22%,var(--border));border-radius:16px;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 8%,var(--surface)),var(--surface));box-shadow:0 10px 26px rgba(15,76,126,.09);transition:transform .2s,border-color .2s,box-shadow .2s}
+.gallery-jump-button:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--primary) 48%,var(--border));box-shadow:0 14px 32px rgba(15,76,126,.15)}
+.gallery-jump-icon{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:12px;color:#fff;background:linear-gradient(145deg,var(--primary),var(--primary-2));box-shadow:0 8px 18px rgba(0,103,172,.22)}
+.gallery-jump-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gallery-jump-copy{display:grid;gap:2px;line-height:1.2}
+.gallery-jump-copy strong{color:var(--text);font-size:14px}
+.gallery-jump-copy small{color:var(--muted);font-size:11px}
+.gallery-jump-arrow{margin-left:auto;color:var(--primary);font-size:22px;font-weight:900;transition:transform .2s}
+.gallery-jump-button:hover .gallery-jump-arrow{transform:translateX(3px)}
 .eyebrow{margin-bottom:7px;color:var(--primary);font-size:12px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
 .section h2,.community-strip h2{margin:0;font-size:clamp(28px,4vw,42px);line-height:1.22;letter-spacing:-.03em}
 .section-lead{max-width:760px;margin:10px 0 0;color:var(--muted)}
@@ -253,6 +263,8 @@ html[data-theme="dark"] .timeline .highlight{background:#173549}
   .community-card img{max-width:330px}
 }
 @media(max-width:650px){
+  .section-head-with-action{align-items:stretch;flex-direction:column;gap:16px}
+  .gallery-jump-button{width:100%;min-width:0}
   .topbar{gap:8px;padding:0 10px}
   .brand{min-width:0;flex:0 1 auto;gap:8px}
   .brand-mark{width:34px;height:34px;flex-basis:34px}
