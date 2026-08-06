@@ -8,7 +8,7 @@
 
 把分散的新生通知、校园地图、学业资料、办事表格和校园经验，整理成一条更容易查找的路径。
 
-**当前版本：v1.19** · **41 份资料** · **22 份 Office 本地预览** · **2 张校园导航地图** · **13 张校园实景照片**
+**当前版本：v1.26** · **41 份资料** · **22 份 Office 本地预览** · **2 张校园导航地图** · **1 个官方校园全景** · **13 张校园实景照片**
 
 [访问主站](https://www.syuct.top/) · [GitHub Pages 备用入口](https://hanchuang0303.github.io/SYUCT/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html)
 
@@ -30,12 +30,14 @@
 | 备用站 | <https://hanchuang0303.github.io/SYUCT/> | GitHub Pages 备用入口 |
 | 源码仓库 | <https://github.com/hanchuang0303/SYUCT> | 查看源码、提交 Issue 或 Pull Request |
 
-## v1.19 更新
+## v1.26 更新
 
-- 侧边栏与首页核心入口的 emoji 已全部替换为 9 枚统一的校园导视 SVG 图标。
-- 龙门与化学金字塔不再单独占用大卡片，而是融入“新生入学”和“校园生活”的页首介绍区域。
-- 新版本使用 `app-v119.js` 与 `styles-v119.css`，避免旧缓存导致图标不生效。
-- 更新说明统一放在 `project-docs/updates/`，仓库根目录不再放置 `UPDATE-v*.md`。
+- 全站静态资源改用固定文件名：`assets/app.js` 与 `assets/styles.css`，不再为每次更新复制新的 `app-v*.js`、`styles-v*.css`。
+- 页面通过 `?rev=20260806` 更新浏览器缓存；后续发布只需修改缓存参数，不需要继续增加带版本号的文件。
+- 校园地图页加入学校官网提供的 720 云校园全景入口，支持页面内漫游、响应式显示和新窗口全屏浏览。
+- 办事大厅页加入“老校门”地标插画，与校训石、龙门、图书馆和化学金字塔使用统一的页首布局。
+- 地标图片统一改为不带版本号的固定命名，并清理已无引用的旧版资源文件。
+- README、项目结构、版本索引和更新报告同步到 v1.26。
 
 完整版本记录见 [`project-docs/updates/README.md`](project-docs/updates/README.md)。
 
@@ -44,7 +46,7 @@
 | 栏目 | 内容 |
 | --- | --- |
 | 新生入学 | 报到准备、入学流程、新生指南、本科与硕士新生常见问题 |
-| 校园地图 | 高清校园总图、体育课专用地图和常用地点导航 |
+| 校园地图 | 官方校园全景、高清校园总图、体育课专用地图和常用地点导航 |
 | 数字校园 | 统一身份认证、校园网络、WebVPN、CARSI 和电子资源 |
 | 学业资料 | 培养方案、选修要求、微专业、创新竞赛、开放实验室和课程资料 |
 | 办事大厅 | 学籍修改、缓考、监控调阅、奖学金、毕业和论文相关流程 |
@@ -58,6 +60,9 @@
 - 同时支持 EdgeOne Pages 与 GitHub Pages 部署
 - 桌面端和移动端自适应，含移动侧栏、站内搜索和深浅色模式
 - 响应式站点标题：桌面端显示完整共创版名称，手机端显示简化名称
+- 全站使用固定的 `app.js`、`styles.css` 与地标资源文件名，通过查询参数刷新缓存
+- 新生入学、校园地图、学业资料、办事大厅和校园生活使用统一校园地标页首
+- 校园地图页内嵌官方 720 云校园全景，并保留新窗口全屏入口
 - PDF.js 完全本地托管，不依赖 jsDelivr、unpkg 等外部 CDN
 - PDF 支持在线阅读、缩放、翻页和原文件下载
 - Word、Excel 支持本站本地转换预览，原文件仍可直接下载
@@ -70,40 +75,63 @@
 SYUCT/
 ├── .github/
 │   └── workflows/
-│       ├── vendor-pdfjs.yml       # 自动维护本地 PDF.js
-│       └── build-office-previews.yml # 自动转换 Word / Excel 预览
+│       ├── vendor-pdfjs.yml           # 自动维护本地 PDF.js
+│       └── build-office-previews.yml  # 自动转换 Word / Excel 预览
 ├── assets/
-│   ├── pdfjs/                     # GitHub Actions 写入的 PDF.js 运行文件
-│   ├── office-preview-manifest.json # Office 原文件与预览 PDF 映射
-│   ├── app-v117.js                # 全站交互与 Office 预览按钮
-│   ├── styles-v117.css            # 全站样式
-│   ├── pdf-viewer.js              # PDF 阅读器入口
-│   ├── pdf-viewer.css             # PDF 阅读器样式
-│   ├── syuct-community-icon.png   # 学生共创图标与 favicon
-│   ├── campus-map.jpg             # 高清校园地图
-│   ├── sports-map.png             # 体育课专用地图
-│   └── gallery-*.jpg              # 校园相册图片
-├── docs/                          # PDF、Word、Excel 等原始资料
-│   └── previews/                  # Word、Excel 转换后的本地 PDF 预览
+│   ├── icons/                         # 全站导航与入口 SVG 图标
+│   ├── pdfjs/                         # GitHub Actions 写入的 PDF.js 运行文件
+│   ├── office-preview-manifest.json   # Office 原文件与预览 PDF 映射
+│   ├── app.js                         # 全站交互、搜索与 Office 预览按钮
+│   ├── styles.css                     # 全站样式
+│   ├── pdf-viewer.js                  # PDF 阅读器入口
+│   ├── pdf-viewer.css                 # PDF 阅读器样式
+│   ├── syuct-community-icon.png       # 学生共创图标与 favicon
+│   ├── landmark-motto-stone.png       # 校训石地标插画
+│   ├── landmark-dragon-gate.png       # 龙门地标插画
+│   ├── landmark-library.png           # 图书馆地标插画
+│   ├── landmark-old-school-gate.png   # 老校门地标插画
+│   ├── landmark-chemical-pyramid.png  # 化学金字塔地标插画
+│   ├── campus-map.jpg                 # 高清校园地图
+│   ├── sports-map.png                 # 体育课专用地图
+│   └── gallery-*.jpg                  # 校园相册图片
+├── docs/                              # PDF、Word、Excel 等原始资料
+│   └── previews/                      # Word、Excel 转换后的本地 PDF 预览
 ├── project-docs/
-│   ├── updates/                   # 各版本更新记录
-│   └── maintenance/               # PDF.js 等维护说明
+│   ├── updates/                       # 各版本更新记录
+│   └── maintenance/                   # PDF.js 等维护说明
 ├── scripts/
-│   ├── vendor-pdfjs.mjs           # PDF.js 本地化脚本
-│   └── build-office-previews.py   # Word、Excel 转本地 PDF
-├── index.html                     # 首页
-├── freshman.html                  # 新生入学
-├── map.html                       # 校园地图
-├── digital.html                   # 数字校园
-├── academics.html                 # 学业资料
-├── services.html                  # 办事大厅
-├── campus.html                    # 校园生活与完整相册
-├── resources.html                 # 资料下载
-├── about.html                     # 关于共建
-├── pdf-viewer.html                # PDF 在线阅读页
+│   ├── vendor-pdfjs.mjs               # PDF.js 本地化脚本
+│   └── build-office-previews.py       # Word、Excel 转本地 PDF
+├── index.html                         # 首页
+├── freshman.html                      # 新生入学
+├── map.html                           # 校园全景、地图与体育课导航
+├── digital.html                       # 数字校园
+├── academics.html                     # 学业资料
+├── services.html                      # 办事大厅
+├── campus.html                        # 校园生活与完整相册
+├── resources.html                     # 资料下载
+├── about.html                         # 关于共建
+├── pdf-viewer.html                    # PDF 在线阅读页
 ├── 404.html
-└── package.json                   # 固定 PDF.js 版本与维护命令
+└── package.json                       # 固定 PDF.js 版本与维护命令
 ```
+
+## 静态资源与缓存
+
+全站 JavaScript、CSS 和地标插画使用固定文件名，避免仓库长期堆积多个历史副本：
+
+```html
+<link href="assets/styles.css?rev=20260806" rel="stylesheet">
+<script defer src="assets/app.js?rev=20260806"></script>
+```
+
+后续更新资源内容时，只需将所有页面中的 `rev` 参数改为新的发布日期或发布编号，例如：
+
+```text
+?rev=20260807
+```
+
+不要重新创建 `app-v127.js`、`styles-v127.css` 一类文件。固定文件名便于维护，查询参数负责让浏览器和 CDN 获取新内容。
 
 ## 本地 PDF.js
 
@@ -156,6 +184,13 @@ Vendor local PDF.js
 2. 在 `campus.html#photos` 的相册区域添加图片卡片。
 3. 需要在首页展示时，再在 `index.html` 的“校园一览”中引用；首页只保留少量精选图，完整图片统一放在校园相册中。
 
+### 新增校园地标插画
+
+1. 将透明 PNG 保存到 `assets/`，使用语义化固定名称，例如 `landmark-example.png`。
+2. 在对应内容页的统一页首结构中引用图片。
+3. 标签使用“校园地标 · 地标名称”的格式。
+4. 更新图片时覆盖原文件，并修改页面中的 `?rev=` 参数，不要新建带版本号的图片副本。
+
 ## 部署说明
 
 ### EdgeOne Pages（主站）
@@ -201,6 +236,8 @@ DNS 解析记录和目标值以 EdgeOne 控制台当前提示为准。网站本�
 ## 资料来源与版权
 
 本站资料主要来自学校和学院公开发布内容，以及同学授权投稿。原文件仅用于学习交流与信息整理；如有侵权、失效内容或不适合公开的资料，请通过仓库 Issue 提出处理请求。
+
+校园全景通过学校官网公开入口链接至第三方全景服务，内容版权及服务可用性以原发布页面为准。
 
 ## 免责声明
 
