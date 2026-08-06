@@ -2,7 +2,7 @@
   "package": "pdfjs-dist",
   "version": "6.2.108",
   "build": "legacy",
-  "generatedAt": "2026-08-06T03:14:36.422Z",
+  "generatedAt": "2026-08-06T07:27:49.119Z",
   "runtimeFiles": [
     "pdf.min.mjs",
     "pdf.worker.min.mjs",
