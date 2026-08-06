@@ -392,3 +392,35 @@ html[data-theme="dark"] .timeline .highlight{background:#173549}
   .office-resource-actions{gap:10px}
   .office-download-actions{min-width:0}
 }
+
+
+/* v1.18 — campus landmark illustration spotlights */
+.landmark-spotlight{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,42%);align-items:stretch;margin:8px 0 34px;overflow:hidden;border:1px solid var(--border);border-radius:24px;background:linear-gradient(135deg,var(--surface),#edf7ff);box-shadow:0 18px 46px rgba(15,58,91,.08)}
+.landmark-copy{display:flex;flex-direction:column;justify-content:center;padding:34px 36px}
+.landmark-kicker{margin-bottom:8px;color:var(--primary);font-size:12px;font-weight:900;letter-spacing:.12em}
+.article .landmark-spotlight h2{margin:0;padding:0;scroll-margin-top:94px;font-size:clamp(27px,4vw,39px);line-height:1.18;letter-spacing:-.03em}
+.landmark-spotlight p{max-width:650px;margin:14px 0 20px;color:var(--muted);font-size:15px;line-height:1.8}
+.landmark-art{position:relative;min-height:286px;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 48%,rgba(255,255,255,.95),rgba(225,241,252,.82) 58%,rgba(210,231,246,.5))}
+.landmark-art::after{content:"";position:absolute;inset:auto 12% 19px;height:22px;border-radius:50%;background:rgba(7,92,168,.12);filter:blur(16px)}
+.landmark-art img{position:relative;z-index:1;width:100%;max-width:520px;max-height:280px;object-fit:contain;filter:drop-shadow(0 18px 20px rgba(15,58,91,.18))}
+.landmark-spotlight-gate{background:linear-gradient(135deg,#fffaf6,var(--surface) 58%,#edf7ff)}
+.landmark-spotlight-pyramid{grid-template-columns:minmax(280px,42%) minmax(0,1fr);background:linear-gradient(135deg,#fff8ec,var(--surface) 52%,#eef7ff)}
+.landmark-spotlight-pyramid .landmark-art{background:radial-gradient(circle at 50% 45%,rgba(255,246,221,.95),rgba(232,241,248,.86) 60%,rgba(211,228,241,.6))}
+html[data-theme="dark"] .landmark-spotlight{background:linear-gradient(135deg,var(--surface),#153047);box-shadow:none}
+html[data-theme="dark"] .landmark-spotlight-gate{background:linear-gradient(135deg,#2c261f,var(--surface) 58%,#153047)}
+html[data-theme="dark"] .landmark-spotlight-pyramid{background:linear-gradient(135deg,#352719,var(--surface) 52%,#153047)}
+html[data-theme="dark"] .landmark-art{background:radial-gradient(circle at 50% 48%,rgba(45,61,74,.95),rgba(23,48,66,.88) 65%,rgba(15,35,50,.7))}
+@media(max-width:760px){
+  .landmark-spotlight,.landmark-spotlight-pyramid{grid-template-columns:1fr}
+  .landmark-spotlight-pyramid .landmark-art{order:2}
+  .landmark-copy{padding:27px 25px}
+  .landmark-art{min-height:220px;padding:18px 22px}
+  .landmark-art img{max-height:220px}
+}
+@media(max-width:420px){
+  .landmark-copy{padding:24px 21px}
+  .article .landmark-spotlight h2{font-size:28px}
+  .landmark-spotlight p{font-size:14px}
+  .landmark-art{min-height:188px}
+  .landmark-art img{max-height:190px}
+}
