@@ -1,0 +1,184 @@
+name: 一次性重构静态资源命名
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refactor:
+    name: 改为固定文件名并清理旧版本
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 生成固定文件名资源
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required_files=(
+            "assets/app-v123.js"
+            "assets/styles-v124.css"
+            "assets/landmark-chemical-pyramid-v124.png"
+            "assets/landmark-dragon-gate-v125.png"
+            "assets/landmark-library-v124.png"
+            "assets/landmark-motto-stone-v124.png"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "::error file=$file::缺少源文件，已停止重构，不会提交任何修改。"
+              exit 1
+            fi
+          done
+
+          cp "assets/app-v123.js" "assets/app.js"
+          cp "assets/styles-v124.css" "assets/styles.css"
+          cp "assets/landmark-chemical-pyramid-v124.png" "assets/landmark-chemical-pyramid.png"
+          cp "assets/landmark-dragon-gate-v125.png" "assets/landmark-dragon-gate.png"
+          cp "assets/landmark-library-v124.png" "assets/landmark-library.png"
+          cp "assets/landmark-motto-stone-v124.png" "assets/landmark-motto-stone.png"
+
+      - name: 更新所有运行时引用
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          REVISION = "20260806"
+
+          html_rules = (
+              (r"assets/styles-v\d+\.css(?:\?v=\d+)?", f"assets/styles.css?rev={REVISION}"),
+              (r"assets/app-v\d+\.js(?:\?v=\d+)?", f"assets/app.js?rev={REVISION}"),
+              (r"assets/landmark-chemical-pyramid-v\d+\.png(?:\?v=\d+)?", f"assets/landmark-chemical-pyramid.png?rev={REVISION}"),
+              (r"assets/landmark-dragon-gate-v\d+\.png(?:\?v=\d+)?", f"assets/landmark-dragon-gate.png?rev={REVISION}"),
+              (r"assets/landmark-library-v\d+\.png(?:\?v=\d+)?", f"assets/landmark-library.png?rev={REVISION}"),
+              (r"assets/landmark-motto-stone-v\d+\.png(?:\?v=\d+)?", f"assets/landmark-motto-stone.png?rev={REVISION}"),
+              (r"assets/pdf-viewer\.css(?:\?(?:v|rev)=\d+)?", f"assets/pdf-viewer.css?rev={REVISION}"),
+              (r"assets/pdf-viewer\.js(?:\?(?:v|rev)=\d+)?", f"assets/pdf-viewer.js?rev={REVISION}"),
+          )
+
+          changed_files = []
+          html_files = sorted(Path(".").glob("*.html"))
+          if not html_files:
+              sys.exit("仓库根目录没有找到 HTML 文件，已停止。")
+
+          for path in html_files:
+              old = path.read_text(encoding="utf-8")
+              new = old
+              for pattern, replacement in html_rules:
+                  new = re.sub(pattern, replacement, new)
+              if new != old:
+                  path.write_text(new, encoding="utf-8", newline="")
+                  changed_files.append(str(path))
+
+          app_path = Path("assets/app.js")
+          app_old = app_path.read_text(encoding="utf-8")
+          app_new = re.sub(
+              r"assets/office-preview-manifest\.json(?:\?(?:v|rev)=\d+)?",
+              f"assets/office-preview-manifest.json?rev={REVISION}",
+              app_old,
+          )
+          if app_new != app_old:
+              app_path.write_text(app_new, encoding="utf-8", newline="")
+              changed_files.append(str(app_path))
+
+          print("已更新：")
+          for file in changed_files:
+              print(f"- {file}")
+          PY
+
+      - name: 校验新引用后清理旧版本文件
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          required = (
+              "assets/app.js",
+              "assets/styles.css",
+              "assets/landmark-chemical-pyramid.png",
+              "assets/landmark-dragon-gate.png",
+              "assets/landmark-library.png",
+              "assets/landmark-motto-stone.png",
+              "assets/pdf-viewer.js",
+              "assets/pdf-viewer.css",
+          )
+          missing = [file for file in required if not Path(file).is_file()]
+          if missing:
+              sys.exit("缺少新资源文件：" + ", ".join(missing))
+
+          forbidden = re.compile(
+              r"assets/(?:app-v\d+\.js|styles-v\d+\.css|"
+              r"landmark-(?:chemical-pyramid|dragon-gate|library|motto-stone)-v\d+\.png)"
+          )
+          failures = []
+          for path in sorted(Path(".").glob("*.html")):
+              text = path.read_text(encoding="utf-8")
+              for match in forbidden.finditer(text):
+                  failures.append(f"{path}: {match.group(0)}")
+
+          if failures:
+              print("仍发现旧版运行时引用：", file=sys.stderr)
+              print("\n".join(failures), file=sys.stderr)
+              sys.exit(1)
+
+          required_refs = {
+              "assets/styles.css?rev=20260806": 1,
+              "assets/app.js?rev=20260806": 1,
+          }
+          all_html = "\n".join(
+              path.read_text(encoding="utf-8")
+              for path in sorted(Path(".").glob("*.html"))
+          )
+          for ref, minimum in required_refs.items():
+              if all_html.count(ref) < minimum:
+                  sys.exit(f"没有检测到预期引用：{ref}")
+
+          print("运行时引用校验通过。")
+          PY
+
+          rm -f assets/app-v*.js
+          rm -f assets/styles-v*.css
+          rm -f assets/landmark-chemical-pyramid-v*.png
+          rm -f assets/landmark-dragon-gate-v*.png
+          rm -f assets/landmark-library-v*.png
+          rm -f assets/landmark-motto-stone-v*.png
+
+          # 旧的单数文件名没有被网页引用，避免与正式 styles.css 混淆。
+          rm -f assets/style.css
+
+      - name: 删除本次一次性工作流
+        shell: bash
+        run: |
+          rm -f .github/workflows/refactor-static-assets.yml
+
+      - name: 提交重构结果
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "没有需要提交的修改。"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor: use stable asset filenames"
+          git push
