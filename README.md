@@ -8,7 +8,7 @@
 
 把分散的新生通知、校园地图、学业资料、办事表格和校园经验，整理成一条更容易查找的路径。
 
-**当前版本：v1.17** · **41 份资料** · **22 份 Office 本地预览** · **2 张校园导航地图** · **13 张校园实景照片**
+**当前版本：v1.19** · **41 份资料** · **22 份 Office 本地预览** · **2 张校园导航地图** · **13 张校园实景照片**
 
 [访问主站](https://www.syuct.top/) · [GitHub Pages 备用入口](https://hanchuang0303.github.io/SYUCT/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html)
 
@@ -30,12 +30,12 @@
 | 备用站 | <https://hanchuang0303.github.io/SYUCT/> | GitHub Pages 备用入口 |
 | 源码仓库 | <https://github.com/hanchuang0303/SYUCT> | 查看源码、提交 Issue 或 Pull Request |
 
-## v1.17 更新
+## v1.19 更新
 
-- 22 份 Word、Excel 文件新增本站本地在线预览，覆盖 `.doc`、`.docx`、`.xls`、`.xlsx`。
-- Office 文件先由 LibreOffice 转换为本地 PDF，再使用本站 PDF.js 阅读，不经过第三方在线文档服务。
-- 预览页的“下载原文件”仍会下载原始 Word 或 Excel 文件。
-- 新增自动转换工作流；后续向 `docs/` 上传 Office 文件后，可自动生成预览并重新部署。
+- 侧边栏与首页核心入口的 emoji 已全部替换为 9 枚统一的校园导视 SVG 图标。
+- 龙门与化学金字塔不再单独占用大卡片，而是融入“新生入学”和“校园生活”的页首介绍区域。
+- 新版本使用 `app-v119.js` 与 `styles-v119.css`，避免旧缓存导致图标不生效。
+- 更新说明统一放在 `project-docs/updates/`，仓库根目录不再放置 `UPDATE-v*.md`。
 
 完整版本记录见 [`project-docs/updates/README.md`](project-docs/updates/README.md)。
 
