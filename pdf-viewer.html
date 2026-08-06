@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#075ca8">
   <title>PDF 在线预览 · 沈阳化工大学校园指南</title>
-  <link rel="stylesheet" href="assets/pdf-viewer.css">
+  <link rel="stylesheet" href="assets/pdf-viewer.css?rev=20260806">
 </head>
 <body>
   <header class="viewer-toolbar">
@@ -68,10 +68,10 @@
       if (viewerStage) viewerStage.hidden = true;
       if (errorPanel) errorPanel.hidden = false;
       if (errorMessage) {
-        errorMessage.textContent = "阅读器入口脚本没有成功加载。请确认当前部署中存在 assets/pdf-viewer.js，并刷新 EdgeOne 缓存。";
+        errorMessage.textContent = "阅读器入口脚本没有成功加载。请确认当前部署中存在 assets/pdf-viewer.js?rev=20260806，并刷新 EdgeOne 缓存。";
       }
     }, 12000);
   </script>
-  <script type="module" src="assets/pdf-viewer.js?v=1170"></script>
+  <script type="module" src="assets/pdf-viewer.js?rev=20260806"></script>
 </body>
 </html>
