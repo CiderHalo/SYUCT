@@ -8,7 +8,7 @@
 
 把分散的新生通知、校园地图、学业资料、办事表格和校园经验，整理成一条更容易查找的路径。
 
-**当前版本：v1.26** · **41 份资料** · **22 份 Office 本地预览** · **2 张校园导航地图** · **1 个官方校园全景** · **13 张校园实景照片**
+**当前版本：v1.27** · **41 份资料** · **22 份 Office 本地预览** · **2 张校园导航地图** · **1 个官方校园全景** · **13 张校园实景照片**
 
 [访问主站](https://www.syuct.top/) · [GitHub Pages 备用入口](https://hanchuang0303.github.io/SYUCT/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html)
 
@@ -30,16 +30,20 @@
 | 备用站 | <https://hanchuang0303.github.io/SYUCT/> | GitHub Pages 备用入口 |
 | 源码仓库 | <https://github.com/hanchuang0303/SYUCT> | 查看源码、提交 Issue 或 Pull Request |
 
-## v1.26 更新
+## v1.27 更新
 
-- 全站静态资源改用固定文件名：`assets/app.js` 与 `assets/styles.css`，不再为每次更新复制新的 `app-v*.js`、`styles-v*.css`。
-- 页面通过 `?rev=20260806` 更新浏览器缓存；后续发布只需修改缓存参数，不需要继续增加带版本号的文件。
-- 校园地图页加入学校官网提供的 720 云校园全景入口，支持页面内漫游、响应式显示和新窗口全屏浏览。
-- 办事大厅页加入“老校门”地标插画，与校训石、龙门、图书馆和化学金字塔使用统一的页首布局。
-- 地标图片统一改为不带版本号的固定命名，并清理已无引用的旧版资源文件。
-- README、项目结构、版本索引和更新报告同步到 v1.26。
+- 在**不改变页面入口、按钮、搜索方式、资料预览和下载逻辑**的前提下，对全站首屏与按需加载流程做性能整理。
+- 全站搜索弹窗改为首次打开时再创建；`resources.html` 的动态索引补充也延后到用户真正使用搜索时加载，普通浏览不再额外请求并解析整页资料中心。
+- Office 在线预览增强改为先检测当前页面是否存在 Word / Excel 链接；没有 Office 文件的页面不再请求 `office-preview-manifest.json`。
+- QQ 群二维码弹窗改为按需创建，未点击“加入交流群”时不再提前构建弹窗与加载二维码资源。
+- 页面已有的静态顶部导航直接复用，JavaScript 不再在页面加载后重复销毁并重建同一套导航 DOM，减少一次无意义的布局与绘制。
+- 首页优先预加载首屏校园主视觉，同时将下方校园地图预览改为懒加载；体育课专用地图也在滚动到附近时再加载。
+- 6 张校园地标透明 PNG 统一优化到 `900×600`：与现有 `3:2` 构图保持一致，在当前网页最大约 320px 的展示尺寸下保留高像素密度屏幕余量，总体积约从 **6.5 MB 降至 2.4 MB**。
+- 体育课专用地图保持原始像素尺寸与透明信息，仅做无损 PNG 重编码，进一步减少传输体积。
+- 数字校园页补充“槐德广场”地标；首页新生快捷入口整理为 5 项；校园地图页精简重复实景内容并将学校官方全景放到页面结尾。
+- 本轮发布统一使用 `?rev=20260807` 刷新静态资源缓存，后续仍继续采用固定文件名，不恢复 `app-v*.js`、`styles-v*.css` 版本副本。
 
-完整版本记录见 [`project-docs/updates/README.md`](project-docs/updates/README.md)。
+历史版本记录见 [`project-docs/updates/README.md`](project-docs/updates/README.md)。
 
 ## 主要栏目
 
@@ -61,7 +65,7 @@
 - 桌面端和移动端自适应，含移动侧栏、站内搜索和深浅色模式
 - 响应式站点标题：桌面端显示完整共创版名称，手机端显示简化名称
 - 全站使用固定的 `app.js`、`styles.css` 与地标资源文件名，通过查询参数刷新缓存
-- 新生入学、校园地图、学业资料、办事大厅和校园生活使用统一校园地标页首
+- 新生入学、校园地图、数字校园、学业资料、办事大厅和校园生活使用统一校园地标页首
 - 校园地图页内嵌官方 720 云校园全景，并保留新窗口全屏入口
 - PDF.js 完全本地托管，不依赖 jsDelivr、unpkg 等外部 CDN
 - PDF 支持在线阅读、缩放、翻页和原文件下载
@@ -89,6 +93,7 @@ SYUCT/
 │   ├── landmark-motto-stone.png       # 校训石地标插画
 │   ├── landmark-dragon-gate.png       # 龙门地标插画
 │   ├── landmark-library.png           # 图书馆地标插画
+│   ├── landmark-huaide-square.png     # 槐德广场地标插画
 │   ├── landmark-old-school-gate.png   # 老校门地标插画
 │   ├── landmark-chemical-pyramid.png  # 化学金字塔地标插画
 │   ├── campus-map.jpg                 # 高清校园地图
@@ -104,7 +109,7 @@ SYUCT/
 │   └── build-office-previews.py       # Word、Excel 转本地 PDF
 ├── index.html                         # 首页
 ├── freshman.html                      # 新生入学
-├── map.html                           # 校园全景、地图与体育课导航
+├── map.html                           # 校园地图与体育课导航
 ├── digital.html                       # 数字校园
 ├── academics.html                     # 学业资料
 ├── services.html                      # 办事大厅
@@ -121,8 +126,8 @@ SYUCT/
 全站 JavaScript、CSS 和地标插画使用固定文件名，避免仓库长期堆积多个历史副本：
 
 ```html
-<link href="assets/styles.css?rev=20260806" rel="stylesheet">
-<script defer src="assets/app.js?rev=20260806"></script>
+<link href="assets/styles.css?rev=20260807" rel="stylesheet">
+<script defer src="assets/app.js?rev=20260807"></script>
 ```
 
 后续更新资源内容时，只需将所有页面中的 `rev` 参数改为新的发布日期或发布编号，例如：
