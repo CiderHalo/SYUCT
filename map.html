@@ -14,24 +14,17 @@
       margin:0 0 28px;
       padding:0;
       overflow:hidden;
-    }
-    .panorama-copy{
-      padding:24px 24px 18px;
-    }
-    .panorama-copy h3{
-      margin:8px 0 6px;
-    }
-    .panorama-copy p{
-      margin:0;
+      border:1px solid var(--border);
+      border-radius:24px;
+      background:var(--card);
+      box-shadow:var(--shadow-sm);
     }
     .panorama-frame{
       position:relative;
       width:100%;
-      aspect-ratio:16 / 9;
+      aspect-ratio:16 / 7.6;
       overflow:hidden;
-      border-top:1px solid var(--border);
-      border-bottom:1px solid var(--border);
-      background:#061d2e;
+      background:#06284b center/cover no-repeat url('assets/campus-panorama-cover.png');
     }
     .panorama-frame iframe{
       display:block;
@@ -40,88 +33,95 @@
       border:0;
     }
     .panorama-gate{
+      position:relative;
       display:flex;
       width:100%;
       height:100%;
-      align-items:center;
+      align-items:flex-end;
       justify-content:center;
-      padding:30px;
+      padding:28px;
       box-sizing:border-box;
       text-align:center;
       color:#fff;
-      background:radial-gradient(circle at 50% 30%,#0d6fb8 0,#075ca8 34%,#061d2e 100%);
+      background:linear-gradient(180deg,rgba(6,26,44,.08) 0%,rgba(6,26,44,.2) 46%,rgba(6,26,44,.62) 100%);
     }
     .panorama-gate-inner{
-      width:min(100%,560px);
+      width:min(100%,520px);
+      padding:18px 18px 16px;
+      border-radius:20px;
+      background:rgba(7,29,50,.34);
+      backdrop-filter:blur(6px);
+      box-shadow:0 18px 40px rgba(0,0,0,.18);
     }
     .panorama-gate-badge{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-width:68px;
-      height:34px;
-      margin-bottom:14px;
+      min-width:82px;
+      height:32px;
+      margin-bottom:12px;
       padding:0 12px;
-      border:1px solid rgba(255,255,255,.35);
+      border:1px solid rgba(255,255,255,.42);
       border-radius:999px;
-      background:rgba(255,255,255,.12);
-      font-size:14px;
-      font-weight:700;
+      background:rgba(255,255,255,.14);
+      color:#fff;
+      font-size:13px;
+      font-weight:800;
       letter-spacing:.04em;
     }
     .panorama-gate h4{
       margin:0 0 8px;
       color:#fff;
-      font-size:clamp(20px,3vw,28px);
+      font-size:clamp(22px,3.1vw,34px);
+      line-height:1.15;
     }
     .panorama-gate p{
-      margin:0 auto 18px;
-      color:rgba(255,255,255,.82);
-      line-height:1.75;
+      margin:0 0 16px;
+      color:rgba(255,255,255,.9);
+      font-size:15px;
+      line-height:1.7;
+    }
+    .panorama-actions{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;
     }
     .panorama-start{
       appearance:none;
       border:0;
-      border-radius:10px;
-      padding:11px 20px;
+      border-radius:999px;
+      padding:13px 24px;
       background:#fff;
       color:#075ca8;
       font:inherit;
       font-weight:800;
       cursor:pointer;
-      box-shadow:0 8px 24px rgba(0,0,0,.18);
+      box-shadow:0 10px 28px rgba(0,0,0,.18);
     }
     .panorama-start:hover{
       transform:translateY(-1px);
     }
     .panorama-start:focus-visible{
-      outline:3px solid rgba(255,255,255,.7);
+      outline:3px solid rgba(255,255,255,.75);
       outline-offset:3px;
     }
-    .panorama-gate small{
-      display:block;
-      margin-top:12px;
-      color:rgba(255,255,255,.68);
+    .panorama-inline-link{
+      color:#fff;
+      font-size:14px;
+      font-weight:700;
+      text-decoration:none;
+      opacity:.92;
+    }
+    .panorama-inline-link:hover{
+      text-decoration:underline;
+    }
+    .panorama-tip{
+      margin:12px 0 0;
+      color:rgba(255,255,255,.78);
       font-size:12px;
       line-height:1.6;
-    }
-    .panorama-footer{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:18px;
-      padding:18px 24px 22px;
-    }
-    .panorama-footer .resource-actions{
-      margin:0;
-      flex:0 0 auto;
-    }
-    .panorama-note{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.65;
-      text-align:right;
     }
     .delivery-note{
       margin:10px 0 0;
@@ -130,19 +130,25 @@
       line-height:1.65;
     }
     @media (max-width:700px){
-      .panorama-copy{
-        padding:20px 18px 15px;
-      }
       .panorama-frame{
-        aspect-ratio:4 / 3;
+        aspect-ratio:4 / 3.1;
+        background-position:center center;
       }
-      .panorama-footer{
-        display:block;
-        padding:16px 18px 20px;
+      .panorama-gate{
+        align-items:flex-end;
+        padding:18px;
       }
-      .panorama-note{
-        margin-top:12px;
-        text-align:left;
+      .panorama-gate-inner{
+        padding:16px 14px 14px;
+      }
+      .panorama-gate p{
+        font-size:14px;
+      }
+      .panorama-start{
+        width:100%;
+      }
+      .panorama-inline-link{
+        width:100%;
       }
     }
   </style>
@@ -245,27 +251,19 @@
           </ul>
           <h2 id="panorama">官方校园全景</h2>
           <article class="resource-card panorama-card">
-            <div class="panorama-copy">
-              <div class="resource-type">720° VR</div>
-              <h3>沈阳化工大学校园全景</h3>
-              <p>点击“开始浏览”后再加载可交互的校园全景，可拖动画面转动视角，并通过场景热点继续漫游。</p>
-            </div>
             <div class="panorama-frame" id="panoramaFrame" data-panorama-src="https://www.720yun.com/t/f2vk69p9dqe?scene_id=100532629">
               <div class="panorama-gate" id="panoramaGate">
                 <div class="panorama-gate-inner">
-                  <div class="panorama-gate-badge">720° VR</div>
+                  <div class="panorama-gate-badge">720° 全景</div>
                   <h4>官方校园全景</h4>
-                  <p>需要时再加载，避免仅浏览地图页就产生 720 云全景访问。</p>
-                  <button class="panorama-start" id="panoramaStart" type="button">开始浏览官方全景</button>
-                  <small>未点击前不会连接 720 云，也不会加载全景画面。</small>
+                  <p>点击后再加载学校官方 720 云全景，拖动画面即可自由浏览校园。</p>
+                  <div class="panorama-actions">
+                    <button class="panorama-start" id="panoramaStart" type="button">开始浏览</button>
+                    <a class="panorama-inline-link" href="https://www.720yun.com/t/f2vk69p9dqe?scene_id=100532629" target="_blank" rel="noreferrer">新窗口打开 ↗</a>
+                  </div>
+                  <div class="panorama-tip">未点击前不会加载全景内容。</div>
                 </div>
               </div>
-            </div>
-            <div class="panorama-footer">
-              <div class="resource-actions">
-                <a class="text-link" href="https://www.720yun.com/t/f2vk69p9dqe?scene_id=100532629" target="_blank" rel="noreferrer">在新窗口全屏浏览 →</a>
-              </div>
-              <p class="panorama-note">内容来源于学校官网的校园全景入口，实际展示与可用性以原页面为准。</p>
             </div>
           </article>
 
