@@ -8,7 +8,7 @@
 
 把分散的新生通知、校园地图、学业资料、办事表格和校园经验，整理成一条更容易查找的路径。
 
-**当前版本：v1.28** · **41 份资料** · **22 份 Office 本地预览** · **4 张实用导航地图** · **1 个官方校园全景** · **13 张校园实景照片**
+**当前版本：v1.29** · **40+ 份资料** · **22 份 Office 本地预览** · **4 张实用导航地图** · **1 个官方校园全景** · **13 张校园实景照片**
 
 [访问主站](https://www.syuct.top/) · [GitHub Pages 备用入口](https://hanchuang0303.github.io/SYUCT/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html)
 
@@ -30,17 +30,17 @@
 | 备用站 | <https://hanchuang0303.github.io/SYUCT/> | GitHub Pages 备用入口 |
 | 源码仓库 | <https://github.com/hanchuang0303/SYUCT> | 查看源码、提交 Issue 或 Pull Request |
 
-## v1.28 更新
+## v1.29 更新
 
-- 校园地图页新增完整的**快递取件导航**，与校园总图、体育课专用地图和官方校园全景形成一页式校园导航。
-- 新增两张快递地图：`delivery-pickup-overview.png` 用于说明主校区、生活城、化大好吃街、地下通道等相对位置；`delivery-haochijie-layout.png` 用于说明化大好吃街内部快递点位。
-- 快递区集中整理收件地址、驿站取件时间、生活城菜鸟驿站与化大好吃街的快递品牌分布，并保留“以物流通知、取件短信和现场标识为准”的动态信息提示。
-- 地图页信息顺序调整为“**校园总图 → 快递取件 → 体育地图 → 官方全景**”，让新生先解决找楼和取件，再查看专项导航。
-- 首页“校园地图”入口补充快递取件能力；“新生最常问的五件事”第 5 项调整为“校园地图与快递取件”，直接跳转到 `map.html#delivery`。
-- 新生入学页在“报到前准备”和“到校后的第一周”中加入快递取件导航入口；快递品牌、时间和位置等易变信息仍只维护在 `map.html#delivery`，避免多页面重复导致内容不同步。
-- v1.27 的首屏预加载、按需搜索、Office 预览条件加载、弹窗懒创建、地标图片压缩等性能优化继续保留；本轮未改变现有用户交互与资料预览逻辑。
+- **官方校园全景改为主动加载。** `map.html` 初始只显示本地航拍封面，用户点击“开始浏览”后才创建 720 云 `iframe`，避免普通地图访问直接产生第三方全景请求。
+- **全景移动端体验重构。** 桌面端继续在地图页卡片内浏览；手机端点击后进入本站控制的全屏查看层，并提供关闭返回，减轻第三方页面在窄卡片中的遮挡感。
+- **全景封面改用压缩后的本地 JPG。** 当前使用 `assets/campus-panorama-cover.jpg`，在保留航拍辨识度的同时减少首屏外资源依赖。
+- **QQ群入口改为统一站内弹窗。** 首页和“关于共建”页点击群入口后，先显示本站加群弹窗，再由用户选择“复制群号”或“一键加入 QQ 群”。
+- **两个群聊定位重新区分。** 2026 新生群用于新生日常交流、经验分享与资料互助；贴吧群明确标注为“沈阳化工大学百度贴吧官方群”。
+- **不再使用加群二维码。** `assets/qq-group.png` 已从新版引用中移除，弹窗仅保留群号复制与 QQ 官方加群链接，减少无必要的图片资源和操作步骤。
+- **继续沿用 v1.28 的快递导航单一维护原则。** 快递地址、品牌、时间和位置只在 `map.html#delivery` 维护，首页和新生页只负责导流。
 
-历史版本记录见 [`project-docs/updates/README.md`](project-docs/updates/README.md)。
+完整版本记录见 [`project-docs/updates/README.md`](project-docs/updates/README.md)。
 
 ## 主要栏目
 
@@ -53,23 +53,24 @@
 | 办事大厅 | 学籍修改、缓考、监控调阅、奖学金、毕业和论文相关流程 |
 | 校园生活 | 校历、体育保健、假期留校、图书馆、学生管理规定和校园相册 |
 | 资料下载 | PDF、Word、Excel 等资料的分类下载与在线预览 |
-| 关于共建 | 投稿、纠错、版权说明和项目维护信息 |
+| 关于共建 | 投稿、纠错、版权说明、QQ 交流群和项目维护信息 |
 
 ## 网站特性
 
 - 纯静态 HTML、CSS 和 JavaScript，无数据库和后端服务
 - 同时支持 EdgeOne Pages 与 GitHub Pages 部署
 - 桌面端和移动端自适应，含移动侧栏、站内搜索和深浅色模式
-- 响应式站点标题：桌面端显示完整共创版名称，手机端显示简化名称
-- 全站使用固定的 `app.js`、`styles.css` 与地标资源文件名，通过查询参数刷新缓存
+- 全站使用固定的 `app.js`、`styles.css` 与语义化资源文件名，通过查询参数刷新缓存
+- 搜索、Office 预览和部分弹窗按需初始化，降低普通页面进入时的额外工作
 - 新生入学、校园地图、数字校园、学业资料、办事大厅和校园生活使用统一校园地标页首
-- 校园地图页集中提供校园总图、两张快递取件图、体育课专用地图与官方 720 云校园全景
-- 快递取件详情以 `map.html#delivery` 为唯一维护入口，首页和新生页只做快捷跳转，减少易变信息重复
+- 校园地图页集中提供校园总图、两张快递取件图、体育课专用地图与学校官网所提供的 720 云校园全景
+- 官方全景仅在用户主动点击后连接第三方服务；手机端使用本站全屏承载层
+- 快递取件详情以 `map.html#delivery` 为唯一维护入口，首页和新生页只做快捷跳转
+- QQ 群入口使用统一站内弹窗：可复制群号，也可通过 QQ 官方网页加群链接一键加入；不再使用二维码
 - PDF.js 完全本地托管，不依赖 jsDelivr、unpkg 等外部 CDN
 - PDF 支持在线阅读、缩放、翻页和原文件下载
 - Word、Excel 支持本站本地转换预览，原文件仍可直接下载
 - 首页校园实景预览可一键跳转到完整校园相册
-- 原始资料集中存放在 `docs/`，维护说明与版本记录集中存放在 `project-docs/`
 
 ## 项目结构
 
@@ -85,9 +86,11 @@ SYUCT/
 │   ├── office-preview-manifest.json   # Office 原文件与预览 PDF 映射
 │   ├── app.js                         # 全站交互、搜索与 Office 预览按钮
 │   ├── styles.css                     # 全站样式
+│   ├── group-community.css            # 交流群双卡片与加群弹窗补充样式
 │   ├── pdf-viewer.js                  # PDF 阅读器入口
 │   ├── pdf-viewer.css                 # PDF 阅读器样式
 │   ├── syuct-community-icon.png       # 学生共创图标与 favicon
+│   ├── campus-panorama-cover.jpg      # 官方全景点击加载前的本地航拍封面
 │   ├── landmark-motto-stone.png       # 校训石地标插画
 │   ├── landmark-dragon-gate.png       # 龙门地标插画
 │   ├── landmark-library.png           # 图书馆地标插画
@@ -103,13 +106,16 @@ SYUCT/
 │   └── previews/                      # Word、Excel 转换后的本地 PDF 预览
 ├── project-docs/
 │   ├── updates/                       # 各版本更新记录
+│   │   ├── README.md                  # 版本索引
+│   │   ├── UPDATE-v1.28.md            # 快递取件导航更新报告
+│   │   └── UPDATE-v1.29.md            # 全景按需加载与 QQ 加群弹窗更新报告
 │   └── maintenance/                   # PDF.js 等维护说明
 ├── scripts/
 │   ├── vendor-pdfjs.mjs               # PDF.js 本地化脚本
 │   └── build-office-previews.py       # Word、Excel 转本地 PDF
 ├── index.html                         # 首页
 ├── freshman.html                      # 新生入学
-├── map.html                           # 校园地图、快递取件与体育课导航
+├── map.html                           # 校园地图、快递取件、体育课与官方全景
 ├── digital.html                       # 数字校园
 ├── academics.html                     # 学业资料
 ├── services.html                      # 办事大厅
@@ -123,87 +129,50 @@ SYUCT/
 
 ## 静态资源与缓存
 
-全站 JavaScript、CSS 和地标插画使用固定文件名，避免仓库长期堆积多个历史副本：
+全站 JavaScript、CSS 和图片资源保持固定文件名，更新内容时覆盖原文件；需要刷新浏览器/CDN 缓存时修改查询参数，例如：
 
 ```html
-<link href="assets/styles.css?rev=20260807" rel="stylesheet">
-<script defer src="assets/app.js?rev=20260807"></script>
+<link href="assets/styles.css?rev=20260810" rel="stylesheet">
+<script defer src="assets/app.js?rev=20260810"></script>
 ```
 
-后续更新资源内容时，只需将所有页面中的 `rev` 参数改为新的发布日期或发布编号，例如：
+`rev` 只用于缓存失效，不代表必须创建新文件。不要重新增加 `app-v129.js`、`styles-v129.css` 这类历史副本。
 
-```text
-?rev=20260807
-```
+## 校园地图维护
 
-不要重新创建 `app-v127.js`、`styles-v127.css` 一类文件。固定文件名便于维护，查询参数负责让浏览器和 CDN 获取新内容。
-
-## 本地 PDF.js
-
-项目通过 GitHub Actions 固定并维护 `pdfjs-dist`。运行文件被保存到 `assets/pdfjs/`，因此阅读器组件与 PDF 原文件都从本站加载，避免外部 CDN 在部分网络环境下连接缓慢或失败。
-
-仓库 **Actions** 页面中应能看到：
-
-```text
-Vendor local PDF.js
-```
-
-工作流成功后，EdgeOne 会检测到新提交并自动重新部署。
-
-## 新增资料
-
-### 新增 PDF
-
-1. 将 PDF 上传到 `docs/`。
-2. 在对应页面中加入在线预览链接：
-
-```html
-<a
-  href="pdf-viewer.html?file=docs/example.pdf&title=资料名称"
-  target="_blank"
-  rel="noreferrer"
->
-  在线预览
-</a>
-```
-
-本地 PDF.js 已经安装，后续新增 PDF 不需要生成页面图片或维护预览清单。
-
-### 新增 Word 或 Excel
-
-1. 将 `.doc`、`.docx`、`.xls` 或 `.xlsx` 文件上传到 `docs/`。
-2. 在对应页面添加指向原文件的普通下载链接：
-
-```html
-<a href="docs/example.docx" download>下载资料</a>
-```
-
-3. `Build local Office previews` 工作流会自动生成 `docs/previews/example.pdf` 并更新预览清单。
-4. 全站脚本会自动在原下载链接旁加入“在线预览”，不需要手写预览链接。
-
-转换预览适合阅读与查找；需要填写、修改或精确核对格式时，请下载原文件。
-
-### 新增校园照片
-
-1. 将压缩后的图片保存到 `assets/`。
-2. 在 `campus.html#photos` 的相册区域添加图片卡片。
-3. 需要在首页展示时，再在 `index.html` 的“校园一览”中引用；首页只保留少量精选图，完整图片统一放在校园相册中。
-
-### 新增校园地标插画
-
-1. 将透明 PNG 保存到 `assets/`，使用语义化固定名称，例如 `landmark-example.png`。
-2. 在对应内容页的统一页首结构中引用图片。
-3. 标签使用“校园地标 · 地标名称”的格式。
-4. 更新图片时覆盖原文件，并修改页面中的 `?rev=` 参数，不要新建带版本号的图片副本。
-
-### 更新快递取件导航
+### 快递取件
 
 快递品牌和驿站位置属于易变信息，统一以 `map.html#delivery` 为详情来源：
 
-1. 修改文字信息时，只更新 `map.html#delivery` 中的地址、时间、品牌和提示。
-2. 位置变化较大时，覆盖 `assets/delivery-pickup-overview.png` 或 `assets/delivery-haochijie-layout.png`，保持固定文件名。
-3. 首页与新生页只保留跳转到 `map.html#delivery` 的入口，不复制快递品牌、时间和详细地址。
-4. 页面长期保留“以物流通知、取件短信和现场标识为准”的提示，避免临时搬迁造成误导。
+1. 地址、时间、品牌或提示变化时，只修改 `map.html#delivery`。
+2. 位置变化较大时覆盖 `assets/delivery-pickup-overview.png` 或 `assets/delivery-haochijie-layout.png`。
+3. 首页和新生页只保留跳转入口，不复制详细品牌和位置说明。
+4. 长期保留“优先以物流通知、取件短信和现场标识为准”的提示。
+
+### 官方校园全景
+
+- 封面图使用 `assets/campus-panorama-cover.jpg`，由本站直接加载。
+- 用户未点击“开始浏览”前，不创建 720 云 iframe。
+- 桌面端在页面卡片中加载；手机端在本站全屏查看层中加载。
+- 新窗口入口仍可直接前往原 720 云作品页面。
+- 全景内容来自学校官网公开提供的入口，实际内容与可用性以原页面为准。
+
+## 本地 PDF.js 与 Office 预览
+
+项目通过 GitHub Actions 固定并维护 `pdfjs-dist`，运行文件保存在 `assets/pdfjs/`。PDF 阅读器与 PDF 原文件均从本站加载。
+
+Word、Excel 原文件上传到 `docs/` 后，`Build local Office previews` 工作流会生成 `docs/previews/*.pdf` 并更新 `assets/office-preview-manifest.json`；全站脚本只在页面确实包含对应文档链接时读取预览清单。
+
+## 参与共建
+
+欢迎通过以下方式参与：
+
+- 指出失效链接、错误日期或过期内容
+- 补充培养方案、通知、表格、真题和校园地图
+- 分享选课、考试、竞赛、考研、保研和就业经验
+- 投稿校园照片并补充拍摄地点说明
+- 通过 Issue 或 Pull Request 改进网站
+- 通过首页或“关于共建”页打开加群弹窗，复制群号或一键加入新生群 / 贴吧官方群
 
 ## 部署说明
 
@@ -218,14 +187,6 @@ Vendor local PDF.js
 生产分支：main
 ```
 
-自定义域名：
-
-```text
-www.syuct.top
-```
-
-DNS 解析记录和目标值以 EdgeOne 控制台当前提示为准。网站本身是纯静态项目，不需要额外购买服务器来运行页面。
-
 ### GitHub Pages（备用站）
 
 ```text
@@ -233,25 +194,13 @@ DNS 解析记录和目标值以 EdgeOne 控制台当前提示为准。网站本�
 目录：/ (root)
 ```
 
-网站不需要执行 `npm run build`。`package.json` 仅用于固定和维护本地 PDF.js；Office 预览由独立 GitHub Actions 工作流生成。
-
-## 参与共建
-
-欢迎通过以下方式参与：
-
-- 指出失效链接、错误日期或过期内容
-- 补充培养方案、通知、表格、真题和校园地图
-- 分享选课、考试、竞赛、考研、保研和就业经验
-- 投稿校园照片并补充拍摄地点说明
-- 通过 Issue 或 Pull Request 改进网站
-
-2026 沈阳化工大学新生交流群：**1170264357**
+网站不需要执行 `npm run build`。`package.json` 主要用于固定和维护本地 PDF.js；Office 预览由独立 GitHub Actions 工作流生成。
 
 ## 资料来源与版权
 
 本站资料主要来自学校和学院公开发布内容，以及同学授权投稿。原文件仅用于学习交流与信息整理；如有侵权、失效内容或不适合公开的资料，请通过仓库 Issue 提出处理请求。
 
-校园全景通过学校官网公开入口链接至第三方全景服务，内容版权及服务可用性以原发布页面为准。
+校园全景通过学校官网公开入口链接至第三方 720 云服务。本站默认仅显示本地封面，用户主动点击后才加载第三方全景；内容版权及服务可用性以原发布页面为准。
 
 ## 免责声明
 

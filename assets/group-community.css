@@ -1,0 +1,113 @@
+/* v1.29 — QQ group cards and modal refinements */
+.community-card.community-card-groups{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:0;
+  align-items:stretch;
+  padding:0;
+  overflow:hidden;
+}
+.community-option{
+  display:flex;
+  min-width:0;
+  flex-direction:column;
+  align-items:flex-start;
+  padding:30px;
+}
+.community-option + .community-option{
+  border-left:1px solid var(--border);
+}
+.community-option h3{
+  margin:8px 0 10px;
+  font-size:28px;
+  line-height:1.3;
+}
+.community-option p{
+  flex:1;
+  margin:0 0 22px;
+  color:var(--muted);
+}
+.community-option .btn{
+  min-width:150px;
+}
+.group-modal-card{
+  width:min(480px,100%);
+  padding:32px;
+}
+.group-modal-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:30px;
+  margin-bottom:8px;
+  padding:0 11px;
+  border-radius:999px;
+  color:var(--primary);
+  background:var(--surface-2);
+  font-size:12px;
+  font-weight:900;
+}
+.group-modal-card h2{
+  margin:5px 0 8px;
+  font-size:28px;
+  line-height:1.3;
+}
+.group-modal-description{
+  margin:0 0 20px!important;
+  line-height:1.7;
+}
+.group-number-panel{
+  margin:0 0 20px;
+  padding:16px 18px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:var(--surface-2);
+}
+.group-number-label{
+  display:block;
+  margin-bottom:4px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.group-number-value{
+  display:block;
+  color:var(--text);
+  font-size:26px;
+  font-weight:900;
+  letter-spacing:.04em;
+}
+.group-modal-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.group-modal-actions .btn{
+  width:100%;
+}
+.group-modal-note{
+  margin:14px 0 0!important;
+  font-size:12px!important;
+}
+@media(max-width:900px){
+  .community-card.community-card-groups{
+    grid-template-columns:1fr;
+  }
+  .community-option + .community-option{
+    border-top:1px solid var(--border);
+    border-left:0;
+  }
+}
+@media(max-width:520px){
+  .community-option{
+    padding:24px 20px;
+  }
+  .community-option h3{
+    font-size:24px;
+  }
+  .group-modal-card{
+    padding:28px 20px 22px;
+  }
+  .group-modal-actions{
+    grid-template-columns:1fr;
+  }
+}
