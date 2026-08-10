@@ -39,6 +39,72 @@
       height:100%;
       border:0;
     }
+    .panorama-gate{
+      display:flex;
+      width:100%;
+      height:100%;
+      align-items:center;
+      justify-content:center;
+      padding:30px;
+      box-sizing:border-box;
+      text-align:center;
+      color:#fff;
+      background:radial-gradient(circle at 50% 30%,#0d6fb8 0,#075ca8 34%,#061d2e 100%);
+    }
+    .panorama-gate-inner{
+      width:min(100%,560px);
+    }
+    .panorama-gate-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:68px;
+      height:34px;
+      margin-bottom:14px;
+      padding:0 12px;
+      border:1px solid rgba(255,255,255,.35);
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      font-size:14px;
+      font-weight:700;
+      letter-spacing:.04em;
+    }
+    .panorama-gate h4{
+      margin:0 0 8px;
+      color:#fff;
+      font-size:clamp(20px,3vw,28px);
+    }
+    .panorama-gate p{
+      margin:0 auto 18px;
+      color:rgba(255,255,255,.82);
+      line-height:1.75;
+    }
+    .panorama-start{
+      appearance:none;
+      border:0;
+      border-radius:10px;
+      padding:11px 20px;
+      background:#fff;
+      color:#075ca8;
+      font:inherit;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 8px 24px rgba(0,0,0,.18);
+    }
+    .panorama-start:hover{
+      transform:translateY(-1px);
+    }
+    .panorama-start:focus-visible{
+      outline:3px solid rgba(255,255,255,.7);
+      outline-offset:3px;
+    }
+    .panorama-gate small{
+      display:block;
+      margin-top:12px;
+      color:rgba(255,255,255,.68);
+      font-size:12px;
+      line-height:1.6;
+    }
     .panorama-footer{
       display:flex;
       align-items:flex-start;
@@ -120,7 +186,7 @@
             </a>
           </header>
 
-          <div class="callout"><strong>使用建议：</strong>地图点击后可打开大图，手机端可横屏查看；快递点位可能调整，请以物流通知和驿站现场为准；页面结尾的官方全景由 720 云加载，可能消耗较多流量。</div>
+          <div class="callout"><strong>使用建议：</strong>地图点击后可打开大图，手机端可横屏查看；快递点位可能调整，请以物流通知和驿站现场为准；页面结尾的官方全景仅在点击“开始浏览”后连接 720 云，未点击不会加载第三方全景资源。</div>
 
           <h2 id="campus-map">高清校园总图</h2>
           <figure class="map-figure">
@@ -182,17 +248,18 @@
             <div class="panorama-copy">
               <div class="resource-type">720° VR</div>
               <h3>沈阳化工大学校园全景</h3>
-              <p>通过可交互的全景画面提前熟悉校门、道路、教学区和校园环境。拖动画面可以转动视角，点击场景热点可以继续漫游。</p>
+              <p>点击“开始浏览”后再加载可交互的校园全景，可拖动画面转动视角，并通过场景热点继续漫游。</p>
             </div>
-            <div class="panorama-frame">
-              <iframe
-                src="https://www.720yun.com/t/f2vk69p9dqe?scene_id=100532629"
-                title="沈阳化工大学官方校园全景"
-                loading="lazy"
-                allow="fullscreen; accelerometer; gyroscope"
-                allowfullscreen
-                referrerpolicy="strict-origin-when-cross-origin"
-              ></iframe>
+            <div class="panorama-frame" id="panoramaFrame" data-panorama-src="https://www.720yun.com/t/f2vk69p9dqe?scene_id=100532629">
+              <div class="panorama-gate" id="panoramaGate">
+                <div class="panorama-gate-inner">
+                  <div class="panorama-gate-badge">720° VR</div>
+                  <h4>官方校园全景</h4>
+                  <p>需要时再加载，避免仅浏览地图页就产生 720 云全景访问。</p>
+                  <button class="panorama-start" id="panoramaStart" type="button">开始浏览官方全景</button>
+                  <small>未点击前不会连接 720 云，也不会加载全景画面。</small>
+                </div>
+              </div>
             </div>
             <div class="panorama-footer">
               <div class="resource-actions">
@@ -211,5 +278,23 @@
   <div id="searchOverlay" class="search-overlay"></div>
   <div id="lightbox" class="lightbox" aria-hidden="true"></div>
   <script defer src="assets/app.js?rev=20260807"></script>
+  <script>
+    (() => {
+      const startButton = document.getElementById('panoramaStart');
+      const frame = document.getElementById('panoramaFrame');
+      if (!startButton || !frame) return;
+
+      startButton.addEventListener('click', () => {
+        if (frame.querySelector('iframe')) return;
+        const iframe = document.createElement('iframe');
+        iframe.src = frame.dataset.panoramaSrc;
+        iframe.title = '沈阳化工大学官方校园全景';
+        iframe.allow = 'fullscreen; accelerometer; gyroscope';
+        iframe.setAttribute('allowfullscreen', '');
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        frame.replaceChildren(iframe);
+      }, { once: true });
+    })();
+  </script>
 </body>
 </html>
