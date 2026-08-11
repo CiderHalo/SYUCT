@@ -10,7 +10,7 @@
 
 **当前版本：v1.29** · **40+ 份资料** · **22 份 Office 本地预览** · **4 张实用导航地图** · **1 个官方校园全景** · **13 张校园实景照片**
 
-[访问主站](https://www.syuct.top/) · [GitHub Pages 备用入口](https://hanchuang0303.github.io/SYUCT/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html)
+[访问主站](https://www.syuct.top/) · [GitHub Pages 备用入口](https://ciderhalo.github.io/SYUCT/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html)
 
 </div>
 
@@ -27,8 +27,8 @@
 | 入口 | 地址 | 用途 |
 | --- | --- | --- |
 | 主站 | <https://www.syuct.top/> | EdgeOne Pages 自定义域名，日常分享优先使用 |
-| 备用站 | <https://hanchuang0303.github.io/SYUCT/> | GitHub Pages 备用入口 |
-| 源码仓库 | <https://github.com/hanchuang0303/SYUCT> | 查看源码、提交 Issue 或 Pull Request |
+| 备用站 | <https://ciderhalo.github.io/SYUCT/> | GitHub Pages 备用入口 |
+| 源码仓库 | <https://github.com/CiderHalo/SYUCT> | 查看源码、提交 Issue 或 Pull Request |
 
 ## v1.29 更新
 
