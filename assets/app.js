@@ -63,16 +63,6 @@ function renderChrome(){
   sidebar.innerHTML = `
     <div class="sidebar-label">SYUCT CAMPUS GUIDE</div>
     <ul class="nav-list">${SITE.nav.map(([url,icon,label])=>`<li><a href="${url}" class="${current===url?'active':''}"><span class="nav-icon"><img src="${icon}" alt="" aria-hidden="true"></span>${label}</a></li>`).join("")}</ul>
-    <a class="sidebar-github" id="githubStatsCard" href="${SITE.repoUrl}" target="_blank" rel="noreferrer" aria-label="打开 GitHub 仓库">
-      <span class="sidebar-github-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" focusable="false"><circle cx="6" cy="5" r="2.2"></circle><circle cx="6" cy="19" r="2.2"></circle><circle cx="18" cy="8" r="2.2"></circle><path d="M6 7.2v9.6M8.2 7h4.1A5.7 5.7 0 0 1 18 12.7v-2.5"></path></svg>
-      </span>
-      <span class="sidebar-github-copy">
-        <strong>GitHub</strong>
-        <small><span aria-hidden="true">★</span> <span data-github-stars>--</span><span class="sidebar-github-divider">·</span><span aria-hidden="true">⑂</span> <span data-github-forks>--</span></small>
-      </span>
-      <span class="sidebar-github-arrow" aria-hidden="true">↗</span>
-    </a>
     <div class="sidebar-card"><strong>非官方学生共建站</strong>资料整理至 2026 年 8 月。政策、收费、考试与毕业要求请以学校当年正式通知为准。</div>`;
   document.getElementById("menuBtn")?.addEventListener("click",()=>{
     sidebar.classList.toggle("open");
@@ -100,8 +90,7 @@ function closeSidebar(){
 async function initGitHubStats(){
   const starNodes=[...document.querySelectorAll("[data-github-stars]")];
   const forkNodes=[...document.querySelectorAll("[data-github-forks]")];
-  const card=document.getElementById("githubStatsCard");
-  if(!card && !starNodes.length && !forkNodes.length)return;
+  if(!starNodes.length && !forkNodes.length)return;
   const threeHourBucket=Math.floor(Date.now()/(3*60*60*1000));
   try{
     const response=await fetch(`assets/github-stats.json?v=${threeHourBucket}`,{cache:"default"});
@@ -114,7 +103,6 @@ async function initGitHubStats(){
     const forksText=forks.toLocaleString("zh-CN");
     starNodes.forEach(node=>node.textContent=starsText);
     forkNodes.forEach(node=>node.textContent=forksText);
-    if(card)card.setAttribute("aria-label",`打开 GitHub 仓库，${stars} 个 Star，${forks} 个 Fork`);
     document.querySelectorAll(".hero-github-inline").forEach(link=>{
       link.setAttribute("aria-label",`打开 GitHub 开源项目，${stars} 个 Star，${forks} 个 Fork`);
     });
