@@ -1,0 +1,93 @@
+name: Update GitHub repository stats
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */3 * * *"
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: update-github-repository-stats
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch repository stats
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${GITHUB_REPOSITORY}" > /tmp/github-repository.json
+
+      - name: Update local stats file when numbers changed
+        run: |
+          python3 - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          api = json.loads(Path("/tmp/github-repository.json").read_text(encoding="utf-8"))
+          path = Path("assets/github-stats.json")
+
+          old = {}
+          if path.exists():
+              try:
+                  old = json.loads(path.read_text(encoding="utf-8"))
+              except (json.JSONDecodeError, OSError):
+                  old = {}
+
+          stars = int(api.get("stargazers_count", 0))
+          forks = int(api.get("forks_count", 0))
+
+          if old.get("stars") == stars and old.get("forks") == forks:
+              print(f"GitHub stats unchanged: {stars} stars, {forks} forks")
+              raise SystemExit(0)
+
+          payload = {
+              "stars": stars,
+              "forks": forks,
+              "updated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+          }
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print(f"Updated GitHub stats: {stars} stars, {forks} forks")
+          PY
+
+      - name: Commit changed stats
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/github-stats.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No stats change; nothing to commit."
+            exit 0
+          fi
+          git commit -m "chore: update GitHub repository stats"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Request GitHub Pages rebuild
+        if: steps.commit.outputs.changed == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${GITHUB_REPOSITORY}/pages/builds"
