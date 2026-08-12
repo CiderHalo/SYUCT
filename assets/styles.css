@@ -73,6 +73,15 @@ img{max-width:100%;display:block}
 .nav-list a:hover{color:var(--text);background:var(--surface-2);transform:translateX(2px)}
 .nav-list a.active{color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,transparent)}
 .nav-icon{width:22px;min-width:22px;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+.sidebar-github{display:flex;align-items:center;gap:10px;margin:20px 10px 0;padding:11px 12px;border:1px solid color-mix(in srgb,var(--primary) 32%,var(--border));border-radius:14px;background:linear-gradient(135deg,#163b61,#24517a);color:#fff;box-shadow:0 10px 24px rgba(8,46,78,.13);transition:transform .18s,box-shadow .18s}
+.sidebar-github:hover{color:#fff;transform:translateY(-1px);box-shadow:0 14px 30px rgba(8,46,78,.19)}
+.sidebar-github-mark{display:grid;place-items:center;width:32px;height:32px;flex:0 0 32px;border-radius:9px;background:rgba(255,255,255,.12)}
+.sidebar-github-mark svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sidebar-github-copy{display:flex;min-width:0;flex:1;flex-direction:column;gap:1px;line-height:1.2}
+.sidebar-github-copy strong{font-size:14px;font-weight:800}
+.sidebar-github-copy small{display:flex;align-items:center;gap:4px;color:rgba(255,255,255,.78);font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.sidebar-github-divider{margin:0 2px;color:rgba(255,255,255,.42)}
+.sidebar-github-arrow{color:rgba(255,255,255,.75);font-size:15px;font-weight:800}
 .sidebar-card{margin:24px 10px 0;padding:16px;border:1px solid var(--border);border-radius:15px;background:var(--surface-2);color:var(--muted);font-size:13px}
 .sidebar-card strong{display:block;color:var(--text);margin-bottom:4px}
 .page-shell{min-height:100vh;padding-top:var(--header-h);padding-left:var(--sidebar-w)}
@@ -576,4 +585,28 @@ html[data-theme="dark"] .freshman-gate-visual::before{
   .freshman-gate-visual.landmark-visual-unified{align-items:flex-start;min-height:0;width:min(86vw,310px)}
   .freshman-gate-visual.landmark-visual-unified::before{inset:4% auto 8% 0;width:300px}
   .freshman-gate-visual.landmark-visual-unified img{width:300px;height:165px;max-width:100%;object-position:left bottom}
+}
+
+
+/* v1.30 — homepage inline GitHub project meta */
+.hero-meta-inline{align-items:center;flex-wrap:nowrap;gap:10px 18px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hero-meta-inline>span{display:inline-flex;align-items:center;min-width:0}
+.hero-github-inline{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.10);color:#fff;transition:background .18s,border-color .18s,transform .18s}
+.hero-github-inline:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.34);transform:translateY(-1px)}
+.hero-github-inline span,.hero-github-inline small{display:inline-flex;align-items:center}
+.hero-github-inline small{gap:5px;color:rgba(255,255,255,.88);font-size:12px;font-weight:800}
+.hero-meta-divider{opacity:.72}
+@media(max-width:900px){
+  .hero-meta-inline{gap:8px 14px;font-size:11.5px}
+  .hero-github-inline{padding:5px 10px;gap:7px}
+}
+@media(max-width:650px){
+  .hero-meta-inline{flex-wrap:wrap;gap:8px 12px;white-space:normal;font-size:11px;line-height:1.5}
+  .hero-github-inline{max-width:100%;padding:5px 10px}
+  .hero-github-inline span,.hero-github-inline small{white-space:nowrap}
+}
+@media(max-width:420px){
+  .hero-meta-inline{gap:7px 10px;font-size:10.5px}
+  .hero-github-inline{gap:6px;padding:5px 9px}
+  .hero-github-inline small{font-size:11px}
 }
