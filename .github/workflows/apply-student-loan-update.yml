@@ -1,0 +1,162 @@
+name: Apply student loan key PDF update
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: syuct-content-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Verify uploaded PDF
+        shell: bash
+        run: |
+          test -f docs/student-origin-credit-loan-liaoning-2026.pdf
+          ls -lh docs/student-origin-credit-loan-liaoning-2026.pdf
+
+      - name: Patch resources and freshman pages
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          from urllib.parse import quote
+          import re
+
+          pdf_path = "docs/student-origin-credit-loan-liaoning-2026.pdf"
+          title = "国家生源地信用助学贷款（国家开发银行辽宁分行）"
+          title_q = quote(title, safe="")
+          preview = f"pdf-viewer.html?file={pdf_path}&amp;title={title_q}"
+
+          # ---- resources.html ----
+          resources_path = Path("resources.html")
+          resources = resources_path.read_text(encoding="utf-8")
+
+          resources = resources.replace(
+              "<p>共收录 41 份文档，另含两张校园地图与交流群二维码。</p>",
+              "<p>共收录 42 份文档，另含校园导航地图与校园全景等站内资源。</p>",
+          )
+
+          if pdf_path not in resources:
+              marker = '<article class="download-item" data-category="数字校园" data-resource-item="" data-search="统一身份认证使用指南 数字校园 pdf">'
+              if marker not in resources:
+                  raise SystemExit("resources.html 插入锚点未找到，已停止，避免误改当前页面")
+              entry = f'''<article class="download-item" data-category="奖助办事" data-resource-item="" data-search="国家生源地信用助学贷款 国家开发银行 辽宁分行 2026 助学贷款 生源地贷款 学费 住宿费 生活费 申请 95593 新生入学 奖助办事 pdf">
+          <div class="download-number">02</div>
+          <div class="download-copy">
+          <span class="download-category">奖助办事</span>
+          <h3>{title}</h3>
+          <p>PDF · 2.6 MB · 关键资料</p>
+          </div>
+          <div class="download-actions"><a class="download-button preview-button" href="{preview}" rel="noreferrer" target="_blank">预览</a><a class="download-button download-secondary" download="" href="{pdf_path}">下载</a></div>
+          </article>
+          '''
+              resources = resources.replace(marker, entry + marker, 1)
+
+          # Keep visible numbering sequential after inserting the new item as #02.
+          counter = 0
+          def renumber(match):
+              global counter
+              counter += 1
+              return f'<div class="download-number">{counter:02d}</div>'
+          resources = re.sub(r'<div class="download-number">\d+</div>', renumber, resources)
+
+          item_count = len(re.findall(r'data-resource-item=""', resources))
+          if item_count != 42:
+              raise SystemExit(f"resources.html 资料项数量应为 42，实际为 {item_count}，已停止")
+          if resources.count(pdf_path) != 2:
+              raise SystemExit("resources.html 助学贷款 PDF 链接数量异常，已停止")
+
+          resources_path.write_text(resources, encoding="utf-8")
+
+          # ---- freshman.html ----
+          freshman_path = Path("freshman.html")
+          freshman = freshman_path.read_text(encoding="utf-8")
+
+          card_marker = '''<article class="resource-card">
+          <div class="resource-type">PDF</div>
+          <h3>2026—2027 第一学期校历</h3>'''
+          if pdf_path not in freshman:
+              if card_marker not in freshman:
+                  raise SystemExit("freshman.html 关键资料卡插入锚点未找到，已停止，避免误改当前页面")
+              loan_card = f'''<article class="resource-card">
+          <div class="resource-type">关键 PDF</div>
+          <h3>{title}</h3>
+          <p>有助学贷款需求的新生建议报到前阅读，涵盖申请对象、额度、材料、2026 办理时间和还款说明。</p>
+          <div class="resource-actions"><a class="text-link" href="{preview}" rel="noreferrer" target="_blank">在线预览 →</a><a class="text-link secondary-link" download="" href="{pdf_path}">下载原文件 ↓</a></div>
+          </article>
+          '''
+              freshman = freshman.replace(card_marker, loan_card + card_marker, 1)
+
+          freshman = freshman.replace(
+              '<h2 id="payment">缴费与银行卡</h2>',
+              '<h2 id="payment">缴费、银行卡与助学贷款</h2>',
+          )
+          old_payment = '<p>新生缴费方式、时间和项目请以入学指南及学校财务通知为准。重修缴费属于在校后的另一套流程，不要与新生学费缴纳混淆。</p>'
+          new_payment = '<p>新生缴费方式、时间和项目请以入学指南及学校财务通知为准。重修缴费属于在校后的另一套流程，不要与新生学费缴纳混淆；有生源地信用助学贷款需求的同学，建议同时查看下方关键资料。</p>'
+          if old_payment in freshman:
+              freshman = freshman.replace(old_payment, new_payment, 1)
+
+          loan_callout = f'<div class="callout"><strong>助学贷款关键资料：</strong>国家开发银行辽宁分行资料集中说明了申请对象、所需材料、办理渠道、2026 年办理时间与还款示例。实际受理时间和具体要求请以生源地教育部门学生资助管理中心及贷款合同为准。<a class="text-link" href="{preview}" rel="noreferrer" target="_blank">在线查看 →</a> <a class="text-link" download="" href="{pdf_path}">下载原文件 ↓</a></div>'
+          if loan_callout not in freshman:
+              anchor = new_payment
+              if anchor not in freshman:
+                  raise SystemExit("freshman.html 缴费段落锚点未找到，已停止，避免误改当前页面")
+              freshman = freshman.replace(anchor, anchor + "\n" + loan_callout, 1)
+
+          freshman = freshman.replace('<a href="#payment">缴费安全</a>', '<a href="#payment">缴费与助贷</a>')
+
+          if freshman.count(pdf_path) != 4:
+              raise SystemExit(f"freshman.html 助学贷款 PDF 链接数量异常：{freshman.count(pdf_path)}，已停止")
+
+          freshman_path.write_text(freshman, encoding="utf-8")
+          PY
+
+      - name: Validate update
+        shell: bash
+        run: |
+          git diff --check
+          grep -F '共收录 42 份文档' resources.html
+          grep -F '国家生源地信用助学贷款（国家开发银行辽宁分行）' resources.html
+          grep -F '缴费、银行卡与助学贷款' freshman.html
+          grep -F '关键 PDF' freshman.html
+          test -s docs/student-origin-credit-loan-liaoning-2026.pdf
+
+      - name: Commit page changes and remove one-time workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/apply-student-loan-update.yml
+          git add -A -- resources.html freshman.html .github/workflows/apply-student-loan-update.yml
+          if git diff --cached --quiet; then
+            echo "No page changes to commit."
+            exit 0
+          fi
+          git commit -m "feat: add key student loan PDF for freshmen"
+          git push origin HEAD:main
+
+      - name: Trigger EdgeOne deployment when configured
+        if: always()
+        shell: bash
+        env:
+          EDGEONE_DEPLOY_HOOK: ${{ secrets.EDGEONE_DEPLOY_HOOK }}
+        run: |
+          if [ -n "$EDGEONE_DEPLOY_HOOK" ]; then
+            echo "Triggering EdgeOne deployment..."
+            curl --fail --silent --show-error --request POST "$EDGEONE_DEPLOY_HOOK"
+            echo
+          else
+            echo "EDGEONE_DEPLOY_HOOK is not configured. If syuct.top does not refresh automatically, redeploy the latest main commit in EdgeOne Pages."
+          fi
