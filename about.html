@@ -10,6 +10,16 @@
   <link href="assets/group-community.css?rev=20260810" rel="stylesheet"/>
 <link href="assets/syuct-community-icon.png" rel="icon" type="image/png"/>
 <link href="assets/syuct-community-icon.png" rel="apple-touch-icon"/>
+<style>
+.acknowledgement-strip{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:24px;margin:58px 0 0;padding:20px 22px;border:1px solid color-mix(in srgb,var(--primary) 24%,var(--border));border-radius:17px;background:linear-gradient(120deg,color-mix(in srgb,var(--primary) 7%,var(--surface)),var(--surface));box-shadow:0 10px 30px rgba(15,58,91,.06);scroll-margin-top:94px}
+.acknowledgement-copy{min-width:0}
+.acknowledgement-title-row{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+.acknowledgement-title-row strong{font-size:19px;color:var(--text)}
+.acknowledgement-badge{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;background:var(--surface-2);color:var(--primary);font-size:10px;font-weight:900;letter-spacing:.05em}
+.acknowledgement-strip p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+.acknowledgement-strip .btn{min-height:42px;white-space:nowrap}
+@media(max-width:650px){.acknowledgement-strip{grid-template-columns:1fr;gap:14px;padding:18px}.acknowledgement-strip .btn{width:max-content}}
+</style>
 </head>
 <body data-page="about.html">
   <header class="topbar" id="topbar">
@@ -36,7 +46,6 @@
   <div id="backdrop" class="backdrop"></div>
   <div class="page-shell">
     <main class="main">
-
 <div class="article-layout">
 <article class="article">
     <header class="article-header">
@@ -44,7 +53,6 @@
       <h1>关于本站与资料共建</h1>
       <p>一个由学生整理、服务学生的非官方校园信息站。</p>
     </header>
-
 <h2 id="purpose">为什么做这个站</h2>
 <p>学校通知、学院表格、群文件、培养方案和老生经验分散在不同入口。本站不替代学校官网，而是把常用信息重新分类，让新生和在校生能更快找到“下一步该做什么”。</p>
 <h2 id="community">加入交流群</h2>
@@ -76,6 +84,13 @@
   <div><span>3</span><h3>经验</h3><p>分享选课、考试、竞赛、考研、保研和就业经验。</p></div>
   <div><span>4</span><h3>维护</h3><p>通过 GitHub 提交修改，帮助持续更新网站。</p></div>
 </div>
+<section class="acknowledgement-strip" id="acknowledgements" aria-labelledby="acknowledgementTitle">
+  <div class="acknowledgement-copy">
+    <div class="acknowledgement-title-row"><strong id="acknowledgementTitle">致谢名单</strong><span class="acknowledgement-badge">PDF</span></div>
+    <p>感谢参与本站建设的同学与社群。名单将随项目持续更新，也欢迎继续通过功能建议、Issue 反馈和资料补充参与共建。</p>
+  </div>
+  <a class="btn btn-blue" href="pdf-viewer.html?file=docs/syuct-acknowledgements.pdf&amp;title=SYUCT%20校园指南致谢名单">查看致谢名单</a>
+</section>
 <h2 id="links">相关入口</h2>
 <div class="action-row">
   <a class="btn btn-blue" href="https://www.syuct.edu.cn/" target="_blank" rel="noreferrer">沈阳化工大学官网</a>
@@ -83,7 +98,7 @@
 </div>
 <footer class="footer"><a class="text-link" href="resources.html">← 资料下载</a><a class="text-link" href="index.html">返回首页 →</a></footer>
 </article>
-<nav class="toc"><div class="toc-title">本页目录</div><a href="#purpose">本站定位</a><a href="#community">交流群</a><a href="#sources">资料来源</a><a href="#contribute">参与共建</a></nav>
+<nav class="toc"><div class="toc-title">本页目录</div><a href="#purpose">本站定位</a><a href="#community">交流群</a><a href="#sources">资料来源</a><a href="#contribute">参与共建</a><a href="#acknowledgements">致谢名单</a></nav>
 </div>
     </main>
   </div>
