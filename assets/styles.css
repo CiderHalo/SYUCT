@@ -645,3 +645,37 @@ html[data-theme="dark"] .freshman-gate-visual::before{
     scroll-snap-align:start;
   }
 }
+
+/* v1.33 - tighter mobile resource toolbar */
+@media(max-width:650px){
+  .resource-toolbar{
+    top:calc(var(--header-h) + 4px);
+    padding:7px 8px;
+    margin-bottom:12px;
+    border-radius:12px;
+  }
+  .resource-search{
+    gap:7px;
+    padding-inline:9px;
+    border-radius:10px;
+  }
+  .resource-search input{
+    height:34px;
+    font-size:13px;
+  }
+  .filter-row{
+    gap:6px;
+    margin-top:6px;
+    padding:0 1px 1px;
+  }
+  .filter-chip{
+    padding:5px 9px;
+    font-size:11px;
+    line-height:1.2;
+  }
+}
+@media(max-width:380px){
+  .resource-toolbar{padding:6px 7px}
+  .resource-search input{height:32px}
+  .filter-chip{padding:4px 8px;font-size:11px}
+}
