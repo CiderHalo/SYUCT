@@ -610,3 +610,38 @@ html[data-theme="dark"] .freshman-gate-visual::before{
   .hero-github-inline{gap:6px;padding:5px 9px}
   .hero-github-inline small{font-size:11px}
 }
+
+/* v1.32 - mobile resource filter strip: single-row horizontal swipe */
+@media(max-width:650px){
+  .resource-toolbar{
+    top:calc(var(--header-h) + 8px);
+    max-width:100%;
+    padding:10px;
+    margin-bottom:16px;
+    border-radius:14px;
+  }
+  .resource-search{padding-inline:10px}
+  .resource-search input{height:40px;font-size:14px}
+  .filter-row{
+    display:flex;
+    flex-wrap:nowrap!important;
+    width:100%;
+    max-width:100%;
+    gap:8px;
+    margin-top:9px;
+    padding:0 2px 2px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    scrollbar-width:none;
+    scroll-snap-type:x proximity;
+    touch-action:pan-x;
+  }
+  .filter-row::-webkit-scrollbar{display:none}
+  .filter-chip{
+    flex:0 0 auto!important;
+    white-space:nowrap;
+    scroll-snap-align:start;
+  }
+}
