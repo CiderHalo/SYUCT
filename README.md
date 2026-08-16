@@ -36,7 +36,7 @@
 | 校园指南主站    | https://www.syuct.top/                                |
 | 资料下载      | https://www.syuct.top/resources.html                  |
 | 关于共建      | https://www.syuct.top/about.html                      |
-| GitHub 仓库 | https://github.com/CiderHalo/SYUCT                    |
+| GitHub page   | https://ciderhalo.github.io/SYUCT/                  |
 | 致谢名单      | https://www.syuct.top/docs/syuct-acknowledgements.pdf |
 
 ## 主要内容
