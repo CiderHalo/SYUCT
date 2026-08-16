@@ -17,11 +17,18 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       TARGET_BRANCH: ${{ github.event.repository.default_branch }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
       - name: Sync repository stats
         id: sync
         shell: bash
@@ -29,6 +36,7 @@ jobs:
           set -euo pipefail
 
           echo "Reading repository stats for ${GITHUB_REPOSITORY}..."
+
           repo_json="$(gh api \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -37,81 +45,152 @@ jobs:
           stars="$(jq -r '.stargazers_count' <<<"$repo_json")"
           forks="$(jq -r '.forks_count' <<<"$repo_json")"
 
-          file_path="assets/github-stats.json"
-          file_api="/repos/${GITHUB_REPOSITORY}/contents/${file_path}?ref=${TARGET_BRANCH}"
-          file_sha=""
-          old_stars="-1"
-          old_forks="-1"
+          echo "GitHub reports: ${stars} stars, ${forks} forks."
 
-          if file_json="$(gh api \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "$file_api" 2>/dev/null)"; then
-            file_sha="$(jq -r '.sha' <<<"$file_json")"
-            encoded_old="$(jq -r '.content // ""' <<<"$file_json" | tr -d '\n')"
-            if [[ -n "$encoded_old" ]]; then
-              old_json="$(printf '%s' "$encoded_old" | base64 --decode)"
-              old_stars="$(jq -r '.stars // -1' <<<"$old_json")"
-              old_forks="$(jq -r '.forks // -1' <<<"$old_json")"
-            fi
+          old_json_stars="-1"
+          old_json_forks="-1"
+
+          if [[ -f "assets/github-stats.json" ]]; then
+            old_json_stars="$(jq -r '.stars // -1' assets/github-stats.json)"
+            old_json_forks="$(jq -r '.forks // -1' assets/github-stats.json)"
           fi
 
-          if [[ "$old_stars" == "$stars" && "$old_forks" == "$forks" ]]; then
-            echo "Stats unchanged: ${stars} stars, ${forks} forks."
+          old_html_stars="$(
+            python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          text = Path("index.html").read_text(encoding="utf-8")
+          match = re.search(r'<span data-github-stars>([^<]*)</span>', text)
+          print(match.group(1).strip() if match else "-1")
+          PY
+          )"
+
+          old_html_forks="$(
+            python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          text = Path("index.html").read_text(encoding="utf-8")
+          match = re.search(r'<span data-github-forks>([^<]*)</span>', text)
+          print(match.group(1).strip() if match else "-1")
+          PY
+          )"
+
+          echo "Current JSON: ${old_json_stars} stars, ${old_json_forks} forks."
+          echo "Current HTML: ${old_html_stars} stars, ${old_html_forks} forks."
+
+          if [[ "$old_json_stars" == "$stars" \
+             && "$old_json_forks" == "$forks" \
+             && "$old_html_stars" == "$stars" \
+             && "$old_html_forks" == "$forks" ]]; then
+
+            echo "Stats are already synchronized."
+
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "stars=${stars}" >> "$GITHUB_OUTPUT"
             echo "forks=${forks}" >> "$GITHUB_OUTPUT"
+
             exit 0
           fi
 
           updated_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          new_json="$(jq -n \
+
+          jq -n \
             --argjson stars "$stars" \
             --argjson forks "$forks" \
             --arg updated_at "$updated_at" \
-            '{stars: $stars, forks: $forks, updated_at: $updated_at}')"
-          encoded_new="$(printf '%s\n' "$new_json" | base64 -w 0)"
+            '{
+              stars: $stars,
+              forks: $forks,
+              updated_at: $updated_at
+            }' > assets/github-stats.json
 
-          api_args=(
-            --method PUT
-            -H "Accept: application/vnd.github+json"
-            -H "X-GitHub-Api-Version: 2022-11-28"
-            "/repos/${GITHUB_REPOSITORY}/contents/${file_path}"
-            -f "message=chore: update GitHub repository stats"
-            -f "content=${encoded_new}"
-            -f "branch=${TARGET_BRANCH}"
+          STARS="$stars" FORKS="$forks" python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path("index.html")
+          text = path.read_text(encoding="utf-8")
+
+          stars = os.environ["STARS"]
+          forks = os.environ["FORKS"]
+
+          text, star_count = re.subn(
+              r'(<span data-github-stars>)[^<]*(</span>)',
+              rf'\g<1>{stars}\g<2>',
+              text,
+              count=1,
           )
 
-          if [[ -n "$file_sha" ]]; then
-            api_args+=( -f "sha=${file_sha}" )
+          text, fork_count = re.subn(
+              r'(<span data-github-forks>)[^<]*(</span>)',
+              rf'\g<1>{forks}\g<2>',
+              text,
+              count=1,
+          )
+
+          if star_count != 1:
+              raise RuntimeError(
+                  f"Expected exactly one data-github-stars element, found {star_count}"
+              )
+
+          if fork_count != 1:
+              raise RuntimeError(
+                  f"Expected exactly one data-github-forks element, found {fork_count}"
+              )
+
+          path.write_text(text, encoding="utf-8")
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add assets/github-stats.json index.html
+
+          if git diff --cached --quiet; then
+            echo "No files changed."
+
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "stars=${stars}" >> "$GITHUB_OUTPUT"
+            echo "forks=${forks}" >> "$GITHUB_OUTPUT"
+
+            exit 0
           fi
 
-          update_result="$(gh api "${api_args[@]}")"
-          commit_sha="$(jq -r '.commit.sha // "unknown"' <<<"$update_result")"
+          git commit -m "chore: update GitHub repository stats"
+          git push origin "HEAD:${TARGET_BRANCH}"
 
-          echo "Updated stats: ${old_stars}/${old_forks} -> ${stars}/${forks}"
+          commit_sha="$(git rev-parse HEAD)"
+
+          echo "Updated stats:"
+          echo "JSON: ${old_json_stars}/${old_json_forks} -> ${stars}/${forks}"
+          echo "HTML: ${old_html_stars}/${old_html_forks} -> ${stars}/${forks}"
           echo "Created commit: ${commit_sha}"
+
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "stars=${stars}" >> "$GITHUB_OUTPUT"
           echo "forks=${forks}" >> "$GITHUB_OUTPUT"
 
-      # A commit created with GITHUB_TOKEN does not automatically start a
-      # GitHub Pages build, so request one explicitly when the JSON changed.
+      # GITHUB_TOKEN 创建的提交不会自动触发新的 GitHub Pages 工作流，
+      # 因此数据发生变化时主动请求重新构建 Pages。
       - name: Rebuild GitHub Pages
         if: steps.sync.outputs.changed == 'true'
         continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
+
           gh api --method POST \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "/repos/${GITHUB_REPOSITORY}/pages/builds" >/dev/null
+
           echo "GitHub Pages rebuild requested."
 
-      # Scheduled runs deploy EdgeOne only when Star/Fork changed.
-      # Manual runs always trigger EdgeOne, which is useful for testing or
-      # forcing syuct.top to catch up with the latest main branch.
+      # 定时运行仅在 Star/Fork 变化时触发 EdgeOne。
+      # 手动运行始终触发，方便强制同步 syuct.top。
       - name: Trigger EdgeOne deployment
         if: steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
         env:
