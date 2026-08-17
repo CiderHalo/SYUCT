@@ -679,3 +679,61 @@ html[data-theme="dark"] .freshman-gate-visual::before{
   .resource-search input{height:32px}
   .filter-chip{padding:4px 8px;font-size:11px}
 }
+
+/* v1.34 - mobile resource filter comfortable touch targets */
+@media(max-width:900px){
+  .resource-toolbar{
+    top:calc(var(--header-h) + 6px);
+    max-width:100%;
+    padding:10px;
+    margin-bottom:14px;
+    border-radius:14px;
+  }
+  .resource-search{
+    min-height:42px;
+    padding-inline:12px;
+  }
+  .resource-search input{
+    height:42px;
+    font-size:14px;
+  }
+  .filter-row{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    width:100%;
+    max-width:100%;
+    gap:8px;
+    margin-top:9px;
+    padding:1px 2px 3px;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    scrollbar-width:none;
+    scroll-padding-inline:2px;
+    touch-action:pan-x;
+  }
+  .filter-row::-webkit-scrollbar{display:none}
+  .filter-chip{
+    flex:0 0 auto!important;
+    min-width:max-content;
+    min-height:40px;
+    padding:0 13px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    white-space:nowrap!important;
+    font-size:13px;
+    line-height:1;
+    font-weight:800;
+    -webkit-tap-highlight-color:transparent;
+  }
+}
+@media(max-width:380px){
+  .resource-toolbar{padding:9px}
+  .resource-search{min-height:40px;padding-inline:11px}
+  .resource-search input{height:40px;font-size:13px}
+  .filter-row{gap:7px;margin-top:8px}
+  .filter-chip{min-height:40px;padding:0 12px;font-size:13px}
+}
