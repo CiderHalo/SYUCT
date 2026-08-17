@@ -1,14 +1,14 @@
 <div align="center">
 
-<img src="assets/syuct-community-icon.png" alt="沈阳化工大学校园指南学生共创图标" width="112" />
-
 # 沈阳化工大学校园指南
 
 **SYUCT Campus Guide · 学生共创版**
 
 把分散的新生通知、校园地图、学业资料、办事表格和校园经验，整理成一个更容易查找和使用的校园信息站。
 
-[访问主站](https://www.syuct.top/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html) · [致谢名单](https://www.syuct.top/docs/syuct-acknowledgements.pdf)
+**当前版本：v260817**
+
+[访问主站](https://www.syuct.top/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html) · [SYUCT 组织](https://github.com/SYUCT)
 
 </div>
 
@@ -22,22 +22,50 @@
 
 本站主要面向：
 
-* 本科新生
-* 研究生新生
-* 在校学生
-* 希望参与校园资料整理和共建的同学
+- 本科新生
+- 研究生新生
+- 在校学生
+- 希望参与校园资料整理和共建的同学
 
 > 本站为非官方学生共建项目，不隶属于沈阳化工大学。涉及学校政策、收费、考试、学籍、培养方案、毕业要求等内容，请始终以学校及学院当年正式通知为准。
 
+## 当前版本
+
+**v260817**
+
+自本版本起，网页版本号统一采用日期格式：
+
+```text
+vYYMMDD
+```
+
+例如：
+
+```text
+v260817 = 2026-08-17
+```
+
+不再使用 `v1.32`、`v1.33` 一类连续小版本号。
+
+### v260817 更新
+
+- 网站代码仓库迁移至 `SYUCT/SYUCT-web`
+- 修正网页中的 GitHub 仓库与 SYUCT 组织入口
+- 资料下载页移动端分类栏改为单行横向滑动，减少筛选区占用高度
+- 持续优化移动端筛选按钮的触摸体验
+- 根目录 README 同步更新仓库地址、组织入口和版本号规则
+
 ## 网站入口
 
-| 入口        | 地址                                                    |
-| --------- | ----------------------------------------------------- |
-| 校园指南主站    | https://www.syuct.top/                                |
-| 资料下载      | https://www.syuct.top/resources.html                  |
-| 关于共建      | https://www.syuct.top/about.html                      |
-| GitHub page   | https://ciderhalo.github.io/SYUCT/                  |
-| 致谢名单      | https://www.syuct.top/docs/syuct-acknowledgements.pdf |
+| 入口 | 地址 |
+| --- | --- |
+| 校园指南主站 | <https://www.syuct.top/> |
+| 资料下载 | <https://www.syuct.top/resources.html> |
+| 关于共建 | <https://www.syuct.top/about.html> |
+| GitHub 仓库 | <https://github.com/SYUCT/SYUCT-web> |
+| GitHub Pages | <https://syuct.github.io/SYUCT-web/> |
+| SYUCT 学生团队 | <https://github.com/SYUCT> |
+| 致谢名单 | <https://www.syuct.top/docs/syuct-acknowledgements.pdf> |
 
 ## 主要内容
 
@@ -71,23 +99,22 @@
 
 ## 网站特性
 
-* 纯静态 HTML、CSS 和 JavaScript
-* 无数据库和后端服务
-* 支持桌面端与移动端
-* 支持深色与浅色模式
-* 提供站内搜索
-* 资料分类筛选
-* PDF 在线阅读
-* Word、Excel 本地转换预览
-* 校园地图与校园全景
-* 移动端适配
-* GitHub Pages 与 EdgeOne Pages 部署
-* GitHub Actions 自动维护部分资料预览文件
+- 纯静态 HTML、CSS 和 JavaScript
+- 无数据库和后端服务
+- 支持桌面端与移动端
+- 支持深色与浅色模式
+- 提供站内搜索
+- 资料分类筛选与移动端横向滑动
+- PDF 在线阅读
+- Word、Excel 本地转换预览
+- 校园地图与校园全景
+- GitHub Pages 与 EdgeOne Pages 部署
+- GitHub Actions 自动维护部分资料预览文件
 
 ## 项目结构
 
 ```text
-SYUCT/
+SYUCT-web/
 ├── .github/
 │   └── workflows/          GitHub Actions
 ├── assets/
@@ -118,15 +145,15 @@ SYUCT/
 
 对于以下内容：
 
-* 学校政策
-* 学费及其他收费
-* 考试安排
-* 学籍管理
-* 培养方案
-* 奖助政策
-* 毕业要求
-* 校园服务时间
-* 快递点位及营业信息
+- 学校政策
+- 学费及其他收费
+- 考试安排
+- 学籍管理
+- 培养方案
+- 奖助政策
+- 毕业要求
+- 校园服务时间
+- 快递点位及营业信息
 
 本站仅进行整理和索引，不替代学校正式通知。
 
@@ -138,20 +165,20 @@ SYUCT/
 
 你可以：
 
-* 指出失效链接
-* 反馈错误日期或过期信息
-* 补充学校和学院公开资料
-* 提供培养方案、表格和课程资料
-* 分享选课、考试、竞赛、考研、保研和就业经验
-* 完善校园地图和办事流程
-* 投稿校园照片
-* 提交 Issue
-* 提交 Pull Request
-* 参与网站功能和界面改进
+- 指出失效链接
+- 反馈错误日期或过期信息
+- 补充学校和学院公开资料
+- 提供培养方案、表格和课程资料
+- 分享选课、考试、竞赛、考研、保研和就业经验
+- 完善校园地图和办事流程
+- 投稿校园照片
+- 提交 Issue
+- 提交 Pull Request
+- 参与网站功能和界面改进
 
 GitHub Issues：
 
-https://github.com/CiderHalo/SYUCT/issues
+<https://github.com/SYUCT/SYUCT-web/issues>
 
 ## 致谢
 
@@ -161,9 +188,9 @@ SYUCT 是一个持续维护的学生共建项目。
 
 实际被采纳或对项目建设产生帮助的贡献，将根据实际情况记录在致谢名单中。
 
-**查看完整致谢名单：**
+查看完整致谢名单：
 
-https://www.syuct.top/docs/syuct-acknowledgements.pdf
+<https://www.syuct.top/docs/syuct-acknowledgements.pdf>
 
 致谢名单将持续更新。
 
@@ -174,8 +201,8 @@ https://www.syuct.top/docs/syuct-acknowledgements.pdf
 克隆仓库：
 
 ```bash
-git clone https://github.com/CiderHalo/SYUCT.git
-cd SYUCT
+git clone https://github.com/SYUCT/SYUCT-web.git
+cd SYUCT-web
 ```
 
 然后使用任意本地 HTTP Server 打开项目即可。
@@ -200,7 +227,7 @@ http://localhost:8000/
 
 生产站点：
 
-https://www.syuct.top/
+<https://www.syuct.top/>
 
 主分支：
 
@@ -212,26 +239,18 @@ main
 
 本站资料主要来自：
 
-* 沈阳化工大学及各学院公开发布的信息
-* 学校公开网站及服务入口
-* 学生整理的公开资料
-* 获得授权的同学投稿内容
+- 沈阳化工大学及各学院公开发布的信息
+- 学校公开网站及服务入口
+- 学生整理的公开资料
+- 获得授权的同学投稿内容
 
 原始资料仅用于校园信息整理、学习交流和信息索引。
 
-如发现：
-
-* 内容侵权
-* 不适合公开的文件
-* 已失效资料
-* 错误信息
-* 需要删除或更正的内容
-
-请通过 GitHub Issue 联系项目维护者。
+如发现内容侵权、不适合公开、已失效、存在错误，或需要删除、更正，请通过 GitHub Issue 联系项目维护者。
 
 ## 免责声明
 
-本站为**非官方学生共建项目**，不代表沈阳化工大学官方立场，也不构成任何官方承诺或办事依据。
+本站为非官方学生共建项目，不代表沈阳化工大学官方立场，也不构成任何官方承诺或办事依据。
 
 学校政策、课程安排、收费标准、考试要求、学籍管理、奖助政策、培养方案和毕业要求等信息，请以沈阳化工大学及相关学院发布的最新正式通知为准。
 
@@ -243,6 +262,6 @@ main
 
 SYUCT Campus Guide
 
-https://www.syuct.top/
+<https://www.syuct.top/>
 
 </div>
