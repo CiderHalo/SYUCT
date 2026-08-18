@@ -121,6 +121,127 @@
     return courses;
   }
 
+
+  function htmlCellText(cell) {
+    if (!cell) return '';
+    const clone = cell.cloneNode(true);
+    clone.querySelectorAll('br').forEach((node) => node.replaceWith('\n'));
+    clone.querySelectorAll('p,div,li').forEach((node) => {
+      if (node.nextSibling) node.append('\n');
+    });
+    return String(clone.textContent || '').replace(/\r/g, '').trim();
+  }
+
+  function buildHtmlTableGrid(table) {
+    const rows = Array.from(table.rows || []);
+    const grid = [];
+    rows.forEach((row, rowIndex) => {
+      if (!grid[rowIndex]) grid[rowIndex] = [];
+      let columnIndex = 0;
+      Array.from(row.cells || []).forEach((cell) => {
+        while (grid[rowIndex][columnIndex]) columnIndex += 1;
+        const rowSpan = Math.max(1, Number(cell.getAttribute('rowspan')) || 1);
+        const colSpan = Math.max(1, Number(cell.getAttribute('colspan')) || 1);
+        const entry = {
+          cell,
+          text: htmlCellText(cell),
+          originRow: rowIndex,
+          originColumn: columnIndex,
+          rowSpan,
+          colSpan
+        };
+        for (let r = rowIndex; r < rowIndex + rowSpan; r += 1) {
+          if (!grid[r]) grid[r] = [];
+          for (let c = columnIndex; c < columnIndex + colSpan; c += 1) {
+            grid[r][c] = entry;
+          }
+        }
+        columnIndex += colSpan;
+      });
+    });
+    return grid;
+  }
+
+  function parseHtmlClipboardCourses(html) {
+    if (!html || typeof DOMParser === 'undefined') {
+      return { ok: false, courses: [], reason: '剪贴板未提供可解析的网页表格结构' };
+    }
+
+    let doc;
+    try {
+      doc = new DOMParser().parseFromString(String(html), 'text/html');
+    } catch (error) {
+      return { ok: false, courses: [], reason: '剪贴板网页表格结构解析失败' };
+    }
+
+    const weekdayNames = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+    const tables = Array.from(doc.querySelectorAll('table'));
+
+    for (let tableIndex = 0; tableIndex < tables.length; tableIndex += 1) {
+      const grid = buildHtmlTableGrid(tables[tableIndex]);
+      if (!grid.length) continue;
+
+      let weekdayColumns = null;
+      for (let rowIndex = 0; rowIndex < grid.length; rowIndex += 1) {
+        const found = [];
+        for (let columnIndex = 0; columnIndex < grid[rowIndex].length; columnIndex += 1) {
+          const entry = grid[rowIndex][columnIndex];
+          if (!entry || entry.originRow !== rowIndex || entry.originColumn !== columnIndex) continue;
+          const text = cleanInline(entry.text);
+          const weekdayIndex = weekdayNames.indexOf(text);
+          if (weekdayIndex >= 0) found[weekdayIndex] = columnIndex;
+        }
+        if (weekdayNames.every((name, index) => Number.isInteger(found[index]))) {
+          weekdayColumns = found;
+          break;
+        }
+      }
+      if (!weekdayColumns) continue;
+
+      const courses = [];
+      const sectionRows = [];
+      for (let rowIndex = 0; rowIndex < grid.length; rowIndex += 1) {
+        let startSection = null;
+        const visited = new Set();
+        for (let columnIndex = 0; columnIndex < grid[rowIndex].length; columnIndex += 1) {
+          const entry = grid[rowIndex][columnIndex];
+          if (!entry || visited.has(entry)) continue;
+          visited.add(entry);
+          if (entry.originRow !== rowIndex) continue;
+          const match = /^第\s*(\d{1,2})\s*节$/.exec(cleanInline(entry.text));
+          if (match) {
+            startSection = Number(match[1]);
+            break;
+          }
+        }
+        if (!Number.isInteger(startSection)) continue;
+        sectionRows.push(startSection);
+
+        weekdayColumns.forEach((columnIndex, weekdayIndex) => {
+          const entry = grid[rowIndex][columnIndex];
+          if (!entry) return;
+          // rowspan 延续到下一节的课程不要重复解析；colspan 延续也只在起始列解析一次。
+          if (entry.originRow !== rowIndex || entry.originColumn !== columnIndex) return;
+          const parsed = parseCourseCell(entry.text, weekdayIndex + 1, startSection, courses.length);
+          parsed.forEach((course) => courses.push(course));
+          if (courses.length > MAX_COURSES) throw new Error('识别到的课程过多，请检查复制内容');
+        });
+      }
+
+      if (courses.length) {
+        return {
+          ok: true,
+          courses,
+          weekdaySlots: 7,
+          sectionRows: sectionRows.length,
+          sectionNumbers: sectionRows
+        };
+      }
+    }
+
+    return { ok: false, courses: [], reason: '剪贴板中没有找到包含星期一到星期日的课表表格' };
+  }
+
   function getTimetableArea(source) {
     const text = String(source || '').replace(/\r/g, '');
     const markers = [
@@ -294,7 +415,7 @@
     };
   }
 
-  function parseCampusTimetable(text) {
+  function parseCampusTimetable(text, options) {
     const rawSource = String(text == null ? '' : text).replace(/^\uFEFF/, '');
     const source = rawSource.trim();
     const sourceInfo = inspectCampusTimetableSource(rawSource);
@@ -303,11 +424,40 @@
       throw new Error('未识别到校园网页完整课表，请在电脑校园网页中选择整个课表后重新复制');
     }
 
-    const tsvStructure = inspectTsvWeekdayStructure(rawSource);
+    const clipboardHtml = options && typeof options.html === 'string' ? options.html : '';
+    const htmlResult = clipboardHtml ? parseHtmlClipboardCourses(clipboardHtml) : { ok: false, courses: [] };
     const isClipboardText = rawSource.includes('\t');
+    const tsvStructure = isClipboardText ? inspectTsvWeekdayStructure(rawSource) : null;
     const markdownCourses = !isClipboardText && source.includes('|') ? parseMarkdownCourses(source) : [];
-    const tsvCourses = isClipboardText ? parseTsvCourses(rawSource, tsvStructure) : [];
-    let courses = isClipboardText ? tsvCourses : markdownCourses;
+
+    let courses = [];
+    let sourceFormat = 'unknown';
+    let structureValid = false;
+    let weekdaySlotCount = 0;
+    let validatedSectionRows = 0;
+
+    if (htmlResult.ok) {
+      courses = htmlResult.courses;
+      sourceFormat = 'clipboard-html-structure';
+      structureValid = true;
+      weekdaySlotCount = htmlResult.weekdaySlots || 7;
+      validatedSectionRows = htmlResult.sectionRows || 0;
+    } else if (isClipboardText && tsvStructure && tsvStructure.ok) {
+      courses = parseTsvCourses(rawSource, tsvStructure);
+      sourceFormat = 'clipboard-text-7col';
+      structureValid = true;
+      weekdaySlotCount = tsvStructure.weekdaySlots;
+      validatedSectionRows = tsvStructure.sectionRows;
+    } else if (markdownCourses.length) {
+      courses = markdownCourses;
+      sourceFormat = 'markdown-table';
+      structureValid = true;
+      weekdaySlotCount = 7;
+    } else if (isClipboardText) {
+      const issue = tsvStructure && tsvStructure.issues && tsvStructure.issues[0];
+      throw new Error(`纯文本本身没有保留完整星期列${issue ? `（${issue}）` : ''}。请直接从教务处网页复制后粘贴；新版会自动读取同一次剪贴板中的表格结构，不需要你做额外操作。`);
+    }
+
     courses = dedupeCourses(courses);
     if (!courses.length) throw new Error('没有识别到上课安排，请重新选择课表表格后复制');
     if (courses.length > MAX_COURSES) throw new Error('识别到的课程过多，请检查复制内容');
@@ -323,13 +473,13 @@
         evenCount: courses.filter((course) => course.weekType === 'even').length,
         practiceNames,
         maxEndWeek: courses.reduce((max, course) => Math.max(max, course.endWeek), 0),
-        sourceFormat: isClipboardText ? 'clipboard-text' : 'table',
+        sourceFormat,
         sourceLength: sourceInfo.sourceLength,
         sourceLikelyComplete: sourceInfo.likelyComplete,
         scheduleMarkerCount: sourceInfo.scheduleMarkerCount,
-        clipboardStructureValid: isClipboardText && tsvStructure.ok,
-        weekdaySlotCount: isClipboardText && tsvStructure.ok ? tsvStructure.weekdaySlots : 0,
-        validatedSectionRows: isClipboardText && tsvStructure.ok ? tsvStructure.sectionRows : 0
+        clipboardStructureValid: structureValid,
+        weekdaySlotCount,
+        validatedSectionRows
       }
     };
   }

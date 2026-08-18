@@ -28,6 +28,7 @@
   const codeMeta = document.getElementById('codeMeta');
 
   let parsedResult = null;
+  let clipboardHtml = '';
 
   function setStatus(kind, title, message) {
     statusBox.hidden = false;
@@ -90,7 +91,7 @@
   function recognize() {
     resetGeneratedCode();
     try {
-      const result = parser.parseCampusTimetable(rawInput.value);
+      const result = parser.parseCampusTimetable(rawInput.value, { html: clipboardHtml });
       parsedResult = result;
       arrangementCount.textContent = String(result.meta.arrangementCount);
       uniqueCourseCount.textContent = String(result.meta.uniqueCourseCount);
@@ -119,7 +120,10 @@
       }
 
       generateBtn.disabled = false;
-      setStatus('success', '星期列校验通过', `纯文本课表结构正常：${result.meta.validatedSectionRows} 个节次行均还原为周一到周日 ${result.meta.weekdaySlotCount} 个星期槽。共识别 ${result.meta.arrangementCount} 个上课安排、${result.meta.uniqueCourseCount} 门不同课程，请核对下方预览后再生成。`);
+      const structureMessage = result.meta.sourceFormat === 'clipboard-html-structure'
+        ? `浏览器剪贴板中的课表表格结构校验通过：已确认周一到周日 ${result.meta.weekdaySlotCount} 列。`
+        : `纯文本课表结构校验通过：${result.meta.validatedSectionRows} 个节次行均还原为周一到周日 ${result.meta.weekdaySlotCount} 个星期槽。`;
+      setStatus('success', '星期列校验通过', `${structureMessage} 共识别 ${result.meta.arrangementCount} 个上课安排、${result.meta.uniqueCourseCount} 门不同课程，请核对下方预览后再生成。`);
     } catch (error) {
       parsedResult = null;
       resultPanel.hidden = true;
@@ -287,8 +291,9 @@
     const plainText = data.getData('text/plain');
     if (!plainText) return;
 
-    // 只使用浏览器提供的原始 text/plain。Tab、连续 Tab 和空星期列必须原样保留，
-    // 不再让 text/html / rowspan / colspan 参与课程星期判断。
+    // textarea 仍然只展示 text/plain；同时保留同一次网页复制附带的 text/html，
+    // 仅用于恢复 table 的 rowspan/colspan 和星期列位置，不上传、不展示。
+    clipboardHtml = data.getData('text/html') || '';
     event.preventDefault();
     const start = rawInput.selectionStart == null ? rawInput.value.length : rawInput.selectionStart;
     const end = rawInput.selectionEnd == null ? start : rawInput.selectionEnd;
@@ -299,6 +304,9 @@
   recognizeBtn.addEventListener('click', recognize);
   generateBtn.addEventListener('click', generateCode);
   copyBtn.addEventListener('click', copyCode);
-  rawInput.addEventListener('input', resetRecognition);
+  rawInput.addEventListener('input', () => {
+    clipboardHtml = '';
+    resetRecognition();
+  });
   [semesterInput, firstWeekDateInput, totalWeeksInput].forEach((input) => input.addEventListener('input', resetGeneratedCode));
 })();
