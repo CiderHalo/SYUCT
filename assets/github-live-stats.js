@@ -3,7 +3,7 @@
 
   const API_URL = 'https://api.github.com/repos/SYUCT/SYUCT-web';
   const FALLBACK_URL = 'assets/github-stats.json';
-  const CACHE_KEY = 'syuct:github-repo-stats:v1';
+  const CACHE_KEY = 'syuct:github-repo-stats:v2';
   const CACHE_TTL_MS = 60 * 60 * 1000;
 
   const toCount = (value) => {
@@ -58,7 +58,7 @@
         fetchedAt: Date.now()
       }));
     } catch (_) {
-      // Storage may be unavailable; live display can still work.
+      // localStorage 不可用时仍可正常显示本次实时结果。
     }
   };
 
@@ -88,10 +88,7 @@
     try {
       const data = await fetchJson(API_URL, {
         cache: 'no-store',
-        headers: {
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28'
-        }
+        headers: { Accept: 'application/vnd.github+json' }
       });
       const stats = normalizeApiStats(data);
       if (!stats) throw new Error('Invalid GitHub API response');
@@ -102,7 +99,7 @@
         try {
           await loadFallback();
         } catch (_) {
-          // Keep the numbers already present in HTML when both sources fail.
+          // API 和 fallback 都失败时保留 HTML 中现有数字。
         }
       }
     }
