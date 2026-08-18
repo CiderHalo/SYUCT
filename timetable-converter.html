@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="沈阳化工大学校园网页课表本地转换工具：复制完整课表，在浏览器本地识别并生成 SYUCT-TT2 课表码供 SYUCT-mini 导入。">
+  <meta name="theme-color" content="#075ca8">
+  <title>化大课表转换 · 沈阳化工大学校园指南（学生共创版）</title>
+  <link href="assets/styles.css?rev=20260818" rel="stylesheet">
+  <link href="assets/timetable-converter.css?rev=20260818" rel="stylesheet">
+  <link href="assets/syuct-community-icon.png" rel="icon" type="image/png">
+  <link href="assets/syuct-community-icon.png" rel="apple-touch-icon">
+</head>
+<body data-page="timetable-converter.html">
+  <header class="topbar" id="topbar"></header>
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="backdrop" id="backdrop"></div>
+
+  <div class="page-shell">
+    <main class="main">
+      <article class="article tt-page">
+        <header class="article-header tt-hero">
+          <div class="breadcrumb">首页 / 办事大厅 / 化大课表转换</div>
+          <h1>化大课表转换</h1>
+          <p>电脑校园网页复制完整课表，在本页本地识别并生成 <strong>SYUCT-TT2</strong> 课表码，再通过微信发送到手机，由 SYUCT-mini 导入。</p>
+          <div class="tt-flow" aria-label="课表转换流程">
+            <div class="tt-flow-step"><b>1</b><span>电脑校园网页复制完整课表</span></div>
+            <div class="tt-flow-step"><b>2</b><span>浏览器本地识别课程安排</span></div>
+            <div class="tt-flow-step"><b>3</b><span>生成并复制 SYUCT-TT2</span></div>
+            <div class="tt-flow-step"><b>4</b><span>发到微信，由 SYUCT-mini 导入</span></div>
+          </div>
+          <div class="tt-privacy"><strong>隐私说明：</strong>课表转换全部在浏览器本地完成，课程、教师、教室等信息不会上传。</div>
+        </header>
+
+        <section class="tt-section" id="recognize">
+          <div class="tt-section-head">
+            <h2>1. 粘贴并识别课表</h2>
+            <p>请在电脑校园网页中选择整个课表后复制，再粘贴到下面。不要只复制某一天或部分节次。</p>
+          </div>
+          <label class="tt-label" for="rawTimetable">校园网页课表内容</label>
+          <textarea id="rawTimetable" class="tt-textarea" spellcheck="false" autocomplete="off" placeholder="在这里粘贴从校园网页复制的完整课表……"></textarea>
+          <div class="tt-actions">
+            <button class="tt-button tt-button-primary" id="recognizeBtn" type="button">识别课表</button>
+          </div>
+          <div class="tt-status" id="recognizeStatus" hidden aria-live="polite">
+            <strong id="recognizeStatusTitle"></strong>
+            <p id="recognizeStatusMessage"></p>
+          </div>
+
+          <div class="tt-result" id="recognizeResult" hidden>
+            <div class="tt-summary" aria-label="识别结果统计">
+              <div class="tt-summary-card"><strong id="arrangementCount">0</strong><span>个上课安排</span></div>
+              <div class="tt-summary-card"><strong id="uniqueCourseCount">0</strong><span>门不同课程</span></div>
+              <div class="tt-summary-card"><strong id="oddCount">0</strong><span>个单周安排</span></div>
+              <div class="tt-summary-card"><strong id="evenCount">0</strong><span>个双周安排</span></div>
+            </div>
+            <div class="tt-practice-notice" id="practiceNotice" hidden></div>
+            <h3 class="tt-preview-title">课程预览</h3>
+            <div class="tt-preview" id="coursePreview"></div>
+          </div>
+        </section>
+
+        <section class="tt-section" id="settings">
+          <div class="tt-section-head">
+            <h2>2. 设置学期信息</h2>
+            <p>第一周周一不确定时可以留空；总周数默认 20 周。</p>
+          </div>
+          <div class="tt-settings">
+            <div class="tt-field">
+              <label class="tt-label" for="semester">学期名称</label>
+              <input id="semester" class="tt-input" type="text" maxlength="80" placeholder="例如：2026-2027 学年第1学期">
+            </div>
+            <div class="tt-field">
+              <label class="tt-label" for="firstWeekDate">第一周的周一</label>
+              <input id="firstWeekDate" class="tt-input" type="date">
+              <small>允许为空；填写时需选择星期一。</small>
+            </div>
+            <div class="tt-field">
+              <label class="tt-label" for="totalWeeks">学期总周数</label>
+              <input id="totalWeeks" class="tt-input" type="number" min="1" max="30" step="1" value="20" inputmode="numeric">
+            </div>
+          </div>
+        </section>
+
+        <section class="tt-section" id="share">
+          <div class="tt-section-head">
+            <h2>3. 生成 SYUCT-TT2 课表码</h2>
+            <p>只有识别结果确认完整后才可生成。课表码不再套 gzip 或 Base64，可直接复制为文本。</p>
+          </div>
+          <div class="tt-actions">
+            <button class="tt-button tt-button-primary" id="generateBtn" type="button" disabled>生成课表码</button>
+            <button class="tt-button tt-button-secondary" id="copyCodeBtn" type="button" disabled>复制课表码</button>
+            <span class="tt-code-meta" id="codeMeta"></span>
+          </div>
+          <textarea id="shareCode" class="tt-textarea tt-code" readonly hidden aria-label="生成的 SYUCT-TT2 课表码"></textarea>
+          <p class="tt-note">复制后可把整段课表码发送到微信，在 SYUCT-mini 的课表导入功能中粘贴。调、停（补）课信息第一版暂不处理。</p>
+        </section>
+
+        <footer class="tt-footer">
+          <a href="services.html">返回办事大厅</a>
+          <a href="https://github.com/SYUCT/SYUCT-mini" target="_blank" rel="noreferrer">查看 SYUCT-mini</a>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <div class="search-overlay" id="searchOverlay"></div>
+  <div aria-hidden="true" class="lightbox" id="lightbox"></div>
+  <script defer src="assets/app.js?rev=20260818"></script>
+  <script defer src="assets/timetable-campus-parser.js?rev=20260818"></script>
+  <script defer src="assets/timetable-codec.js?rev=20260818"></script>
+  <script defer src="assets/timetable-converter.js?rev=20260818"></script>
+</body>
+</html>
