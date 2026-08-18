@@ -121,8 +121,23 @@
     return courses;
   }
 
-  function findTsvSectionChunks(source) {
+  function getTimetableArea(source) {
     const text = String(source || '').replace(/\r/g, '');
+    const markers = [
+      /实践课\s*[（(]或无上课时间[）)]信息/,
+      /调、停[（(]补[）)]课信息/,
+      /调停[（(]补[）)]课信息/
+    ];
+    let endIndex = text.length;
+    markers.forEach((pattern) => {
+      const match = pattern.exec(text);
+      if (match && match.index < endIndex) endIndex = match.index;
+    });
+    return text.slice(0, endIndex);
+  }
+
+  function findTsvSectionChunks(source) {
+    const text = getTimetableArea(source);
     const pattern = /(?:^|\n)(?:(?:早晨|上午|下午|晚上)\t)?第\s*(\d{1,2})\s*节\t/g;
     const matches = [];
     let match;
@@ -136,17 +151,74 @@
     return matches.map((item, index) => ({
       startSection: item.startSection,
       content: text.slice(item.contentStart, index + 1 < matches.length ? matches[index + 1].start : text.length)
+        .replace(/\n+$/, '')
     }));
   }
 
-  function parseTsvCourses(source) {
+  function inspectTsvWeekdayStructure(source) {
+    const text = String(source || '').replace(/^\uFEFF/, '').replace(/\r/g, '');
+    if (!text.includes('\t')) {
+      return {
+        isTsv: false,
+        ok: false,
+        weekdaySlots: 0,
+        sectionRows: 0,
+        sectionNumbers: [],
+        issues: ['未检测到 Tab 分隔的校园网页原始纯文本']
+      };
+    }
+
+    const weekdayNames = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+    const headerLine = text.split('\n').find((line) => weekdayNames.every((name) => line.includes(name))) || '';
+    const headerCells = headerLine.split('\t').map((cell) => cleanInline(cell));
+    const headerWeekdays = headerCells.filter((cell) => weekdayNames.includes(cell));
+    const issues = [];
+    if (headerWeekdays.length !== 7 || !weekdayNames.every((name, index) => headerWeekdays[index] === name)) {
+      issues.push('表头没有按星期一到星期日保留 7 个星期列');
+    }
+
+    const chunks = findTsvSectionChunks(text);
+    if (!chunks.length) issues.push('没有找到“第N节 + Tab”节次行');
+
+    const rowDetails = chunks.map((chunk) => {
+      const cells = chunk.content.split('\t');
+      if (cells.length !== 7) {
+        issues.push(`第${chunk.startSection}节星期列结构异常：收到 ${cells.length} 个槽位，应为 7 个`);
+      }
+      return {
+        startSection: chunk.startSection,
+        cellCount: cells.length,
+        cells
+      };
+    });
+
+    const sectionNumbers = rowDetails.map((row) => row.startSection);
+    [1, 3, 5, 7, 9].forEach((section) => {
+      if (!sectionNumbers.includes(section)) issues.push(`缺少第${section}节起始行`);
+    });
+
+    return {
+      isTsv: true,
+      ok: issues.length === 0,
+      weekdaySlots: 7,
+      sectionRows: rowDetails.length,
+      sectionNumbers,
+      rowDetails,
+      issues
+    };
+  }
+
+  function parseTsvCourses(source, structureInfo) {
+    const structure = structureInfo || inspectTsvWeekdayStructure(source);
+    if (!structure.ok) {
+      throw new Error(`纯文本星期列校验失败：${structure.issues[0] || '无法确认周一到周日 7 个星期槽'}`);
+    }
+
     const courses = [];
-    const chunks = findTsvSectionChunks(source);
-    chunks.forEach((chunk) => {
-      const cells = chunk.content.replace(/\n+$/, '').split('\t');
+    structure.rowDetails.forEach((row) => {
       for (let weekday = 1; weekday <= 7; weekday += 1) {
-        const cell = cells[weekday - 1] || '';
-        const parsed = parseCourseCell(cell, weekday, chunk.startSection, courses.length);
+        const cell = row.cells[weekday - 1] || '';
+        const parsed = parseCourseCell(cell, weekday, row.startSection, courses.length);
         parsed.forEach((course) => courses.push(course));
         if (courses.length > MAX_COURSES) throw new Error('识别到的课程过多，请检查复制内容');
       }
@@ -223,22 +295,25 @@
   }
 
   function parseCampusTimetable(text) {
-    const source = String(text == null ? '' : text).replace(/^\uFEFF/, '').trim();
-    const sourceInfo = inspectCampusTimetableSource(source);
+    const rawSource = String(text == null ? '' : text).replace(/^\uFEFF/, '');
+    const source = rawSource.trim();
+    const sourceInfo = inspectCampusTimetableSource(rawSource);
     if (!source) throw new Error('没有可识别的课表内容');
     if (!/星期一/.test(source) || !/星期[五六日]/.test(source) || !/第\s*\d{1,2}\s*节/.test(source)) {
       throw new Error('未识别到校园网页完整课表，请在电脑校园网页中选择整个课表后重新复制');
     }
 
-    const markdownCourses = source.includes('|') ? parseMarkdownCourses(source) : [];
-    const tsvCourses = source.includes('\t') ? parseTsvCourses(source) : [];
-    let courses = markdownCourses.length >= tsvCourses.length ? markdownCourses : tsvCourses;
+    const tsvStructure = inspectTsvWeekdayStructure(rawSource);
+    const isClipboardText = rawSource.includes('\t');
+    const markdownCourses = !isClipboardText && source.includes('|') ? parseMarkdownCourses(source) : [];
+    const tsvCourses = isClipboardText ? parseTsvCourses(rawSource, tsvStructure) : [];
+    let courses = isClipboardText ? tsvCourses : markdownCourses;
     courses = dedupeCourses(courses);
     if (!courses.length) throw new Error('没有识别到上课安排，请重新选择课表表格后复制');
     if (courses.length > MAX_COURSES) throw new Error('识别到的课程过多，请检查复制内容');
 
     const uniqueCourseNames = Array.from(new Set(courses.map((course) => course.name)));
-    const practiceNames = extractPracticeNames(source);
+    const practiceNames = extractPracticeNames(rawSource);
     return {
       courses,
       meta: {
@@ -248,16 +323,20 @@
         evenCount: courses.filter((course) => course.weekType === 'even').length,
         practiceNames,
         maxEndWeek: courses.reduce((max, course) => Math.max(max, course.endWeek), 0),
-        sourceFormat: markdownCourses.length >= tsvCourses.length ? 'table' : 'clipboard',
+        sourceFormat: isClipboardText ? 'clipboard-text' : 'table',
         sourceLength: sourceInfo.sourceLength,
         sourceLikelyComplete: sourceInfo.likelyComplete,
-        scheduleMarkerCount: sourceInfo.scheduleMarkerCount
+        scheduleMarkerCount: sourceInfo.scheduleMarkerCount,
+        clipboardStructureValid: isClipboardText && tsvStructure.ok,
+        weekdaySlotCount: isClipboardText && tsvStructure.ok ? tsvStructure.weekdaySlots : 0,
+        validatedSectionRows: isClipboardText && tsvStructure.ok ? tsvStructure.sectionRows : 0
       }
     };
   }
 
   return {
     parseCampusTimetable,
-    inspectCampusTimetableSource
+    inspectCampusTimetableSource,
+    inspectTsvWeekdayStructure
   };
 });

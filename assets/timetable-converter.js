@@ -28,7 +28,6 @@
   const codeMeta = document.getElementById('codeMeta');
 
   let parsedResult = null;
-  let clipboardGrid = null;
 
   function setStatus(kind, title, message) {
     statusBox.hidden = false;
@@ -62,73 +61,6 @@
     clearStatus();
   }
 
-  function clipboardNodeText(node) {
-    if (!node) return '';
-    if (node.nodeType === Node.TEXT_NODE) return node.nodeValue || '';
-    if (node.nodeType !== Node.ELEMENT_NODE) return '';
-    const tag = node.tagName ? node.tagName.toLowerCase() : '';
-    if (tag === 'br') return '\n';
-    let value = '';
-    node.childNodes.forEach((child) => { value += clipboardNodeText(child); });
-    if (/^(div|p|li|section|article)$/.test(tag) && value && !value.endsWith('\n')) value += '\n';
-    return value;
-  }
-
-  function clipboardCellText(cell) {
-    return clipboardNodeText(cell)
-      .replace(/\u00a0/g, ' ')
-      .replace(/\r/g, '')
-      .replace(/[ \t]*\n[ \t]*/g, '\n')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-  }
-
-  function tableToGrid(table) {
-    const grid = [];
-    const occupied = [];
-    Array.from(table.rows || []).forEach((row, rowIndex) => {
-      if (!grid[rowIndex]) grid[rowIndex] = [];
-      if (!occupied[rowIndex]) occupied[rowIndex] = [];
-      let columnIndex = 0;
-      Array.from(row.cells || []).forEach((cell) => {
-        while (occupied[rowIndex][columnIndex]) columnIndex += 1;
-        const rowSpan = Math.max(1, Number(cell.rowSpan) || 1);
-        const colSpan = Math.max(1, Number(cell.colSpan) || 1);
-        const value = clipboardCellText(cell);
-        for (let rowOffset = 0; rowOffset < rowSpan; rowOffset += 1) {
-          const targetRow = rowIndex + rowOffset;
-          if (!grid[targetRow]) grid[targetRow] = [];
-          if (!occupied[targetRow]) occupied[targetRow] = [];
-          for (let colOffset = 0; colOffset < colSpan; colOffset += 1) {
-            const targetColumn = columnIndex + colOffset;
-            occupied[targetRow][targetColumn] = true;
-            if (grid[targetRow][targetColumn] == null) {
-              grid[targetRow][targetColumn] = rowOffset === 0 && colOffset === 0 ? value : '';
-            }
-          }
-        }
-        columnIndex += colSpan;
-      });
-    });
-    return grid;
-  }
-
-  function extractClipboardTimetableGrid(html) {
-    if (!html || typeof DOMParser === 'undefined') return null;
-    try {
-      const documentFragment = new DOMParser().parseFromString(html, 'text/html');
-      const tables = Array.from(documentFragment.querySelectorAll('table'));
-      for (const table of tables) {
-        const grid = tableToGrid(table);
-        const flat = grid.flat().map((cell) => String(cell || '')).join('\n');
-        if (/星期一/.test(flat) && /星期五/.test(flat) && /第\s*\d{1,2}\s*节/.test(flat)) return grid;
-      }
-    } catch (error) {
-      return null;
-    }
-    return null;
-  }
-
   function renderPreview(courses) {
     previewList.replaceChildren();
     courses.forEach((course) => {
@@ -158,9 +90,7 @@
   function recognize() {
     resetGeneratedCode();
     try {
-      const result = clipboardGrid && typeof parser.parseCampusTimetableGrid === 'function'
-        ? parser.parseCampusTimetableGrid(clipboardGrid, rawInput.value)
-        : parser.parseCampusTimetable(rawInput.value);
+      const result = parser.parseCampusTimetable(rawInput.value);
       parsedResult = result;
       arrangementCount.textContent = String(result.meta.arrangementCount);
       uniqueCourseCount.textContent = String(result.meta.uniqueCourseCount);
@@ -182,8 +112,14 @@
         return;
       }
 
+      if (!result.meta.clipboardStructureValid) {
+        generateBtn.disabled = true;
+        setStatus('warning', '星期列未通过校验', '未检测到校园网页原始纯文本的 7 个星期槽结构。请直接从教务处网页复制完整课表后粘贴，不要经过聊天软件或文档转换；当前不允许生成课表码。');
+        return;
+      }
+
       generateBtn.disabled = false;
-      setStatus('success', '识别完成', `${result.meta.arrangementCount} 个上课安排，${result.meta.uniqueCourseCount} 门不同课程。请核对下方预览后再生成课表码。`);
+      setStatus('success', '星期列校验通过', `纯文本课表结构正常：${result.meta.validatedSectionRows} 个节次行均还原为周一到周日 ${result.meta.weekdaySlotCount} 个星期槽。共识别 ${result.meta.arrangementCount} 个上课安排、${result.meta.uniqueCourseCount} 门不同课程，请核对下方预览后再生成。`);
     } catch (error) {
       parsedResult = null;
       resultPanel.hidden = true;
@@ -220,8 +156,8 @@
   }
 
   function generateCode() {
-    if (!parsedResult || !parsedResult.meta.sourceLikelyComplete) {
-      setStatus('error', '暂不能生成课表码', '请先识别一份完整课表。');
+    if (!parsedResult || !parsedResult.meta.sourceLikelyComplete || !parsedResult.meta.clipboardStructureValid) {
+      setStatus('error', '暂不能生成课表码', '请先粘贴教务处原始纯文本，并通过周一到周日 7 列结构校验。');
       return;
     }
     try {
@@ -350,21 +286,19 @@
     if (!data) return;
     const plainText = data.getData('text/plain');
     if (!plainText) return;
-    const structuredGrid = extractClipboardTimetableGrid(data.getData('text/html'));
+
+    // 只使用浏览器提供的原始 text/plain。Tab、连续 Tab 和空星期列必须原样保留，
+    // 不再让 text/html / rowspan / colspan 参与课程星期判断。
     event.preventDefault();
     const start = rawInput.selectionStart == null ? rawInput.value.length : rawInput.selectionStart;
     const end = rawInput.selectionEnd == null ? start : rawInput.selectionEnd;
     rawInput.setRangeText(plainText, start, end, 'end');
-    clipboardGrid = structuredGrid;
     resetRecognition();
   });
 
   recognizeBtn.addEventListener('click', recognize);
   generateBtn.addEventListener('click', generateCode);
   copyBtn.addEventListener('click', copyCode);
-  rawInput.addEventListener('input', () => {
-    clipboardGrid = null;
-    resetRecognition();
-  });
+  rawInput.addEventListener('input', resetRecognition);
   [semesterInput, firstWeekDateInput, totalWeeksInput].forEach((input) => input.addEventListener('input', resetGeneratedCode));
 })();
