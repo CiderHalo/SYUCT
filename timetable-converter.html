@@ -22,22 +22,22 @@
         <header class="article-header tt-hero">
           <div class="breadcrumb">首页 / 办事大厅 / 化大课表转换</div>
           <h1>化大课表转换</h1>
-          <p>电脑校园网页复制完整课表，在本页本地识别并生成 <strong>SYUCT-TT2</strong> 课表码，再通过微信发送到手机，由 SYUCT-mini 导入。</p>
+          <p>教程：电脑打开教务处找到你得班级课表，鼠标选中左上角时间单元格，一直拖到整个页面右下角，键盘ctrl+C，复制完整课表，在本页进行识别并生成 <strong>SYUCT-TT2</strong> 课表码，将课表码发送到手机，在小程序课表页面处导入。</p>
           <div class="tt-flow" aria-label="课表转换流程">
-            <div class="tt-flow-step"><b>1</b><span>电脑校园网页复制完整课表</span></div>
-            <div class="tt-flow-step"><b>2</b><span>浏览器本地识别课程安排</span></div>
-            <div class="tt-flow-step"><b>3</b><span>生成并复制 SYUCT-TT2</span></div>
-            <div class="tt-flow-step"><b>4</b><span>发到微信，由 SYUCT-mini 导入</span></div>
+            <div class="tt-flow-step"><b>1</b><span>打开电脑端教务处网页复制完整课表</span></div>
+            <div class="tt-flow-step"><b>2</b><span>在本页面粘贴并识别课程安排</span></div>
+            <div class="tt-flow-step"><b>3</b><span>生成并复制 SYUCT-TT2专用课表码</span></div>
+            <div class="tt-flow-step"><b>4</b><span>发到微信，复制后在SH小程序内导入</span></div>
           </div>
-          <div class="tt-privacy"><strong>隐私说明：</strong>课表转换全部在浏览器本地完成，课程、教师、教室等信息不会上传。</div>
+          <div class="tt-privacy"><strong>隐私说明：</strong>课表转换全部在浏览器本地完成，课程、教师、教室等信息不会上传。公益项目没租服务器，偷不了你信息</div>
         </header>
 
         <section class="tt-section" id="recognize">
           <div class="tt-section-head">
             <h2>1. 粘贴并识别课表</h2>
-            <p>请在电脑校园网页中选择整个课表后复制，再粘贴到下面。不要只复制某一天或部分节次。</p>
+            <p>请在电脑端教务处网页中选取整个课表后复制，再粘贴到下面。不要只复制某一天或部分节次。</p>
           </div>
-          <label class="tt-label" for="rawTimetable">校园网页课表内容</label>
+          <label class="tt-label" for="rawTimetable">教务处课表复制内容</label>
           <textarea id="rawTimetable" class="tt-textarea" spellcheck="false" autocomplete="off" placeholder="在这里粘贴从校园网页复制的完整课表……"></textarea>
           <div class="tt-actions">
             <button class="tt-button tt-button-primary" id="recognizeBtn" type="button">识别课表</button>
@@ -85,7 +85,7 @@
         <section class="tt-section" id="share">
           <div class="tt-section-head">
             <h2>3. 生成 SYUCT-TT2 课表码</h2>
-            <p>只有识别结果确认完整后才可生成。课表码不再套 gzip 或 Base64，可直接复制为文本。</p>
+            <p>只有识别结果确认完整后才可生成。生成后实际教学方案有所变动，请在小程序上手动编辑。</p>
           </div>
           <div class="tt-actions">
             <button class="tt-button tt-button-primary" id="generateBtn" type="button" disabled>生成课表码</button>
@@ -93,12 +93,12 @@
             <span class="tt-code-meta" id="codeMeta"></span>
           </div>
           <textarea id="shareCode" class="tt-textarea tt-code" readonly hidden aria-label="生成的 SYUCT-TT2 课表码"></textarea>
-          <p class="tt-note">复制后可把整段课表码发送到微信，在 SYUCT-mini 的课表导入功能中粘贴。调、停（补）课信息第一版暂不处理。</p>
+          <p class="tt-note">复制后可把整段课表码发送到微信，在SH小程序的课表导入功能中粘贴。调、停（补）课信息第一版暂不处理。</p>
         </section>
 
         <footer class="tt-footer">
           <a href="services.html">返回办事大厅</a>
-          <a href="https://github.com/SYUCT/SYUCT-mini" target="_blank" rel="noreferrer">查看 SYUCT-mini</a>
+          <a href="https://github.com/SYUCT/SYUCT-mini" target="_blank" rel="noreferrer">查看小程序二维码i</a>
         </footer>
       </article>
     </main>
