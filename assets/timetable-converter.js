@@ -192,6 +192,89 @@
     }
   }
 
+  function initMiniProgramQrDialog() {
+    const footer = document.querySelector('.tt-footer');
+    if (!footer) return;
+
+    const oldLink = Array.from(footer.querySelectorAll('a')).find((item) => {
+      const href = item.getAttribute('href') || '';
+      const text = item.textContent || '';
+      return /github\.com\/SYUCT\/SYUCT-mini/i.test(href) || /SYUCT-mini/i.test(text);
+    });
+    if (!oldLink) return;
+
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'tt-mini-qr-trigger';
+    trigger.textContent = '查看小程序二维码';
+    oldLink.replaceWith(trigger);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .tt-mini-qr-trigger{appearance:none;padding:0;border:0;background:none;color:var(--primary);font:inherit;font-weight:700;cursor:pointer}
+      .tt-mini-qr-trigger:hover{text-decoration:underline}
+      .tt-mini-qr-modal{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:24px;background:rgba(5,21,37,.58);backdrop-filter:blur(5px)}
+      .tt-mini-qr-dialog{position:relative;width:min(960px,calc(100vw - 32px));max-height:calc(100vh - 48px);overflow:auto;border:1px solid color-mix(in srgb,var(--primary) 18%,var(--border));border-radius:20px;background:var(--surface);box-shadow:0 24px 70px rgba(0,0,0,.28)}
+      .tt-mini-qr-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 18px;border-bottom:1px solid var(--border)}
+      .tt-mini-qr-head strong{font-size:17px}
+      .tt-mini-qr-close{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border:1px solid var(--border);border-radius:11px;background:var(--surface-2);color:var(--text);font:inherit;font-size:20px;line-height:1;cursor:pointer}
+      .tt-mini-qr-body{padding:16px}
+      .tt-mini-qr-image{display:block;width:100%;height:auto;border-radius:14px;background:#eef6ff}
+      .tt-mini-qr-note{margin:12px 2px 0;color:var(--muted);font-size:13px;text-align:center}
+      @media(max-width:650px){.tt-mini-qr-modal{padding:12px}.tt-mini-qr-dialog{width:100%;max-height:calc(100vh - 24px);border-radius:16px}.tt-mini-qr-head{padding:13px 14px}.tt-mini-qr-body{padding:10px}.tt-mini-qr-image{border-radius:10px}}
+    `;
+    document.head.appendChild(style);
+
+    const modal = document.createElement('div');
+    modal.className = 'tt-mini-qr-modal';
+    modal.hidden = true;
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'ttMiniQrTitle');
+    modal.innerHTML = `
+      <div class="tt-mini-qr-dialog">
+        <div class="tt-mini-qr-head">
+          <strong id="ttMiniQrTitle">SYUCT-mini 小程序二维码</strong>
+          <button class="tt-mini-qr-close" type="button" aria-label="关闭二维码弹窗">×</button>
+        </div>
+        <div class="tt-mini-qr-body">
+          <img class="tt-mini-qr-image" alt="沈阳化工大学校园指南 SYUCT-mini 小程序二维码宣传图">
+          <p class="tt-mini-qr-note">请使用微信扫码进入小程序。</p>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('.tt-mini-qr-close');
+    const image = modal.querySelector('.tt-mini-qr-image');
+    let previousFocus = null;
+
+    function openModal() {
+      previousFocus = document.activeElement;
+      if (!image.getAttribute('src')) image.src = 'assets/syuct-mini-qr-poster.png';
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      document.body.style.overflow = '';
+      if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
+    }
+
+    trigger.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !modal.hidden) closeModal();
+    });
+  }
+
+  initMiniProgramQrDialog();
+
   recognizeBtn.addEventListener('click', recognize);
   generateBtn.addEventListener('click', generateCode);
   copyBtn.addEventListener('click', copyCode);
