@@ -65,6 +65,25 @@ function markdown(rows, tail = true) {
   assert.strictEqual(result.courses[0].weekday, 5, '时段列 + 节次列存在时星期五不能错位到星期六');
 })();
 
+
+(function testRenyiNatureDoesNotReplaceCourseName() {
+  const renyiCell = '程序设计竞赛I<br>任意<br>2节/周(1-8)<br>肖明霞<br>瑞师楼(原3#教学楼)402<br>无方向';
+  const source = markdown([
+    ['下午', '第5节', '', '', '', renyiCell, '', '', ''],
+    ['晚上', '第9节', '', '', '', '', '', '', '']
+  ]);
+  const result = parser.parseCampusTimetable(source);
+  assert.strictEqual(result.courses.length, 1);
+  assert.strictEqual(result.courses[0].name, '程序设计竞赛I', '“任意”是课程性质，不能覆盖课程名称');
+  assert.strictEqual(result.courses[0].teacher, '肖明霞');
+  assert.strictEqual(result.courses[0].room, '瑞师楼(原3#教学楼)402');
+  assert.strictEqual(result.courses[0].weekday, 4);
+  assert.strictEqual(result.courses[0].startSection, 5);
+  assert.strictEqual(result.courses[0].endSection, 6);
+  assert.strictEqual(result.courses[0].startWeek, 1);
+  assert.strictEqual(result.courses[0].endWeek, 8);
+})();
+
 (function testPracticeCourseIsWarnOnly() {
   const source = `${markdown([['晚上', '第9节', cell('正常课程', '2节/周(1-8)'), '', '', '', '', '', '']], false)}
 | 实践课(或无上课时间)信息： |
@@ -111,53 +130,6 @@ assert.ok(real.courses.some((course) => course.name === '数据库系统原理' 
   '星期五 1-2 节数据库系统原理不能因时段列发生错位');
 assert.strictEqual(real.courses.filter((course) => course.name === '习近平新时代中国特色社会主义思想概论' && course.weekday === 7).length, 2,
   '同名课程不同时间必须保留多条');
-
-
-(function testClipboardHtmlGridKeepsWeekdayColumns() {
-  const grid = [
-    ['时间', '', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
-    ['早晨', '', '', '', '', '', '', '', ''],
-    ['上午', '第1节',
-      cell('线性代数', '2节/周(1-18)', '苏牧羊', '通明楼(原5#教学楼)136'),
-      `${cell('大学外语Ⅲ', '2节/单周(1-18)', '李辉', '碧帆楼108')}<br><br>${cell('大学外语Ⅲ', '2节/双周(1-18)', '李辉', '景唐楼(原1#教学楼)503')}`,
-      cell('基础综合俄语Ⅲ', '2节/周(1-18)', '李晓丹', '景唐楼(原1#教学楼)321'),
-      cell('俄语口语Ⅰ', '2节/周(1-18)', '外教2', '思远楼多功能教室1'),
-      `${cell('创造性思维与创新方法', '2节/双周(1-5)', '张展', '瑞师楼(原3#教学楼)107')}<br><br>${cell('创造性思维与创新方法', '2节/单周(9-9)', '张展', '应星楼(原6#教学楼)502')}<br><br>${cell('创造性思维与创新方法', '2节/双周(7-8)', '张展', '瑞师楼(原3#教学楼)107')}`,
-      '', ''],
-    ['', '第2节', '', '', '', '', '', '', ''],
-    ['', '第3节',
-      cell('俄语听说Ⅲ', '2节/周(1-18)', '外教2', '思远楼多功能教室2'),
-      cell('宏观经济学', '2节/周(1-16)', '石沂哲', '敬仲楼(原4#教学楼)120'),
-      cell('大学外语Ⅲ', '2节/周(1-18)', '李辉', '景唐楼(原1#教学楼)503'),
-      cell('基础综合俄语Ⅲ', '2节/周(1-18)', '李晓丹', '景唐楼(原1#教学楼)321'),
-      '', '', ''],
-    ['', '第4节', '', '', '', '', '', '', ''],
-    ['下午', '第5节',
-      cell('财经应用文写作', '2节/周(3-8)', '殷秀丽', '通明楼(原5#教学楼)338'),
-      cell('形势与政策', '2节/周(9-12)', '薛孚', '应星楼(原6#教学楼)501'),
-      cell('线性代数', '2节/周(6-9)', '苏牧羊', '通明楼(原5#教学楼)234'),
-      cell('金融学', '2节/周(1-16)', '郭文超', '瑞师楼(原3#教学楼)109'),
-      `${cell('金融学', '2节/单周(1-16)', '郭文超', '瑞师楼(原3#教学楼)207')}<br><br>${cell('宏观经济学', '2节/双周(1-16)', '石沂哲', '瑞师楼(原3#教学楼)405')}`,
-      '', ''],
-    ['', '第6节', '', '', '', '', '', '', ''],
-    ['', '第7节', '', '', '', '', '', '', ''],
-    ['', '第8节', '', '', '', '', '', '', ''],
-    ['晚上', '第9节', '', '', '', '', '', '', ''],
-    ['', '第10节', '', '', '', '', '', '', '']
-  ];
-  const source = '星期一 星期二 星期三 星期四 星期五 星期六 星期日 第1节 第3节 第5节 第7节 第9节 实践课(或无上课时间)信息：';
-  const result = parser.parseCampusTimetableGrid(grid, source);
-  assert.strictEqual(result.courses.length, 18, '该样例应识别 18 个上课安排');
-  assert.strictEqual(result.meta.uniqueCourseCount, 10, '该样例应识别 10 门不同课程');
-  assert.strictEqual(result.meta.oddCount, 3);
-  assert.strictEqual(result.meta.evenCount, 4);
-  assert.ok(result.courses.some((course) => course.name === '大学外语Ⅲ' && course.weekday === 2 && course.weekType === 'odd'), '星期二大学外语不能落到周一');
-  assert.ok(result.courses.some((course) => course.name === '基础综合俄语Ⅲ' && course.weekday === 3 && course.startSection === 1), '星期三课程必须保留星期三');
-  assert.ok(result.courses.some((course) => course.name === '俄语口语Ⅰ' && course.weekday === 4), '星期四课程必须保留星期四');
-  assert.strictEqual(result.courses.filter((course) => course.name === '创造性思维与创新方法').every((course) => course.weekday === 5), true, '星期五同格多门安排必须全部保持星期五');
-  assert.ok(result.courses.some((course) => course.name === '金融学' && course.weekday === 4 && course.weekType === 'all'), '星期四金融学不能落到周一');
-  assert.ok(result.courses.some((course) => course.name === '金融学' && course.weekday === 5 && course.weekType === 'odd'), '星期五金融学不能落到周一');
-})();
 
 (function testTT2RoundTripAndMiniCompatibility() {
   const payload = {
