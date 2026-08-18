@@ -28,6 +28,7 @@
   const codeMeta = document.getElementById('codeMeta');
 
   let parsedResult = null;
+  let clipboardGrid = null;
 
   function setStatus(kind, title, message) {
     statusBox.hidden = false;
@@ -61,6 +62,73 @@
     clearStatus();
   }
 
+  function clipboardNodeText(node) {
+    if (!node) return '';
+    if (node.nodeType === Node.TEXT_NODE) return node.nodeValue || '';
+    if (node.nodeType !== Node.ELEMENT_NODE) return '';
+    const tag = node.tagName ? node.tagName.toLowerCase() : '';
+    if (tag === 'br') return '\n';
+    let value = '';
+    node.childNodes.forEach((child) => { value += clipboardNodeText(child); });
+    if (/^(div|p|li|section|article)$/.test(tag) && value && !value.endsWith('\n')) value += '\n';
+    return value;
+  }
+
+  function clipboardCellText(cell) {
+    return clipboardNodeText(cell)
+      .replace(/\u00a0/g, ' ')
+      .replace(/\r/g, '')
+      .replace(/[ \t]*\n[ \t]*/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  function tableToGrid(table) {
+    const grid = [];
+    const occupied = [];
+    Array.from(table.rows || []).forEach((row, rowIndex) => {
+      if (!grid[rowIndex]) grid[rowIndex] = [];
+      if (!occupied[rowIndex]) occupied[rowIndex] = [];
+      let columnIndex = 0;
+      Array.from(row.cells || []).forEach((cell) => {
+        while (occupied[rowIndex][columnIndex]) columnIndex += 1;
+        const rowSpan = Math.max(1, Number(cell.rowSpan) || 1);
+        const colSpan = Math.max(1, Number(cell.colSpan) || 1);
+        const value = clipboardCellText(cell);
+        for (let rowOffset = 0; rowOffset < rowSpan; rowOffset += 1) {
+          const targetRow = rowIndex + rowOffset;
+          if (!grid[targetRow]) grid[targetRow] = [];
+          if (!occupied[targetRow]) occupied[targetRow] = [];
+          for (let colOffset = 0; colOffset < colSpan; colOffset += 1) {
+            const targetColumn = columnIndex + colOffset;
+            occupied[targetRow][targetColumn] = true;
+            if (grid[targetRow][targetColumn] == null) {
+              grid[targetRow][targetColumn] = rowOffset === 0 && colOffset === 0 ? value : '';
+            }
+          }
+        }
+        columnIndex += colSpan;
+      });
+    });
+    return grid;
+  }
+
+  function extractClipboardTimetableGrid(html) {
+    if (!html || typeof DOMParser === 'undefined') return null;
+    try {
+      const documentFragment = new DOMParser().parseFromString(html, 'text/html');
+      const tables = Array.from(documentFragment.querySelectorAll('table'));
+      for (const table of tables) {
+        const grid = tableToGrid(table);
+        const flat = grid.flat().map((cell) => String(cell || '')).join('\n');
+        if (/星期一/.test(flat) && /星期五/.test(flat) && /第\s*\d{1,2}\s*节/.test(flat)) return grid;
+      }
+    } catch (error) {
+      return null;
+    }
+    return null;
+  }
+
   function renderPreview(courses) {
     previewList.replaceChildren();
     courses.forEach((course) => {
@@ -90,7 +158,9 @@
   function recognize() {
     resetGeneratedCode();
     try {
-      const result = parser.parseCampusTimetable(rawInput.value);
+      const result = clipboardGrid && typeof parser.parseCampusTimetableGrid === 'function'
+        ? parser.parseCampusTimetableGrid(clipboardGrid, rawInput.value)
+        : parser.parseCampusTimetable(rawInput.value);
       parsedResult = result;
       arrangementCount.textContent = String(result.meta.arrangementCount);
       uniqueCourseCount.textContent = String(result.meta.uniqueCourseCount);
@@ -275,9 +345,26 @@
 
   initMiniProgramQrDialog();
 
+  rawInput.addEventListener('paste', (event) => {
+    const data = event.clipboardData;
+    if (!data) return;
+    const plainText = data.getData('text/plain');
+    if (!plainText) return;
+    const structuredGrid = extractClipboardTimetableGrid(data.getData('text/html'));
+    event.preventDefault();
+    const start = rawInput.selectionStart == null ? rawInput.value.length : rawInput.selectionStart;
+    const end = rawInput.selectionEnd == null ? start : rawInput.selectionEnd;
+    rawInput.setRangeText(plainText, start, end, 'end');
+    clipboardGrid = structuredGrid;
+    resetRecognition();
+  });
+
   recognizeBtn.addEventListener('click', recognize);
   generateBtn.addEventListener('click', generateCode);
   copyBtn.addEventListener('click', copyCode);
-  rawInput.addEventListener('input', resetRecognition);
+  rawInput.addEventListener('input', () => {
+    clipboardGrid = null;
+    resetRecognition();
+  });
   [semesterInput, firstWeekDateInput, totalWeeksInput].forEach((input) => input.addEventListener('input', resetGeneratedCode));
 })();

@@ -180,6 +180,79 @@
     return result;
   }
 
+
+  function parseCampusTimetableGrid(grid, sourceText) {
+    const rows = Array.isArray(grid) ? grid : [];
+    const weekdayByLabel = {
+      '星期一': 1,
+      '星期二': 2,
+      '星期三': 3,
+      '星期四': 4,
+      '星期五': 5,
+      '星期六': 6,
+      '星期日': 7
+    };
+    let headerIndex = -1;
+    let weekdayColumns = {};
+
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex += 1) {
+      const row = Array.isArray(rows[rowIndex]) ? rows[rowIndex] : [];
+      const found = {};
+      row.forEach((cell, columnIndex) => {
+        const weekday = weekdayByLabel[cleanInline(cell)];
+        if (weekday) found[weekday] = columnIndex;
+      });
+      if (Object.keys(found).length >= 5 && found[1] != null && found[5] != null) {
+        headerIndex = rowIndex;
+        weekdayColumns = found;
+        break;
+      }
+    }
+
+    if (headerIndex < 0) throw new Error('没有识别到课表的星期表头，请重新复制完整课表');
+
+    const courses = [];
+    for (let rowIndex = headerIndex + 1; rowIndex < rows.length; rowIndex += 1) {
+      const row = Array.isArray(rows[rowIndex]) ? rows[rowIndex] : [];
+      const sectionIndex = row.findIndex((cell) => /^第\s*\d{1,2}\s*节$/.test(cleanInline(cell)));
+      if (sectionIndex < 0) continue;
+      const sectionMatch = /第\s*(\d{1,2})\s*节/.exec(cleanInline(row[sectionIndex]));
+      if (!sectionMatch) continue;
+      const startSection = Number(sectionMatch[1]);
+
+      for (let weekday = 1; weekday <= 7; weekday += 1) {
+        const columnIndex = weekdayColumns[weekday];
+        if (columnIndex == null) continue;
+        const cell = row[columnIndex] || '';
+        const parsed = parseCourseCell(cell, weekday, startSection, courses.length);
+        parsed.forEach((course) => courses.push(course));
+        if (courses.length > MAX_COURSES) throw new Error('识别到的课程过多，请检查复制内容');
+      }
+    }
+
+    const normalizedCourses = dedupeCourses(courses);
+    if (!normalizedCourses.length) throw new Error('没有识别到上课安排，请重新选择课表表格后复制');
+    const source = String(sourceText == null ? '' : sourceText).replace(/^\uFEFF/, '').trim();
+    const sourceInfo = inspectCampusTimetableSource(source);
+    const uniqueCourseNames = Array.from(new Set(normalizedCourses.map((course) => course.name)));
+    const practiceNames = extractPracticeNames(source);
+    return {
+      courses: normalizedCourses,
+      meta: {
+        arrangementCount: normalizedCourses.length,
+        uniqueCourseCount: uniqueCourseNames.length,
+        oddCount: normalizedCourses.filter((course) => course.weekType === 'odd').length,
+        evenCount: normalizedCourses.filter((course) => course.weekType === 'even').length,
+        practiceNames,
+        maxEndWeek: normalizedCourses.reduce((max, course) => Math.max(max, course.endWeek), 0),
+        sourceFormat: 'clipboard-html',
+        sourceLength: sourceInfo.sourceLength,
+        sourceLikelyComplete: sourceInfo.likelyComplete,
+        scheduleMarkerCount: sourceInfo.scheduleMarkerCount
+      }
+    };
+  }
+
   function extractPracticeNames(source) {
     const text = String(source || '').replace(/\r/g, '');
     const markerMatch = /实践课\s*[（(]或无上课时间[）)]信息/.exec(text);
@@ -258,6 +331,7 @@
 
   return {
     parseCampusTimetable,
+    parseCampusTimetableGrid,
     inspectCampusTimetableSource
   };
 });
