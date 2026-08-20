@@ -1,0 +1,176 @@
+name: Update community mirror
+
+on:
+  schedule:
+    # Avoid the top of the hour, when scheduled Actions are more likely to be delayed.
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/update-community.yml"
+      - "scripts/update-community.mjs"
+
+# The built-in GITHUB_TOKEN is intentionally kept read-only for repository
+# contents. All Discussions read / branch / PR / merge operations are performed
+# with the dedicated SYUCT Community Bot GitHub App installation token.
+permissions:
+  contents: read
+  pages: write
+
+concurrency:
+  group: syuct-community-mirror
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync GitHub Discussions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create SYUCT Community Bot token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.COMMUNITY_APP_CLIENT_ID }}
+          private-key: ${{ secrets.COMMUNITY_APP_PRIVATE_KEY }}
+
+      - name: Check out repository as Community Bot
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+          # Do not leave any token in .git/config. Git is authenticated explicitly
+          # with the short-lived App token only in the publishing step below.
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Verify mirror logic
+        run: node scripts/update-community.mjs --self-test
+
+      - name: Fetch community discussions
+        run: node scripts/update-community.mjs
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Detect content changes
+        id: changes
+        shell: bash
+        run: |
+          if [[ -n "$(git status --porcelain -- assets/community.json assets/community-media)" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Community mirror has changes to publish."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Community content is unchanged. No pull request is needed."
+          fi
+
+      - name: Resolve Community Bot identity
+        if: steps.changes.outputs.changed == 'true'
+        id: bot
+        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          set -euo pipefail
+          BOT_ID="$(gh api "/users/${APP_SLUG}[bot]" --jq '.id')"
+          echo "name=${APP_SLUG}[bot]" >> "$GITHUB_OUTPUT"
+          echo "email=${BOT_ID}+${APP_SLUG}[bot]@users.noreply.github.com" >> "$GITHUB_OUTPUT"
+
+      - name: Publish through protected-main pull request
+        if: steps.changes.outputs.changed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          BOT_NAME: ${{ steps.bot.outputs.name }}
+          BOT_EMAIL: ${{ steps.bot.outputs.email }}
+        run: |
+          set -euo pipefail
+
+          BRANCH="automation/community-mirror-${GITHUB_RUN_ID}"
+          TITLE="chore: update community mirror"
+
+          # Use only the short-lived GitHub App token for git authentication.
+          gh auth setup-git
+          git config user.name "$BOT_NAME"
+          git config user.email "$BOT_EMAIL"
+
+          git switch -c "$BRANCH"
+          git add assets/community.json assets/community-media
+          git commit -m "$TITLE"
+
+          # Rebase on the newest main before opening the short-lived PR.
+          git fetch origin main
+          git rebase origin/main
+          git push origin "$BRANCH"
+
+          echo "Creating Community Bot pull request..."
+          PR_JSON=$(gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "repos/${GITHUB_REPOSITORY}/pulls" \
+            -f title="$TITLE" \
+            -f head="$BRANCH" \
+            -f base="main" \
+            -f body="Automated hourly refresh of the read-only SYUCT GitHub Discussions mirror. This PR contains only generated community JSON and mirrored discussion media.")
+
+          PR_NUMBER=$(printf '%s' "$PR_JSON" | jq -r '.number')
+          if [[ -z "$PR_NUMBER" || "$PR_NUMBER" == "null" ]]; then
+            echo "$PR_JSON"
+            echo "::error::The Community Bot PR was created but its number could not be read."
+            exit 1
+          fi
+
+          echo "Created PR #${PR_NUMBER}. Attempting squash merge as SYUCT Community Bot..."
+          MERGED="false"
+          MERGE_JSON=""
+          for ATTEMPT in 1 2 3 4 5 6; do
+            set +e
+            MERGE_JSON=$(gh api \
+              --method PUT \
+              -H "Accept: application/vnd.github+json" \
+              "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/merge" \
+              -f merge_method="squash" \
+              -f commit_title="$TITLE" \
+              2>&1)
+            MERGE_STATUS=$?
+            set -e
+
+            if [[ $MERGE_STATUS -eq 0 ]] && [[ "$(printf '%s' "$MERGE_JSON" | jq -r '.merged // false' 2>/dev/null)" == "true" ]]; then
+              MERGED="true"
+              break
+            fi
+
+            echo "Merge attempt ${ATTEMPT} is not ready yet."
+            [[ $ATTEMPT -lt 6 ]] && sleep $((ATTEMPT * 3))
+          done
+
+          if [[ "$MERGED" != "true" ]]; then
+            echo "$MERGE_JSON"
+            echo "::error::Community Bot could not merge the automated PR. Confirm that the SYUCT Community Bot GitHub App is installed on SYUCT-web and is present in the main ruleset Bypass list with 'For pull requests only'. The PR has been left open for inspection; no direct push to protected main was attempted."
+            exit 1
+          fi
+
+          git push origin --delete "$BRANCH" || true
+          echo "Community mirror PR #${PR_NUMBER} merged successfully by $BOT_NAME."
+
+      - name: Refresh GitHub Pages backup
+        if: steps.changes.outputs.changed == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          # The App-authored merge normally emits a normal push event. This explicit
+          # request is retained as a harmless fallback for the GitHub Pages backup.
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "repos/${GITHUB_REPOSITORY}/pages/builds" >/dev/null
+          echo "GitHub Pages backup build requested."
