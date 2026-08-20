@@ -157,13 +157,22 @@
     </section>`;
   }
 
+
+  function renderMarkdownContent(post) {
+    const source = post.bodyMarkdown || post.body || "";
+    if (window.communityMarkdownRender) {
+      return sanitizeGithubHtml(window.communityMarkdownRender(source));
+    }
+    return sanitizeGithubHtml(post.bodyHTML);
+  }
+
   function renderDiscussion(post, isPinned) {
     const id = `discussion-${post.number}-${isPinned ? "pinned" : "recent"}`;
     const category = [post.category?.emoji, post.category?.name].filter(Boolean).join(" ");
     const commentCount = Number(post.commentCount) || 0;
     const upvoteCount = Number(post.upvoteCount) || 0;
     const comments = post.comments || {};
-    const body = sanitizeGithubHtml(post.bodyHTML);
+    const body = renderMarkdownContent(post);
     const meta = [
       `@${post.author || "ghost"}`,
       category || "讨论",

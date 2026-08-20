@@ -108,3 +108,7 @@ html[data-theme="dark"] .comment-tag{color:#8fe0aa}
   .community-source-note{align-items:stretch;flex-direction:column}
   .community-source-note .btn{width:100%}
 }
+
+
+.community-code-copy{position:absolute;right:8px;top:8px;font-size:.8rem;padding:4px 8px;cursor:pointer;}
+.github-content pre{position:relative;overflow:auto;}
