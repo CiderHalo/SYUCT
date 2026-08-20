@@ -1,13 +1,15 @@
 {
   "name": "syuct-campus-guide",
-  "version": "1.29.0",
+  "version": "1.30.0",
   "private": true,
   "description": "Static campus guide with locally hosted PDF.js and local Office-to-PDF previews.",
   "scripts": {
     "vendor:pdfjs": "node scripts/vendor-pdfjs.mjs",
     "test": "node tests/timetable-converter.test.js",
     "audit:static": "python3 scripts/audit-static-assets.py",
-    "images:build": "python3 scripts/build-web-images.py"
+    "images:build": "python3 scripts/build-web-images.py",
+    "community:test": "node scripts/update-community.mjs --self-test",
+    "community:update": "node scripts/update-community.mjs"
   },
   "devDependencies": {
     "pdfjs-dist": "6.2.108"

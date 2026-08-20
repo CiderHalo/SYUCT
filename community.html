@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="SYUCT 校园社区阅读预览。每小时同步 GitHub Discussions 的置顶讨论、最近讨论与精选评论。" name="description"/>
+<meta content="#075ca8" name="theme-color"/>
+<title>校园社区 · 沈阳化工大学校园指南（学生共创版）</title>
+<link href="assets/styles.css?rev=20260820" rel="stylesheet"/>
+<link href="assets/community.css?rev=20260820" rel="stylesheet"/>
+<link href="assets/syuct-community-icon.png" rel="icon" type="image/png"/>
+<link href="assets/syuct-community-icon.png" rel="apple-touch-icon"/>
+</head>
+<body data-page="community.html">
+<header class="topbar" id="topbar">
+<button class="icon-btn menu-btn" id="menuBtn" aria-label="打开菜单">☰</button>
+<a class="brand" href="index.html" aria-label="返回首页">
+<span class="brand-mark brand-mark-logo"><img src="assets/optimized/syuct-community-icon.webp" alt="沈化校园指南学生共创图标" width="256" height="256" decoding="async"></span>
+<span class="brand-name brand-name-desktop">沈阳化工大学校园指南（学生共创版）</span>
+<span class="brand-name brand-name-mobile">沈化大校园指南</span>
+</a>
+<span class="topbar-spacer"></span>
+<div class="topbar-actions">
+<button class="icon-btn" id="themeBtn" aria-label="切换深浅色">◐</button>
+<button class="topbar-search" id="searchBtn" aria-label="打开站内搜索"><span>⌕</span><span class="topbar-search-label">搜索校园资料</span><kbd>Ctrl K</kbd></button>
+<div class="quick-links" id="quickLinks">
+<button class="icon-btn quick-links-button" id="quickLinksButton" type="button" aria-label="打开快捷链接" aria-haspopup="menu" aria-expanded="false"><span aria-hidden="true">⋯</span></button>
+<div class="quick-links-menu" id="quickLinksMenu" role="menu" aria-label="快捷链接">
+<a href="https://www.syuct.edu.cn/" target="_blank" rel="noreferrer" role="menuitem"><span><strong>学校官网</strong><small>沈阳化工大学官方网站</small></span></a>
+<a href="https://github.com/SYUCT/SYUCT-web" target="_blank" rel="noreferrer" role="menuitem"><span><strong>GitHub 仓库</strong><small>查看源码与更新记录</small></span></a>
+</div>
+</div>
+</div>
+</header>
+<aside class="sidebar" id="sidebar"></aside>
+<div class="backdrop" id="backdrop"></div>
+
+<div class="page-shell">
+<main class="main community-main">
+<section class="community-hero">
+<div class="community-hero-copy">
+<div class="eyebrow">SYUCT COMMUNITY</div>
+<h1>校园社区</h1>
+<p>这里是 SYUCT GitHub 校园社区的静态阅读预览。系统每小时检查一次置顶讨论、最近活跃讨论与精选评论；发帖、回复、投票和点赞仍在 GitHub 原始社区完成。</p>
+<div class="community-hero-actions">
+<a class="btn btn-blue" href="https://github.com/orgs/SYUCT/discussions" target="_blank" rel="noopener noreferrer">前往 GitHub 校园社区</a>
+</div>
+</div>
+<div class="community-sync-card" aria-live="polite">
+<span class="community-sync-label">同步状态</span>
+<strong id="communitySyncStatus">正在读取社区数据</strong>
+<small id="communitySyncTime">系统每小时自动检查</small>
+</div>
+</section>
+
+<section class="community-notice" aria-label="社区预览说明">
+<strong>阅读预览说明</strong>
+<p>本站缓存讨论正文，并展示热度最高的 5 条评论与时间最新的 5 条评论；两组重复评论只保留在热门评论中。若讨论包含 GitHub 托管图片，系统会尽量缓存到本站静态资源，减少国内网络环境下的加载失败。</p>
+</section>
+
+<section class="section community-section" id="pinnedSection" hidden>
+<div class="section-head community-section-head">
+<div>
+<div class="eyebrow">PINNED</div>
+<h2>置顶讨论</h2>
+<p class="section-lead">由 SYUCT 社区维护者置顶的重要内容。</p>
+</div>
+</div>
+<div class="discussion-list" id="communityPinned"></div>
+</section>
+
+<section class="section community-section">
+<div class="section-head community-section-head">
+<div>
+<div class="eyebrow">RECENT</div>
+<h2>最近讨论</h2>
+<p class="section-lead">展示最近活跃的 10 个非置顶讨论，按最后更新时间排序。</p>
+</div>
+</div>
+<div class="discussion-list" id="communityRecent"></div>
+<div class="community-empty" id="communityEmpty" hidden>
+<strong>社区数据暂未同步</strong>
+<p>首次部署后，GitHub Actions 会自动生成阅读预览。也可以在 Actions 中手动运行 “Update community mirror”。</p>
+</div>
+</section>
+
+<section class="community-source-note">
+<div>
+<strong>GitHub 是社区原始数据源</strong>
+<p>本页面只提供静态阅读镜像。完整回复、全部评论、投票、搜索和账号互动请访问原始 GitHub Discussions。</p>
+</div>
+<a class="btn btn-outline" href="https://github.com/orgs/SYUCT/discussions" target="_blank" rel="noopener noreferrer">查看完整社区</a>
+</section>
+
+<footer class="site-footer">
+<span>非官方学生共建站，请以学校当年正式通知为准。</span>
+<span><a href="https://www.syuct.edu.cn/" rel="noreferrer" target="_blank">学校官网</a> · <a href="https://github.com/SYUCT/SYUCT-web" rel="noreferrer" target="_blank">GitHub 仓库</a></span>
+</footer>
+</main>
+</div>
+
+<div class="search-overlay" id="searchOverlay"></div>
+<script defer src="assets/app.js?rev=20260820-community"></script>
+<script defer src="assets/community.js?rev=20260820"></script>
+</body>
+</html>

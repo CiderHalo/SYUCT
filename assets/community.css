@@ -1,0 +1,110 @@
+.community-main{padding-bottom:36px}
+.community-hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.6fr);gap:24px;align-items:stretch;margin:34px 0 28px;padding:42px;border:1px solid var(--border);border-radius:28px;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 11%,var(--surface)),var(--surface) 58%,color-mix(in srgb,var(--accent) 9%,var(--surface)));box-shadow:0 18px 46px rgba(15,58,91,.08)}
+.community-hero h1{margin:0;font-size:clamp(38px,6vw,64px);line-height:1.05;letter-spacing:-.045em}
+.community-hero p{max-width:760px;margin:16px 0 0;color:var(--muted);font-size:16px;line-height:1.85}
+.community-hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.community-sync-card{display:flex;min-height:170px;flex-direction:column;justify-content:center;padding:24px;border:1px solid color-mix(in srgb,var(--primary) 25%,var(--border));border-radius:20px;background:color-mix(in srgb,var(--surface) 88%,var(--primary));box-shadow:0 10px 28px rgba(15,58,91,.07)}
+.community-sync-label{color:var(--primary);font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.community-sync-card strong{margin-top:10px;font-size:20px;line-height:1.4}
+.community-sync-card small{margin-top:8px;color:var(--muted);line-height:1.6}
+
+.community-notice{margin:0 0 56px;padding:20px 22px;border:1px solid color-mix(in srgb,var(--primary) 18%,var(--border));border-radius:18px;background:var(--surface-2)}
+.community-notice strong{font-size:15px}
+.community-notice p{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.8}
+
+.community-section{margin-top:56px}
+.community-section-head{margin-bottom:18px}
+.discussion-list{display:grid;gap:14px}
+.discussion-card{overflow:hidden;border:1px solid var(--border);border-radius:20px;background:var(--surface);box-shadow:0 10px 28px rgba(15,58,91,.055)}
+.discussion-card.is-pinned{border-color:color-mix(in srgb,var(--accent) 34%,var(--border))}
+.discussion-summary{display:grid;width:100%;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;padding:22px 24px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+.discussion-summary:hover{background:color-mix(in srgb,var(--primary) 4%,transparent)}
+.discussion-summary:focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 32%,transparent);outline-offset:-3px}
+.discussion-heading{min-width:0}
+.discussion-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.discussion-badge{display:inline-flex;align-items:center;min-height:25px;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-size:12px;font-weight:800}
+.discussion-badge.pinned{background:color-mix(in srgb,var(--accent) 15%,var(--surface));color:color-mix(in srgb,var(--accent) 78%,var(--text))}
+.discussion-title{display:block;font-size:20px;font-weight:900;line-height:1.4;overflow-wrap:anywhere}
+.discussion-meta{display:flex;flex-wrap:wrap;gap:7px 14px;margin-top:8px;color:var(--muted);font-size:12px;line-height:1.5}
+.discussion-toggle{display:inline-flex;min-width:74px;align-items:center;justify-content:center;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);color:var(--primary);font-size:13px;font-weight:900}
+.discussion-content{border-top:1px solid var(--border);padding:0 24px 24px}
+.discussion-content[hidden]{display:none}
+.discussion-body{padding:24px 0 4px}
+
+.github-content{color:var(--text);font-size:15px;line-height:1.82;overflow-wrap:anywhere}
+.github-content>*:first-child{margin-top:0}
+.github-content>*:last-child{margin-bottom:0}
+.github-content h1,.github-content h2,.github-content h3,.github-content h4,.github-content h5,.github-content h6{margin:1.5em 0 .65em;line-height:1.35;letter-spacing:-.02em}
+.github-content h1{font-size:1.75em}.github-content h2{font-size:1.5em}.github-content h3{font-size:1.25em}
+.github-content p,.github-content ul,.github-content ol,.github-content blockquote,.github-content pre,.github-content table{margin:1em 0}
+.github-content ul,.github-content ol{padding-left:1.5em}
+.github-content li+li{margin-top:.35em}
+.github-content blockquote{padding:10px 16px;border-left:4px solid color-mix(in srgb,var(--primary) 45%,var(--border));background:var(--surface-2);color:var(--muted)}
+.github-content code{padding:.15em .35em;border-radius:6px;background:var(--surface-2);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em}
+.github-content pre{overflow:auto;padding:15px;border:1px solid var(--border);border-radius:12px;background:color-mix(in srgb,var(--surface-2) 80%,#000 2%)}
+.github-content pre code{padding:0;background:transparent}
+.github-content a{color:var(--primary);font-weight:750;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.github-content img{display:block;max-width:100%;height:auto;margin:16px auto;border-radius:12px;border:1px solid var(--border);background:var(--surface-2)}
+.github-content table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse}
+.github-content th,.github-content td{padding:8px 10px;border:1px solid var(--border);white-space:normal}
+.github-content hr{margin:24px 0;border:0;border-top:1px solid var(--border)}
+.github-content details{margin:12px 0;padding:10px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface-2)}
+.github-content summary{cursor:pointer;font-weight:800}
+
+.community-poll{margin:22px 0;padding:18px;border:1px solid var(--border);border-radius:16px;background:var(--surface-2)}
+.community-poll-title{font-weight:900;line-height:1.5}
+.community-poll-meta{margin-top:4px;color:var(--muted);font-size:12px}
+.community-poll-options{display:grid;gap:9px;margin-top:14px}
+.community-poll-option{position:relative;overflow:hidden;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.community-poll-bar{position:absolute;inset:0 auto 0 0;background:color-mix(in srgb,var(--primary) 10%,transparent);pointer-events:none}
+.community-poll-option-copy{position:relative;z-index:1;display:flex;justify-content:space-between;gap:12px;font-size:13px}
+.community-poll-option-copy strong{font-weight:800}
+
+.discussion-comments{margin-top:28px}
+.comment-group+.comment-group{margin-top:26px}
+.comment-group-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px;font-size:15px}
+.comment-group-title small{color:var(--muted);font-size:11px;font-weight:700}
+.comment-list{display:grid;gap:10px}
+.comment-card{padding:16px;border:1px solid var(--border);border-radius:14px;background:color-mix(in srgb,var(--surface-2) 60%,var(--surface))}
+.comment-card.is-answer{border-color:color-mix(in srgb,#2e9b5b 42%,var(--border))}
+.comment-head{display:flex;flex-wrap:wrap;align-items:center;gap:7px 10px;margin-bottom:9px;color:var(--muted);font-size:11px}
+.comment-author{color:var(--text);font-size:13px;font-weight:900}
+.comment-tag{padding:2px 7px;border-radius:999px;background:color-mix(in srgb,#2e9b5b 14%,var(--surface));color:#247746;font-weight:800}
+html[data-theme="dark"] .comment-tag{color:#8fe0aa}
+.comment-reply-to{color:var(--muted)}
+.comment-card .github-content{font-size:14px}
+.comment-stats{margin-left:auto;white-space:nowrap}
+
+.discussion-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:26px;padding-top:20px;border-top:1px solid var(--border)}
+.discussion-footer-note{color:var(--muted);font-size:12px;line-height:1.6}
+.discussion-github-button{flex:0 0 auto}
+
+.community-empty{padding:36px;border:1px dashed var(--border);border-radius:18px;background:var(--surface);text-align:center}
+.community-empty strong{font-size:18px}
+.community-empty p{max-width:620px;margin:8px auto 0;color:var(--muted);line-height:1.7}
+.community-error{padding:18px;border:1px solid color-mix(in srgb,#d85151 38%,var(--border));border-radius:14px;background:color-mix(in srgb,#d85151 7%,var(--surface));color:var(--text)}
+
+.community-source-note{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:72px 0 34px;padding:28px;border:1px solid var(--border);border-radius:20px;background:var(--surface)}
+.community-source-note strong{font-size:17px}
+.community-source-note p{max-width:760px;margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.75}
+
+@media(max-width:900px){
+  .community-hero{grid-template-columns:1fr;padding:32px}
+  .community-sync-card{min-height:auto}
+}
+@media(max-width:650px){
+  .community-hero{margin-top:20px;padding:24px;border-radius:20px}
+  .community-hero h1{font-size:40px}
+  .community-hero p{font-size:14px}
+  .community-hero-actions .btn{width:100%}
+  .community-notice{margin-bottom:40px}
+  .discussion-summary{grid-template-columns:1fr;gap:14px;padding:18px}
+  .discussion-toggle{justify-self:start}
+  .discussion-content{padding:0 18px 18px}
+  .discussion-title{font-size:18px}
+  .discussion-footer{align-items:stretch;flex-direction:column}
+  .discussion-github-button{width:100%}
+  .comment-stats{width:100%;margin-left:0}
+  .community-source-note{align-items:stretch;flex-direction:column}
+  .community-source-note .btn{width:100%}
+}
