@@ -1,23 +1,34 @@
 name: Static performance audit
 
 on:
-  pull_request:
-    paths:
-      - "*.html"
-      - "assets/**"
-      - "scripts/audit-static-assets.py"
-      - "scripts/build-web-images.py"
-      - "edgeone.json"
-      - "package.json"
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - "*.html"
+      - "styles.css"
       - "assets/**"
       - "scripts/audit-static-assets.py"
       - "scripts/build-web-images.py"
       - "edgeone.json"
       - "package.json"
+      - "tests/**"
+      - ".github/workflows/static-performance-audit.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "*.html"
+      - "styles.css"
+      - "assets/**"
+      - "scripts/audit-static-assets.py"
+      - "scripts/build-web-images.py"
+      - "edgeone.json"
+      - "package.json"
+      - "tests/**"
+      - ".github/workflows/static-performance-audit.yml"
+
   workflow_dispatch:
 
 permissions:
@@ -25,13 +36,25 @@ permissions:
 
 jobs:
   audit:
+    name: Check static assets and tests
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
       - name: Audit static assets
         run: python3 scripts/audit-static-assets.py
 
-      - name: Run timetable converter tests
+      - name: Test timetable converter
         run: node tests/timetable-converter.test.js
