@@ -261,7 +261,7 @@
 
     function openModal() {
       previousFocus = document.activeElement;
-      if (!image.getAttribute('src')) image.src = 'assets/syuct-mini-qr-poster.png';
+      if (!image.getAttribute('src')) image.src = 'assets/optimized/syuct-mini-qr-poster.webp?rev=20260820-opt';
       modal.hidden = false;
       document.body.style.overflow = 'hidden';
       closeBtn.focus();

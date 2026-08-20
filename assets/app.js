@@ -43,7 +43,7 @@ function renderChrome(){
     topbar.innerHTML = `
       <button class="icon-btn menu-btn" id="menuBtn" aria-label="打开菜单">☰</button>
       <a class="brand" href="index.html" aria-label="返回首页">
-        <span class="brand-mark brand-mark-logo"><img src="assets/syuct-community-icon.png" alt="沈化校园指南学生共创图标"></span>
+        <span class="brand-mark brand-mark-logo"><img src="assets/optimized/syuct-community-icon.webp" alt="沈化校园指南学生共创图标" width="256" height="256" decoding="async"></span>
         <span class="brand-name brand-name-desktop">${SITE.desktopName}</span>
         <span class="brand-name brand-name-mobile">${SITE.mobileName}</span>
       </a>
