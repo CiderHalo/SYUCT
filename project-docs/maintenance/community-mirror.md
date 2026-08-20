@@ -10,19 +10,33 @@
 ## 展示规则
 
 - 展示全部 GitHub 置顶 Discussion。
-- 另外展示最近活跃的 10 条非置顶 Discussion，按 GitHub `updatedAt` 从新到旧排列。
-- 点击标题后展开完整正文。
+- 其次展示带「精选」标签的 Discussion，位于置顶与最近讨论之间。
+- 另外展示最近活跃的 10 条 Discussion，按 GitHub `updatedAt` 从新到旧排列。
+- 三个分组互斥：置顶优先，其次精选，剩下的才进入最近讨论，同一条帖子不会重复出现。
+- 点击标题后展开完整正文。正文直接使用 GitHub 渲染好的 `bodyHTML`，经白名单过滤后显示。
+- 正文里的每个代码块上方带「复制代码」按钮，复制 `pre` 的 `textContent`，因此折叠在 `<details>` 里的代码也能完整复制。
+- 分类 emoji 取 GraphQL 的 `category.emojiHTML`；`assets/community-markdown.js` 还会在前端把残留的 `:shortcode:` 兜底转成 Unicode 字符。
 - 每条 Discussion 展示最多 5 条热门评论，以及最多 5 条最新评论。
 - 热门评论按：`赞同 × 3 + reactions × 2 + 直接回复数` 排序。
 - 最新评论如果已进入热门评论，会从“最新评论”中去重。
 - GitHub 托管的正文/评论图片会尽量下载到 `assets/community-media/`，避免阅读正文时再次依赖 GitHub 图片域名；下载失败时保留原链接。
 - 每条帖子末尾保留“前往 GitHub 查看完整讨论”按钮。
 
+## 精选标签
+
+精选分组按标签名匹配，默认认可 `精选` 和 `featured`（忽略大小写）。在 GitHub 上给 Discussion 打标签即可，无需改代码。
+
+需要换用别的标签名时，给工作流加环境变量：
+
+```yaml
+COMMUNITY_FEATURED_LABELS: "精选,featured,置顶推荐"
+```
+
 ## 自动同步
 
 工作流：`.github/workflows/update-community.yml`
 脚本：`scripts/update-community.mjs`
-数据：`assets/community.json`
+数据：`assets/community.json`（`schemaVersion: 2`，分 `pinned` / `featured` / `recent` 三组）
 
 计划任务：
 

@@ -3,8 +3,10 @@
   const DATA_URL = "assets/community.json";
 
   const pinnedContainer = document.getElementById("communityPinned");
+  const featuredContainer = document.getElementById("communityFeatured");
   const recentContainer = document.getElementById("communityRecent");
   const pinnedSection = document.getElementById("pinnedSection");
+  const featuredSection = document.getElementById("featuredSection");
   const emptyState = document.getElementById("communityEmpty");
   const statusNode = document.getElementById("communitySyncStatus");
   const timeNode = document.getElementById("communitySyncTime");
@@ -65,6 +67,12 @@
 
       if (node.tagName === "IMG") {
         const src = node.getAttribute("src");
+        // GitHub 把部分 emoji 渲染成 githubassets 上的图片，国内网络常加载失败，
+        // 直接换回 alt 里的 Unicode 字符。
+        if (/^https?:\/\/[^/]*githubassets\.com\/images\/icons\/emoji\//i.test(src || "")) {
+          node.replaceWith(document.createTextNode(node.getAttribute("alt") || ""));
+          return;
+        }
         if (!isSafeUrl(src, "src")) {
           node.remove();
           return;
@@ -158,21 +166,31 @@
   }
 
 
-  function renderMarkdownContent(post) {
+  function renderPostBody(post) {
+    // GitHub 已经把正文渲染成 HTML（含代码块、details、表格），优先直接用；
+    // 只有缺少 bodyHTML 时才回退到本地 Markdown 渲染。
+    if (post.bodyHTML) return sanitizeGithubHtml(post.bodyHTML);
     const source = post.bodyMarkdown || post.body || "";
-    if (window.communityMarkdownRender) {
+    if (source && window.communityMarkdownRender) {
       return sanitizeGithubHtml(window.communityMarkdownRender(source));
     }
-    return sanitizeGithubHtml(post.bodyHTML);
+    return "";
   }
 
-  function renderDiscussion(post, isPinned) {
-    const id = `discussion-${post.number}-${isPinned ? "pinned" : "recent"}`;
-    const category = [post.category?.emoji, post.category?.name].filter(Boolean).join(" ");
+  function emojify(value) {
+    const text = String(value ?? "");
+    return window.communityEmoji ? window.communityEmoji(text) : text;
+  }
+
+  function renderDiscussion(post, variant) {
+    const isPinned = variant === "pinned";
+    const isFeatured = variant === "featured";
+    const id = `discussion-${post.number}-${variant}`;
+    const category = [emojify(post.category?.emoji), post.category?.name].filter(Boolean).join(" ");
     const commentCount = Number(post.commentCount) || 0;
     const upvoteCount = Number(post.upvoteCount) || 0;
     const comments = post.comments || {};
-    const body = renderMarkdownContent(post);
+    const body = renderPostBody(post);
     const meta = [
       `@${post.author || "ghost"}`,
       category || "讨论",
@@ -181,14 +199,15 @@
       `${upvoteCount} 赞同`
     ];
 
-    return `<article class="discussion-card${isPinned ? " is-pinned" : ""}">
+    return `<article class="discussion-card${isPinned ? " is-pinned" : ""}${isFeatured ? " is-featured" : ""}">
       <button class="discussion-summary" type="button" aria-expanded="false" aria-controls="${id}">
         <span class="discussion-heading">
           <span class="discussion-badges">
             ${isPinned ? `<span class="discussion-badge pinned">置顶</span>` : ""}
+            ${isFeatured ? `<span class="discussion-badge featured">精选</span>` : ""}
             ${category ? `<span class="discussion-badge">${escapeHtml(category)}</span>` : ""}
           </span>
-          <span class="discussion-title">${escapeHtml(post.title)}</span>
+          <span class="discussion-title">${escapeHtml(emojify(post.title))}</span>
           <span class="discussion-meta">${meta.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</span>
         </span>
         <span class="discussion-toggle">展开内容</span>
@@ -211,6 +230,61 @@
     </article>`;
   }
 
+  async function copyText(text) {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    // 非 HTTPS 或旧浏览器下 Clipboard API 不可用，退回选中复制。
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.cssText = "position:fixed;top:0;left:-9999px;opacity:0";
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    area.remove();
+    if (!ok) throw new Error("execCommand copy failed");
+  }
+
+  function enhanceCodeBlocks(scope) {
+    scope.querySelectorAll(".github-content pre").forEach((pre) => {
+      if (pre.parentElement?.classList.contains("community-code-block")) return;
+
+      const block = document.createElement("div");
+      block.className = "community-code-block";
+      const toolbar = document.createElement("div");
+      toolbar.className = "community-code-toolbar";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "community-code-copy";
+      button.textContent = "复制代码";
+
+      toolbar.appendChild(button);
+      pre.replaceWith(block);
+      block.append(toolbar, pre);
+
+      let resetTimer = 0;
+      button.addEventListener("click", async () => {
+        window.clearTimeout(resetTimer);
+        try {
+          // 代码块常放在折叠的 details 里，innerText 对隐藏元素返回空串，必须用 textContent。
+          await copyText(pre.textContent.replace(/\n$/, ""));
+          button.textContent = "已复制";
+          button.classList.add("is-copied");
+        } catch (error) {
+          console.warn("[SYUCT] 代码复制失败", error);
+          button.textContent = "复制失败，请手动选择";
+          button.classList.add("is-failed");
+        }
+        resetTimer = window.setTimeout(() => {
+          button.textContent = "复制代码";
+          button.classList.remove("is-copied", "is-failed");
+        }, 2000);
+      });
+    });
+  }
+
   function bindToggles(scope) {
     scope.querySelectorAll(".discussion-summary").forEach((button) => {
       button.addEventListener("click", () => {
@@ -225,21 +299,31 @@
     });
   }
 
+  function fillSection(container, section, posts, variant) {
+    if (!container) return;
+    if (posts.length) {
+      container.innerHTML = posts.map((post) => renderDiscussion(post, variant)).join("");
+      bindToggles(container);
+      enhanceCodeBlocks(container);
+      if (section) section.hidden = false;
+    } else {
+      container.innerHTML = "";
+      if (section) section.hidden = true;
+    }
+  }
+
   function renderData(data) {
     const pinned = Array.isArray(data?.pinned) ? data.pinned : [];
+    const featured = Array.isArray(data?.featured) ? data.featured : [];
     const recent = Array.isArray(data?.recent) ? data.recent : [];
 
-    if (pinned.length && pinnedContainer) {
-      pinnedSection.hidden = false;
-      pinnedContainer.innerHTML = pinned.map((post) => renderDiscussion(post, true)).join("");
-      bindToggles(pinnedContainer);
-    } else if (pinnedSection) {
-      pinnedSection.hidden = true;
-    }
+    fillSection(pinnedContainer, pinnedSection, pinned, "pinned");
+    fillSection(featuredContainer, featuredSection, featured, "featured");
 
     if (recent.length) {
-      recentContainer.innerHTML = recent.map((post) => renderDiscussion(post, false)).join("");
+      recentContainer.innerHTML = recent.map((post) => renderDiscussion(post, "recent")).join("");
       bindToggles(recentContainer);
+      enhanceCodeBlocks(recentContainer);
       emptyState.hidden = true;
     } else {
       recentContainer.innerHTML = "";

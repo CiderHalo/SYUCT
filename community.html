@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<meta content="SYUCT 校园社区阅读预览。每小时同步 GitHub Discussions 的置顶讨论、最近讨论与精选评论。" name="description"/>
+<meta content="SYUCT 校园社区阅读预览。每小时同步 GitHub Discussions 的置顶讨论、精选讨论与最近讨论。" name="description"/>
 <meta content="#075ca8" name="theme-color"/>
 <title>校园社区 · 沈阳化工大学校园指南（学生共创版）</title>
 <link href="assets/styles.css?rev=20260820" rel="stylesheet"/>
-<link href="assets/community.css?rev=20260820" rel="stylesheet"/>
+<link href="assets/community.css?rev=20260820-2" rel="stylesheet"/>
 <link href="assets/syuct-community-icon.png" rel="icon" type="image/png"/>
 <link href="assets/syuct-community-icon.png" rel="apple-touch-icon"/>
 </head>
@@ -41,7 +41,7 @@
 <div class="community-hero-copy">
 <div class="eyebrow">SYUCT COMMUNITY</div>
 <h1>校园社区</h1>
-<p>这里是 SYUCT GitHub 校园社区的静态阅读预览。系统每小时检查一次置顶讨论、最近活跃讨论与精选评论；发帖、回复、投票和点赞仍在 GitHub 原始社区完成。</p>
+<p>这里是 SYUCT GitHub 校园社区的静态阅读预览。系统每小时检查一次置顶讨论、精选讨论与最近活跃讨论；发帖、回复、投票和点赞仍在 GitHub 原始社区完成。</p>
 <div class="community-hero-actions">
 <a class="btn btn-blue" href="https://github.com/orgs/SYUCT/discussions" target="_blank" rel="noopener noreferrer">前往 GitHub 校园社区</a>
 </div>
@@ -55,7 +55,7 @@
 
 <section class="community-notice" aria-label="社区预览说明">
 <strong>阅读预览说明</strong>
-<p>本站缓存讨论正文，并展示热度最高的 5 条评论与时间最新的 5 条评论；两组重复评论只保留在热门评论中。若讨论包含 GitHub 托管图片，系统会尽量缓存到本站静态资源，减少国内网络环境下的加载失败。</p>
+<p>本站缓存讨论正文，并展示热度最高的 5 条评论与时间最新的 5 条评论；两组重复评论只保留在热门评论中。正文里的代码块右上角提供「复制代码」按钮，可直接复制完整内容。若讨论包含 GitHub 托管图片，系统会尽量缓存到本站静态资源，减少国内网络环境下的加载失败。</p>
 </section>
 
 <section class="section community-section" id="pinnedSection" hidden>
@@ -69,12 +69,23 @@
 <div class="discussion-list" id="communityPinned"></div>
 </section>
 
+<section class="section community-section" id="featuredSection" hidden>
+<div class="section-head community-section-head">
+<div>
+<div class="eyebrow">FEATURED</div>
+<h2>精选讨论</h2>
+<p class="section-lead">在 GitHub 上被打上「精选」标签的讨论。</p>
+</div>
+</div>
+<div class="discussion-list" id="communityFeatured"></div>
+</section>
+
 <section class="section community-section">
 <div class="section-head community-section-head">
 <div>
 <div class="eyebrow">RECENT</div>
 <h2>最近讨论</h2>
-<p class="section-lead">展示最近活跃的 10 个非置顶讨论，按最后更新时间排序。</p>
+<p class="section-lead">展示最近活跃的 10 个讨论，按最后更新时间排序，不含置顶与精选。</p>
 </div>
 </div>
 <div class="discussion-list" id="communityRecent"></div>
@@ -101,7 +112,7 @@
 
 <div class="search-overlay" id="searchOverlay"></div>
 <script defer src="assets/app.js?rev=20260820-community"></script>
-<script defer src="assets/community-markdown.js?rev=20260820"></script>
-<script defer src="assets/community.js?rev=20260820"></script>
+<script defer src="assets/community-markdown.js?rev=20260820-2"></script>
+<script defer src="assets/community.js?rev=20260820-2"></script>
 </body>
 </html>

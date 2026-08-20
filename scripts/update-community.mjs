@@ -14,6 +14,12 @@ const OWNER = process.env.COMMUNITY_OWNER || "SYUCT";
 const REPO = process.env.COMMUNITY_REPO || "SYUCT-web";
 const SOURCE_URL = "https://github.com/orgs/SYUCT/discussions";
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || "";
+const FEATURED_LABELS = new Set(
+  (process.env.COMMUNITY_FEATURED_LABELS || "精选,featured")
+    .split(",")
+    .map((name) => name.trim().toLowerCase())
+    .filter(Boolean)
+);
 const MAX_RECENT = 10;
 const MAX_PINNED_QUERY = 100;
 const RECENT_QUERY_COUNT = 50;
@@ -68,7 +74,8 @@ const DISCUSSION_FIELDS = `
   closed
   upvoteCount
   author { login }
-  category { name emoji }
+  category { name emoji emojiHTML }
+  labels(first: 20) { nodes { name } }
   comments { totalCount }
   poll {
     question
@@ -228,6 +235,20 @@ function normalizePoll(poll) {
   };
 }
 
+function categoryEmoji(category) {
+  // emoji 只返回 :mega: 这样的短代码，emojiHTML 里才有真正的字符。
+  const fromHtml = String(category?.emojiHTML || "").replace(/<[^>]*>/g, "").replace(/["']/g, "").trim();
+  return fromHtml || category?.emoji || "";
+}
+
+function discussionLabels(discussion) {
+  return (discussion.labels?.nodes || []).map((node) => node?.name).filter(Boolean);
+}
+
+function isFeatured(discussion) {
+  return discussionLabels(discussion).some((name) => FEATURED_LABELS.has(String(name).toLowerCase()));
+}
+
 function normalizeDiscussion(discussion, comments) {
   return {
     id: discussion.id,
@@ -237,8 +258,9 @@ function normalizeDiscussion(discussion, comments) {
     author: discussion.author?.login || "ghost",
     category: {
       name: discussion.category?.name || "",
-      emoji: discussion.category?.emoji || ""
+      emoji: categoryEmoji(discussion.category)
     },
+    labels: discussionLabels(discussion),
     bodyHTML: discussion.bodyHTML || "",
     createdAt: discussion.createdAt,
     updatedAt: discussion.updatedAt,
@@ -374,6 +396,7 @@ function comparablePayload(payload) {
     source: payload.source,
     repository: payload.repository,
     pinned: payload.pinned,
+    featured: payload.featured,
     recent: payload.recent
   };
 }
@@ -404,11 +427,14 @@ async function buildCommunityMirror() {
     .map((node) => node.discussion)
     .filter(Boolean);
   const pinnedIds = new Set(pinnedRaw.map((item) => item.id));
-  const recentRaw = (index.repository.discussions?.nodes || [])
-    .filter((item) => !pinnedIds.has(item.id))
+  const allDiscussions = index.repository.discussions?.nodes || [];
+  const featuredRaw = allDiscussions.filter((item) => !pinnedIds.has(item.id) && isFeatured(item));
+  const featuredIds = new Set(featuredRaw.map((item) => item.id));
+  const recentRaw = allDiscussions
+    .filter((item) => !pinnedIds.has(item.id) && !featuredIds.has(item.id))
     .slice(0, MAX_RECENT);
 
-  const selected = [...pinnedRaw, ...recentRaw];
+  const selected = [...pinnedRaw, ...featuredRaw, ...recentRaw];
   const posts = [];
   for (const discussion of selected) {
     const comments = await fetchAllComments(discussion.number);
@@ -417,26 +443,28 @@ async function buildCommunityMirror() {
 
   const byId = new Map(posts.map((post) => [post.id, post]));
   const pinned = pinnedRaw.map((item) => byId.get(item.id)).filter(Boolean);
+  const featured = featuredRaw.map((item) => byId.get(item.id)).filter(Boolean);
   const recent = recentRaw.map((item) => byId.get(item.id)).filter(Boolean);
 
   const usedPaths = new Set();
   await fs.mkdir(MEDIA_ROOT, { recursive: true });
-  for (const post of [...pinned, ...recent]) {
+  for (const post of [...pinned, ...featured, ...recent]) {
     await mirrorDiscussionMedia(post, usedPaths);
   }
   await removeUnusedMedia(usedPaths);
 
   const payload = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     source: SOURCE_URL,
     repository: index.repository.nameWithOwner,
     generatedAt: new Date().toISOString(),
     pinned,
+    featured,
     recent
   };
 
   const changed = await writePayloadIfChanged(payload);
-  console.log(`Pinned: ${pinned.length}; recent: ${recent.length}; GraphQL cost: ${index.rateLimit?.cost ?? "?"}; remaining: ${index.rateLimit?.remaining ?? "?"}`);
+  console.log(`Pinned: ${pinned.length}; featured: ${featured.length}; recent: ${recent.length}; GraphQL cost: ${index.rateLimit?.cost ?? "?"}; remaining: ${index.rateLimit?.remaining ?? "?"}`);
   console.log(changed ? "Community mirror updated." : "No community content changes.");
 }
 
@@ -462,6 +490,16 @@ function selfTest() {
   assert(selected.latest.every((item) => !hotIds.has(item.id)), "self-test: latest must not duplicate hot");
   assert(isGithubHostedImage("https://user-images.githubusercontent.com/a/b.png"), "self-test: GitHub image host should be accepted");
   assert(!isGithubHostedImage("https://example.com/a.png"), "self-test: arbitrary image host should not be mirrored");
+
+  assert(categoryEmoji({ emoji: ":mega:", emojiHTML: "<div>📣</div>" }) === "📣", "self-test: emojiHTML must win over the shortcode");
+  assert(categoryEmoji({ emoji: ":mega:" }) === ":mega:", "self-test: shortcode is the fallback when emojiHTML is missing");
+
+  const featuredFixture = { labels: { nodes: [{ name: "精选" }, { name: "bug" }] } };
+  assert(isFeatured(featuredFixture), "self-test: the 精选 label must mark a discussion as featured");
+  assert(isFeatured({ labels: { nodes: [{ name: "Featured" }] } }), "self-test: featured label matching must ignore case");
+  assert(!isFeatured({ labels: { nodes: [{ name: "question" }] } }), "self-test: unrelated labels must not mark a discussion as featured");
+  assert(!isFeatured({}), "self-test: a discussion without labels must not be featured");
+
   console.log("Community mirror self-test passed.");
 }
 
