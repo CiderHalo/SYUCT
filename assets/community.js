@@ -193,7 +193,6 @@
     const body = renderPostBody(post);
     const meta = [
       `@${post.author || "ghost"}`,
-      category || "讨论",
       `更新 ${formatRelative(post.updatedAt)}`,
       `${commentCount} 条评论`,
       `${upvoteCount} 赞同`
