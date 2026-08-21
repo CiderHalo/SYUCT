@@ -6,13 +6,32 @@
   <meta name="description" content="沈阳化工大学校园网页课表本地转换工具：复制完整课表，在浏览器本地识别并生成 SYUCT-TT2 课表码供 SYUCT-mini 导入。">
   <meta name="theme-color" content="#075ca8">
   <title>化大课表转换 · 沈阳化工大学校园指南（学生共创版）</title>
-  <link href="assets/styles.css?rev=20260818" rel="stylesheet">
-  <link href="assets/timetable-converter.css?rev=20260818" rel="stylesheet">
-  <link href="assets/syuct-community-icon.png" rel="icon" type="image/png">
-  <link href="assets/syuct-community-icon.png" rel="apple-touch-icon">
+  <link href="assets/styles.css?rev=20260821" rel="stylesheet">
+  <link href="assets/timetable-converter.css?rev=20260821" rel="stylesheet">
+  <link href="assets/favicon-32.png" rel="icon" type="image/png" sizes="32x32">
+  <link href="assets/apple-touch-icon.png" rel="apple-touch-icon">
 </head>
 <body data-page="timetable-converter.html">
-  <header class="topbar" id="topbar"></header>
+  <header class="topbar" id="topbar">
+    <button class="icon-btn menu-btn" id="menuBtn" aria-label="打开菜单">☰</button>
+    <a class="brand" href="index.html" aria-label="返回首页">
+      <span class="brand-mark brand-mark-logo"><img src="assets/optimized/syuct-community-icon.webp" alt="沈化校园指南学生共创图标" width="96" height="96" decoding="async"></span>
+      <span class="brand-name brand-name-desktop">沈阳化工大学校园指南（学生共创版）</span>
+      <span class="brand-name brand-name-mobile">沈化大校园指南</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="themeBtn" aria-label="切换深浅色">◐</button>
+      <button class="topbar-search" id="searchBtn" aria-label="打开站内搜索"><span>⌕</span><span class="topbar-search-label">搜索校园资料</span><kbd>Ctrl K</kbd></button>
+      <div class="quick-links" id="quickLinks">
+        <button class="icon-btn quick-links-button" id="quickLinksButton" type="button" aria-label="打开快捷链接" aria-haspopup="menu" aria-expanded="false"><span aria-hidden="true">⋯</span></button>
+        <div class="quick-links-menu" id="quickLinksMenu" role="menu" aria-label="快捷链接">
+          <a href="https://www.syuct.edu.cn/" target="_blank" rel="noreferrer" role="menuitem"><span><strong>学校官网</strong><small>沈阳化工大学官方网站</small></span></a>
+          <a href="https://github.com/SYUCT/SYUCT-web" target="_blank" rel="noreferrer" role="menuitem"><span><strong>GitHub 仓库</strong><small>查看源码与更新记录</small></span></a>
+        </div>
+      </div>
+    </div>
+  </header>
   <aside class="sidebar" id="sidebar"></aside>
   <div class="backdrop" id="backdrop"></div>
 
@@ -22,12 +41,22 @@
         <header class="article-header tt-hero">
           <div class="breadcrumb">首页 / 办事大厅 / 化大课表转换</div>
           <h1>化大课表转换</h1>
-          <p>教程：电脑打开教务处找到你得班级课表，鼠标选中左上角时间单元格，一直拖到整个页面右下角，键盘ctrl+C，复制完整课表，在本页进行识别并生成 <strong>SYUCT-TT2</strong> 课表码，将课表码发送到手机，在小程序课表页面处导入。</p>
+          <p>在电脑上把教务处课表整页复制过来，本页离线识别后生成 <strong>SYUCT-TT2</strong> 课表码，发到手机即可在小程序导入。</p>
           <div class="tt-flow" aria-label="课表转换流程">
-            <div class="tt-flow-step"><b>1</b><span>打开电脑端教务处网页复制完整课表</span></div>
-            <div class="tt-flow-step"><b>2</b><span>在本页面粘贴并识别课程安排</span></div>
-            <div class="tt-flow-step"><b>3</b><span>生成并复制 SYUCT-TT2专用课表码</span></div>
-            <div class="tt-flow-step"><b>4</b><span>发到微信，复制后在SH小程序内导入</span></div>
+            <div class="tt-flow-step"><b>1</b><span>电脑端教务处复制完整课表</span></div>
+            <div class="tt-flow-step"><b>2</b><span>粘贴到本页并识别</span></div>
+            <div class="tt-flow-step"><b>3</b><span>生成并复制课表码</span></div>
+            <div class="tt-flow-step"><b>4</b><span>发到微信，在小程序导入</span></div>
+          </div>
+          <div class="tt-guide-card">
+            <div class="tt-guide-copy">
+              <strong>看不懂？带截图的图文教程</strong>
+              <span>6 页 PDF，逐步演示从复制课表到小程序导入，含常见问题。</span>
+            </div>
+            <div class="tt-guide-actions">
+              <a class="tt-button tt-button-primary" href="pdf-viewer.html?file=docs/timetable-converter-guide.pdf&amp;title=%E5%8C%96%E5%A4%A7%E8%AF%BE%E8%A1%A8%E8%BD%AC%E6%8D%A2%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E" target="_blank" rel="noreferrer">打开图文教程</a>
+              <a class="tt-button tt-button-secondary" href="docs/timetable-converter-guide.pdf" download>下载 PDF</a>
+            </div>
           </div>
           <div class="tt-privacy"><strong>隐私说明：</strong>课表转换全部在浏览器本地完成，课程、教师、教室等信息不会上传。公益项目没租服务器，偷不了你信息</div>
         </header>
@@ -35,7 +64,7 @@
         <section class="tt-section" id="recognize">
           <div class="tt-section-head">
             <h2>1. 粘贴并识别课表</h2>
-            <p>请在电脑端教务处网页中选取整个课表后复制，再粘贴到下面。不要在其他的地方复制，会丢失原页面格式。</p>
+            <p>必须在电脑端教务处原页面复制，从左上角「时间」拖选到页面右下角。经微信、QQ 转发后会丢失格式，导致星期错位。</p>
           </div>
           <label class="tt-label" for="rawTimetable">教务处课表复制内容</label>
           <textarea id="rawTimetable" class="tt-textarea" spellcheck="false" autocomplete="off" placeholder="在这里粘贴从校园网页复制的完整课表……"></textarea>
@@ -106,7 +135,7 @@
 
   <div class="search-overlay" id="searchOverlay"></div>
   <div aria-hidden="true" class="lightbox" id="lightbox"></div>
-  <script defer src="assets/app.js?rev=20260818"></script>
+  <script defer src="assets/app.js?rev=20260821"></script>
   <script defer src="assets/timetable-campus-parser.js?rev=20260818f"></script>
   <script defer src="assets/timetable-codec.js?rev=20260818"></script>
   <script defer src="assets/timetable-converter.js?rev=20260818f"></script>

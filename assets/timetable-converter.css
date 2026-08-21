@@ -19,6 +19,12 @@
 .tt-button-primary{color:#fff;background:linear-gradient(100deg,var(--primary-dark),var(--primary),var(--primary-2))}
 .tt-button-secondary{color:var(--primary);border-color:color-mix(in srgb,var(--primary) 35%,var(--border));background:var(--surface-2)}
 .tt-button:disabled{cursor:not-allowed;opacity:.48}
+.tt-guide-card{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin:18px 0 0;padding:15px 17px;border:1px solid color-mix(in srgb,var(--primary) 26%,var(--border));border-radius:14px;background:color-mix(in srgb,var(--primary) 6%,var(--surface))}
+.tt-guide-copy{min-width:min(100%,240px);flex:1 1 260px}
+.tt-guide-copy strong{display:block;font-size:15px}
+.tt-guide-copy span{display:block;margin-top:3px;color:var(--muted);font-size:13px;line-height:1.55}
+.tt-guide-actions{display:flex;flex-wrap:wrap;gap:10px}
+.tt-guide-actions .tt-button{display:inline-flex;align-items:center;text-decoration:none}
 .tt-privacy{margin:18px 0 0;padding:14px 16px;border-left:4px solid var(--primary);border-radius:10px;background:var(--surface-2);font-size:14px}
 .tt-status{margin:18px 0 0;padding:14px 16px;border:1px solid var(--border);border-radius:13px;background:var(--surface-2)}
 .tt-status strong{display:block;margin-bottom:2px}
@@ -59,6 +65,8 @@
   .tt-settings{grid-template-columns:1fr}
   .tt-field:first-child{grid-column:auto}
   .tt-button{min-height:44px}
+  .tt-guide-actions{width:100%}
+  .tt-guide-actions .tt-button{flex:1 1 140px;justify-content:center}
   .tt-footer{flex-direction:column}
 }
 @media(max-width:420px){
