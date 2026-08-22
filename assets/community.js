@@ -199,17 +199,17 @@
     ];
 
     return `<article class="discussion-card${isPinned ? " is-pinned" : ""}${isFeatured ? " is-featured" : ""}">
-      <button class="discussion-summary" type="button" aria-expanded="false" aria-controls="${id}">
+      <button class="discussion-summary" type="button" aria-expanded="false" aria-controls="${id}" aria-label="展开或收起：${escapeHtml(emojify(post.title))}">
         <span class="discussion-heading">
-          <span class="discussion-badges">
+          <span class="discussion-title">${escapeHtml(emojify(post.title))}</span>
+          <span class="discussion-meta">
             ${isPinned ? `<span class="discussion-badge pinned">置顶</span>` : ""}
             ${isFeatured ? `<span class="discussion-badge featured">精选</span>` : ""}
             ${category ? `<span class="discussion-badge">${escapeHtml(category)}</span>` : ""}
+            ${meta.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
           </span>
-          <span class="discussion-title">${escapeHtml(emojify(post.title))}</span>
-          <span class="discussion-meta">${meta.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</span>
         </span>
-        <span class="discussion-toggle">展开内容</span>
+        <span class="discussion-toggle" aria-hidden="true"></span>
       </button>
       <div class="discussion-content" id="${id}" hidden>
         <div class="discussion-body">
@@ -284,6 +284,41 @@
     });
   }
 
+  // 正文和评论区都可能很长（实测最长单条正文近 3000px），超过阈值就先折叠，
+  // 只有真正超高时才显示展开按钮，避免只多两行也要点一下。
+  const COLLAPSE_MAX_HEIGHT = 420;
+  const COLLAPSE_SLACK = 90;
+
+  function setupCollapse(region, labels) {
+    if (!region || region.dataset.collapseReady === "1") return;
+    const full = region.scrollHeight;
+    if (full <= COLLAPSE_MAX_HEIGHT + COLLAPSE_SLACK) {
+      region.dataset.collapseReady = "1";
+      return;
+    }
+
+    region.classList.add("is-collapsible", "is-collapsed");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "community-expand";
+    button.setAttribute("aria-expanded", "false");
+    button.textContent = labels.expand;
+    region.insertAdjacentElement("afterend", button);
+
+    button.addEventListener("click", () => {
+      const expanding = !button.matches('[aria-expanded="true"]');
+      button.setAttribute("aria-expanded", String(expanding));
+      region.classList.toggle("is-collapsed", !expanding);
+      button.textContent = expanding ? labels.collapse : labels.expand;
+      if (!expanding) {
+        const top = region.getBoundingClientRect().top;
+        if (top < 0) region.scrollIntoView({ block: "start" });
+      }
+    });
+
+    region.dataset.collapseReady = "1";
+  }
+
   function bindToggles(scope) {
     scope.querySelectorAll(".discussion-summary").forEach((button) => {
       button.addEventListener("click", () => {
@@ -292,8 +327,14 @@
         const opening = button.getAttribute("aria-expanded") !== "true";
         button.setAttribute("aria-expanded", String(opening));
         target.hidden = !opening;
-        const label = button.querySelector(".discussion-toggle");
-        if (label) label.textContent = opening ? "收起内容" : "展开内容";
+        if (!opening) return;
+        // 只能在展开后测量，隐藏元素的 scrollHeight 为 0。
+        setupCollapse(target.querySelector(".discussion-body"), {
+          expand: "展开全文", collapse: "收起正文"
+        });
+        setupCollapse(target.querySelector(".discussion-comments"), {
+          expand: "展开全部评论", collapse: "收起评论"
+        });
       });
     });
   }

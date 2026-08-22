@@ -1,37 +1,53 @@
 .community-main{padding-bottom:36px}
-.community-hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.6fr);gap:24px;align-items:stretch;margin:34px 0 28px;padding:42px;border:1px solid var(--border);border-radius:28px;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 11%,var(--surface)),var(--surface) 58%,color-mix(in srgb,var(--accent) 9%,var(--surface)));box-shadow:0 18px 46px rgba(15,58,91,.08)}
-.community-hero h1{margin:0;font-size:clamp(38px,6vw,64px);line-height:1.05;letter-spacing:-.045em}
-.community-hero p{max-width:760px;margin:16px 0 0;color:var(--muted);font-size:16px;line-height:1.85}
-.community-hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
-.community-sync-card{display:flex;min-height:170px;flex-direction:column;justify-content:center;padding:24px;border:1px solid color-mix(in srgb,var(--primary) 25%,var(--border));border-radius:20px;background:color-mix(in srgb,var(--surface) 88%,var(--primary));box-shadow:0 10px 28px rgba(15,58,91,.07)}
+.community-hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.6fr);gap:24px;align-items:stretch;margin:24px 0 18px;padding:32px 34px;border:1px solid var(--border);border-radius:24px;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 11%,var(--surface)),var(--surface) 58%,color-mix(in srgb,var(--accent) 9%,var(--surface)));box-shadow:0 18px 46px rgba(15,58,91,.08)}
+.community-hero h1{margin:0;font-size:clamp(32px,5vw,50px);line-height:1.08;letter-spacing:-.04em}
+.community-hero p{max-width:760px;margin:12px 0 0;color:var(--muted);font-size:15px;line-height:1.72}
+.community-hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+.community-sync-card{display:flex;min-height:auto;flex-direction:column;justify-content:center;padding:20px;border:1px solid color-mix(in srgb,var(--primary) 25%,var(--border));border-radius:18px;background:color-mix(in srgb,var(--surface) 88%,var(--primary));box-shadow:0 10px 28px rgba(15,58,91,.07)}
 .community-sync-label{color:var(--primary);font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
-.community-sync-card strong{margin-top:10px;font-size:20px;line-height:1.4}
-.community-sync-card small{margin-top:8px;color:var(--muted);line-height:1.6}
+.community-sync-card strong{margin-top:8px;font-size:18px;line-height:1.4}
+.community-sync-card small{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.55}
 
-.community-notice{margin:0 0 56px;padding:20px 22px;border:1px solid color-mix(in srgb,var(--primary) 18%,var(--border));border-radius:18px;background:var(--surface-2)}
-.community-notice strong{font-size:15px}
-.community-notice p{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.8}
+/* 阅读说明收成一行可点开的小字，正文默认不占首屏高度。 */
+.community-notice{margin:0 0 26px;padding:0;border:1px solid color-mix(in srgb,var(--primary) 18%,var(--border));border-radius:12px;background:var(--surface-2)}
+.community-notice summary{padding:10px 16px;color:var(--muted);font-size:13px;font-weight:800;cursor:pointer;list-style:none}
+.community-notice summary::-webkit-details-marker{display:none}
+.community-notice summary::after{content:" ▾";color:var(--primary)}
+.community-notice[open] summary::after{content:" ▴"}
+.community-notice p{margin:0;padding:0 16px 12px;color:var(--muted);font-size:13px;line-height:1.75}
 
-.community-section{margin-top:56px}
-.community-section-head{margin-bottom:18px}
+.community-section{margin-top:34px}
+.community-section-head{margin-bottom:14px}
 .discussion-list{display:grid;gap:14px}
 .discussion-card{overflow:hidden;border:1px solid var(--border);border-radius:20px;background:var(--surface);box-shadow:0 10px 28px rgba(15,58,91,.055)}
 .discussion-card.is-pinned{border-color:color-mix(in srgb,var(--accent) 34%,var(--border))}
 .discussion-card.is-featured{border-color:color-mix(in srgb,var(--primary) 34%,var(--border))}
-.discussion-summary{display:grid;width:100%;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;padding:22px 24px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+.discussion-summary{display:grid;width:100%;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:15px 20px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
 .discussion-summary:hover{background:color-mix(in srgb,var(--primary) 4%,transparent)}
 .discussion-summary:focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 32%,transparent);outline-offset:-3px}
 .discussion-heading{min-width:0}
-.discussion-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
-.discussion-badge{display:inline-flex;align-items:center;min-height:25px;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-size:12px;font-weight:800}
+.discussion-badge{display:inline-flex;align-items:center;min-height:22px;padding:1px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-size:12px;font-weight:800}
 .discussion-badge.pinned{background:color-mix(in srgb,var(--accent) 15%,var(--surface));color:color-mix(in srgb,var(--accent) 78%,var(--text))}
 .discussion-badge.featured{background:color-mix(in srgb,var(--primary) 14%,var(--surface));color:color-mix(in srgb,var(--primary) 82%,var(--text))}
-.discussion-title{display:block;font-size:20px;font-weight:900;line-height:1.4;overflow-wrap:anywhere}
-.discussion-meta{display:flex;flex-wrap:wrap;gap:7px 14px;margin-top:8px;color:var(--muted);font-size:12px;line-height:1.5}
-.discussion-toggle{display:inline-flex;min-width:74px;align-items:center;justify-content:center;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);color:var(--primary);font-size:13px;font-weight:900}
-.discussion-content{border-top:1px solid var(--border);padding:0 24px 24px}
+.discussion-title{display:block;font-size:17px;font-weight:900;line-height:1.4;overflow-wrap:anywhere}
+/* 徽章与作者、时间等元信息同处一行，卡头从 131px 压到约 88px。 */
+.discussion-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:6px;color:var(--muted);font-size:12px;line-height:1.5}
+.discussion-toggle{position:relative;width:30px;height:30px;flex:0 0 30px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2)}
+.discussion-toggle::before{content:"";position:absolute;top:50%;left:50%;width:7px;height:7px;margin:-5px 0 0 -4px;border-right:2px solid var(--primary);border-bottom:2px solid var(--primary);transform:rotate(45deg);transition:transform .18s ease}
+.discussion-summary[aria-expanded="true"] .discussion-toggle::before{transform:rotate(-135deg);margin-top:-2px}
+.discussion-content{border-top:1px solid var(--border);padding:0 20px 20px}
 .discussion-content[hidden]{display:none}
-.discussion-body{padding:24px 0 4px}
+.discussion-body{padding:18px 0 4px}
+
+/* 超长正文/评论先折叠，底部渐隐提示还有内容。 */
+.is-collapsible{position:relative}
+.is-collapsed{max-height:420px;overflow:hidden}
+.is-collapsed::after{content:"";position:absolute;inset:auto 0 0 0;height:110px;background:linear-gradient(to bottom,transparent,var(--surface) 88%);pointer-events:none}
+.community-expand{display:inline-flex;align-items:center;gap:6px;margin-top:10px;min-height:34px;padding:5px 14px;border:1px solid color-mix(in srgb,var(--primary) 30%,var(--border));border-radius:10px;background:var(--surface-2);color:var(--primary);font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.community-expand:hover{background:color-mix(in srgb,var(--primary) 8%,var(--surface))}
+.community-expand:focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 32%,transparent);outline-offset:2px}
+.community-expand::after{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-1px)}
+.community-expand[aria-expanded="true"]::after{transform:rotate(-135deg) translateY(-1px)}
 
 .github-content{color:var(--text);font-size:15px;line-height:1.82;overflow-wrap:anywhere}
 .github-content>*:first-child{margin-top:0}
@@ -99,11 +115,11 @@ html[data-theme="dark"] .comment-tag{color:#8fe0aa}
   .community-hero h1{font-size:40px}
   .community-hero p{font-size:14px}
   .community-hero-actions .btn{width:100%}
-  .community-notice{margin-bottom:40px}
-  .discussion-summary{grid-template-columns:1fr;gap:14px;padding:18px}
-  .discussion-toggle{justify-self:start}
-  .discussion-content{padding:0 18px 18px}
-  .discussion-title{font-size:18px}
+  .community-notice{margin-bottom:32px}
+  /* 箭头保持在标题右侧，不另起一行。 */
+  .discussion-summary{gap:12px;padding:14px 16px}
+  .discussion-content{padding:0 16px 16px}
+  .discussion-title{font-size:16px}
   .discussion-footer{align-items:stretch;flex-direction:column}
   .discussion-github-button{width:100%}
   .comment-stats{width:100%;margin-left:0}
