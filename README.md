@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/syuct-community-icon.png" alt="沈化大校园指南学生共创图标" width="112" />
+<img src="assets/optimized/syuct-community-icon.webp" alt="沈化大校园指南学生共创图标" width="112" />
 
 # 沈阳化工大学校园指南（学生共创版）
 
@@ -8,9 +8,9 @@
 
 把分散的新生通知、校园地图、学业资料、办事表格和校园经验，整理成一条更容易查找的路径。
 
-**当前版本：v260817** · **42 份资料** · **22 份 Office 本地预览** · **4 张实用导航地图** · **1 个官方校园全景** · **13 张校园实景照片**
+**当前版本：v260822** · **44 份资料** · **22 份 Office 本地预览** · **4 张实用导航地图** · **1 个官方校园全景** · **12 张校园实景照片**
 
-[访问主站](https://www.syuct.top/) · [GitHub Pages 备用入口](https://syuct.github.io/SYUCT-web/) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html)
+[访问主站](https://www.syuct.top/) · [GitHub Pages 备用入口](https://syuct.github.io/SYUCT-web/) · [校园社区](https://www.syuct.top/community.html) · [资料下载](https://www.syuct.top/resources.html) · [参与共建](https://www.syuct.top/about.html)
 
 </div>
 
@@ -30,15 +30,17 @@
 | 备用站 | <https://syuct.github.io/SYUCT-web/> | GitHub Pages 备用入口 |
 | 源码仓库 | <https://github.com/SYUCT/SYUCT-web> | 查看源码、提交 Issue 或 Pull Request |
 
-## v260817 更新
+## v260822 更新
 
-- **版本号规则调整。** 从本版本起，网页版本统一使用 `vYYMMDD` 日期格式；本次版本为 `v260817`。
-- **仓库迁移信息同步。** 项目仓库统一指向 `SYUCT/SYUCT-web`，GitHub Pages 备用入口同步改为 `syuct.github.io/SYUCT-web/`。
-- **资料下载移动端筛选栏优化。** 分类筛选保持单行横向滑动，避免多行占据半屏，同时恢复更合适的按钮高度、字号和点击面积。
-- **相关入口更新。** “关于共建”等页面中的项目 GitHub 地址切换到组织仓库，并补充 SYUCT 学生团队组织入口。
-- **继续保持固定静态资源文件名。** CSS、JavaScript 等资源仍采用覆盖更新；`rev` 仅用于浏览器/CDN 缓存失效，不作为网页版本号。
+- **校园社区阅读镜像。** 新增 `community.html`，每小时同步 GitHub Discussions 的置顶讨论、`精选` 标签讨论与最近讨论，正文直接采用 GitHub 渲染结果，代码块支持一键复制，分类 emoji 转为 Unicode 显示。
+- **化大课表转换教程重构。** 页面小字教程精简为一句话概述加四步流程，完整图文步骤改由 6 页 PDF 承载，可在站内 `pdf-viewer.html` 预览或直接下载。
+- **站点图标按用途拆分尺寸。** `favicon-32.png`（3 KB）用于标签页图标，`apple-touch-icon.png` 用于 iOS 添加到主屏，顶栏品牌图改为 96px WebP；原先各页面直接引用 86 KB 原图。
+- **首页主视觉改用 WebP。** 主视觉是 CSS 背景图且盖有深色渐变，改用 `image-set()` 加载 1280px WebP，单张省约 228 KB，不支持的浏览器回退原 JPG。
+- **课表转换页顶栏内联。** 该页原本是全站唯一依赖 `app.js` 运行时渲染顶栏的页面，首屏需等脚本执行；现与其他页面统一内联。
 
-完整版本记录见 [`project-docs/updates/README.md`](project-docs/updates/README.md)。
+以上改动使课表页总传输从 288 KB 降到约 150 KB。站点在 EdgeOne 开启 HTTP/2 后，TLS 握手从 12 次降到 1 次，整页完成时间从约 6.0 秒降到约 2.6 秒。
+
+完整版本记录见 [`project-docs/updates/README.md`](project-docs/updates/README.md)；性能相关的实测数据与维护规则见 [`project-docs/maintenance/static-performance.md`](project-docs/maintenance/static-performance.md)。
 
 ## 主要栏目
 
@@ -48,8 +50,9 @@
 | 校园地图 | 高清校园总图、快递取件导航、体育课专用地图与官方校园全景 |
 | 数字校园 | 统一身份认证、校园网络、WebVPN、CARSI 和电子资源 |
 | 学业资料 | 培养方案、选修要求、微专业、创新竞赛、开放实验室和课程资料 |
-| 办事大厅 | 学籍修改、缓考、监控调阅、奖学金、毕业和论文相关流程 |
+| 办事大厅 | 学籍修改、缓考、监控调阅、奖学金、毕业和论文相关流程，以及化大课表转换 |
 | 校园生活 | 校历、体育保健、假期留校、图书馆、学生管理规定和校园相册 |
+| 校园社区 | GitHub Discussions 的静态阅读镜像：置顶讨论、精选讨论与最近讨论 |
 | 资料下载 | PDF、Word、Excel 等资料的分类下载与在线预览 |
 | 关于共建 | 投稿、纠错、版权说明、QQ 交流群和项目维护信息 |
 
@@ -70,6 +73,9 @@
 - Word、Excel 支持本站本地转换预览，原文件仍可直接下载
 - 首页校园实景预览可一键跳转到完整校园相册
 - 首页可显示 GitHub 项目 Star / Fork；网页只读取 `assets/github-stats.json`，统计由 GitHub Actions 定时更新
+- 校园社区为 GitHub Discussions 的只读镜像，发帖与回复仍在 GitHub 完成
+- 化大课表转换全部在浏览器本地完成，课表内容不会上传服务器
+- 图片按显示尺寸提供 WebP 版本，原图保留用于高清查看；站点图标按用途拆分尺寸
 
 ## 项目结构
 
@@ -79,41 +85,50 @@ SYUCT-web/
 │   └── workflows/
 │       ├── vendor-pdfjs.yml           # 自动维护本地 PDF.js
 │       ├── build-office-previews.yml  # 自动转换 Word / Excel 预览
-│       └── update-github-stats.yml    # 定时更新 Star / Fork 静态统计
+│       ├── update-community.yml       # 每小时同步 GitHub Discussions 镜像
+│       ├── update-github-stats.yml    # 定时更新 Star / Fork 静态统计
+│       └── static-performance-audit.yml # 静态资源与课表转换回归检查
 ├── assets/
 │   ├── icons/                         # 全站导航与入口 SVG 图标
+│   ├── optimized/                     # 网页显示用 WebP（原图仍保留）
 │   ├── pdfjs/                         # GitHub Actions 写入的 PDF.js 运行文件
+│   ├── community-media/               # 社区讨论正文图片的本地缓存
 │   ├── office-preview-manifest.json   # Office 原文件与预览 PDF 映射
 │   ├── github-stats.json              # GitHub Star / Fork 静态统计
+│   ├── community.json                 # 社区镜像数据（由工作流生成）
 │   ├── app.js                         # 全站交互、搜索与 Office 预览按钮
 │   ├── styles.css                     # 全站样式
 │   ├── group-community.css            # 交流群双卡片与加群弹窗补充样式
+│   ├── community.js / community.css   # 校园社区阅读镜像
+│   ├── community-markdown.js          # 社区正文兜底渲染与 emoji 转换
+│   ├── timetable-*.js / .css          # 化大课表转换解析、编解码与页面逻辑
 │   ├── pdf-viewer.js                  # PDF 阅读器入口
 │   ├── pdf-viewer.css                 # PDF 阅读器样式
-│   ├── syuct-community-icon.png       # 学生共创图标与 favicon
+│   ├── syuct-community-icon.png       # 学生共创图标原图（各尺寸图标的生成源）
+│   ├── favicon-32.png                 # 标签页图标
+│   ├── apple-touch-icon.png           # iOS 添加到主屏图标
 │   ├── campus-panorama-cover.jpg      # 官方全景点击加载前的本地航拍封面
-│   ├── landmark-motto-stone.png       # 校训石地标插画
-│   ├── landmark-dragon-gate.png       # 龙门地标插画
-│   ├── landmark-library.png           # 图书馆地标插画
-│   ├── landmark-huaide-square.png     # 槐德广场地标插画
-│   ├── landmark-old-school-gate.png   # 老校门地标插画
-│   ├── landmark-chemical-pyramid.png  # 化学金字塔地标插画
+│   ├── landmark-*.png                 # 校训石、龙门、图书馆等校园地标插画
 │   ├── campus-map.jpg                 # 高清校园地图
 │   ├── sports-map.png                 # 体育课专用地图
 │   ├── delivery-pickup-overview.png   # 快递取件位置总览图
 │   ├── delivery-haochijie-layout.png  # 化大好吃街内部快递点位图
+│   ├── hero-campus.jpg                # 首页主视觉原图
 │   └── gallery-*.jpg                  # 校园相册图片
 ├── docs/                              # PDF、Word、Excel 等原始资料
-│   └── previews/                      # Word、Excel 转换后的本地 PDF 预览
+│   ├── previews/                      # Word、Excel 转换后的本地 PDF 预览
+│   └── timetable-converter-guide.pdf  # 化大课表转换图文教程
 ├── project-docs/
 │   ├── updates/                       # 各版本更新记录
-│   │   ├── README.md                  # 版本索引
-│   │   ├── UPDATE-v1.28.md            # 快递取件导航更新报告
-│   │   └── UPDATE-v1.29.md            # 全景按需加载与 QQ 加群弹窗更新报告
-│   └── maintenance/                   # PDF.js 等维护说明
+│   │   └── README.md                  # 版本索引
+│   └── maintenance/                   # PDF.js、社区镜像与性能维护说明
 ├── scripts/
 │   ├── vendor-pdfjs.mjs               # PDF.js 本地化脚本
-│   └── build-office-previews.py       # Word、Excel 转本地 PDF
+│   ├── build-office-previews.py       # Word、Excel 转本地 PDF
+│   ├── build-web-images.py            # 生成 WebP 显示版本与各尺寸图标
+│   ├── audit-static-assets.py         # 静态资源性能检查
+│   └── update-community.mjs           # 拉取 GitHub Discussions 生成社区镜像
+├── tests/                             # 课表转换回归测试
 ├── index.html                         # 首页
 ├── freshman.html                      # 新生入学
 ├── map.html                           # 校园地图、快递取件、体育课与官方全景
@@ -121,10 +136,13 @@ SYUCT-web/
 ├── academics.html                     # 学业资料
 ├── services.html                      # 办事大厅
 ├── campus.html                        # 校园生活与完整相册
+├── community.html                     # 校园社区阅读镜像
 ├── resources.html                     # 资料下载
 ├── about.html                         # 关于共建
+├── timetable-converter.html           # 化大课表转换
 ├── pdf-viewer.html                    # PDF 在线阅读页
 ├── 404.html
+├── edgeone.json                       # EdgeOne Pages 缓存头配置
 └── package.json                       # 固定 PDF.js 版本与维护命令
 ```
 
@@ -133,11 +151,30 @@ SYUCT-web/
 全站 JavaScript、CSS 和图片资源保持固定文件名，更新内容时覆盖原文件；需要刷新浏览器/CDN 缓存时修改查询参数，例如：
 
 ```html
-<link href="assets/styles.css?rev=20260817" rel="stylesheet">
-<script defer src="assets/app.js?rev=20260817"></script>
+<link href="assets/styles.css?rev=20260822" rel="stylesheet">
+<script defer src="assets/app.js?rev=20260821"></script>
 ```
 
 `rev` 只用于缓存失效，不代表必须创建新文件。不要重新增加 `app-v129.js`、`styles-v129.css` 这类历史副本。
+
+修改 `styles.css` 或 `app.js` 后，需要把**所有**页面引用的 `rev` 一起更新；否则拿到旧缓存的浏览器可能引用到已经改名或删除的资源。
+
+## 校园社区镜像
+
+`community.html` 是 GitHub Discussions 的静态阅读入口，数据由 `update-community.yml` 每小时同步一次，写入 `assets/community.json`：
+
+- 展示全部置顶讨论、打了 `精选` 标签的讨论，以及最近活跃的非置顶讨论；
+- 正文直接采用 GitHub 渲染好的 HTML，前端再按标签与属性白名单二次过滤；
+- 讨论中的 GitHub 图片会尽量缓存到 `assets/community-media/`，避免国内网络下加载失败；
+- 分类 emoji 的 `:shortcode:` 会转成 Unicode 字符显示；代码块提供一键复制。
+
+维护细节见 [`project-docs/maintenance/community-mirror.md`](project-docs/maintenance/community-mirror.md)。
+
+## 图片与性能
+
+- 需要重新生成 WebP 显示版本或各尺寸站点图标时运行 `npm run images:build`（需要 ImageMagick 7）。
+- 提交前可运行 `npm run audit:static` 检查图片引用、尺寸属性与资源体积预算，`npm test` 跑课表转换回归测试。
+- 站点已开启 Brotli 与 HTTP/2，因此不要为了减少请求数而合并资源；实测数据与判断依据见 [`project-docs/maintenance/static-performance.md`](project-docs/maintenance/static-performance.md)。
 
 ## 校园地图维护
 

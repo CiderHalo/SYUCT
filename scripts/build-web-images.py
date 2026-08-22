@@ -32,6 +32,12 @@ BRAND_ICON = ASSETS / "syuct-community-icon.png"
 BRAND_ICON_SIZE = 96
 ICON_PNGS = [("favicon-32.png", 32), ("apple-touch-icon.png", 180)]
 
+# 首页主视觉是 CSS 背景图，上面盖着很重的深色渐变，压得比相册更狠也看不出差别。
+HERO_BG_SOURCE = ASSETS / "hero-campus.jpg"
+HERO_BG_DEST = "hero-campus-bg.webp"
+HERO_BG_WIDTH = 1280
+HERO_BG_QUALITY = 58
+
 
 def run(args: list[str]) -> None:
     subprocess.run(args, check=True)
@@ -72,6 +78,15 @@ def main() -> None:
         dest = ASSETS / name
         run([MAGICK, str(BRAND_ICON), "-resize", f"{size}x{size}>", "-strip", str(dest)])
         print(f"icon      {BRAND_ICON.name} -> {dest.relative_to(ROOT)}")
+
+    if not HERO_BG_SOURCE.exists():
+        raise SystemExit(f"Missing source: {HERO_BG_SOURCE.relative_to(ROOT)}")
+    hero_dest = OUT / HERO_BG_DEST
+    run([
+        MAGICK, str(HERO_BG_SOURCE), "-resize", f"{HERO_BG_WIDTH}x{HERO_BG_WIDTH}>", "-strip",
+        "-quality", str(HERO_BG_QUALITY), "-define", "webp:method=6", str(hero_dest)
+    ])
+    print(f"hero bg   {HERO_BG_SOURCE.name} -> {hero_dest.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

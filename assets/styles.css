@@ -88,6 +88,9 @@ img{max-width:100%;display:block}
 .main{width:min(100%,calc(var(--content-w) + 68px));margin:auto;padding:36px 34px 80px}
 .hero{position:relative;min-height:500px;overflow:hidden;display:flex;align-items:center;padding:72px 70px;border-radius:30px;color:#fff;box-shadow:0 30px 70px rgba(5,72,123,.25)}
 .hero-photo{background-image:linear-gradient(100deg,rgba(3,45,77,.94) 0%,rgba(5,75,127,.80) 48%,rgba(7,92,168,.26) 100%),url("hero-campus.jpg");background-position:center;background-size:cover}
+/* 主视觉盖着很重的深色渐变，压到 1280px/q58 也看不出差别，比原图省 228 KB。
+   不支持 image-set() 的浏览器会落回上面那条 JPG 规则。 */
+.hero-photo{background-image:linear-gradient(100deg,rgba(3,45,77,.94) 0%,rgba(5,75,127,.80) 48%,rgba(7,92,168,.26) 100%),image-set(url("optimized/hero-campus-bg.webp") type("image/webp"),url("hero-campus.jpg") type("image/jpeg"))}
 .hero-content{position:relative;z-index:2;max-width:760px}
 .hero-kicker{display:inline-flex;padding:7px 13px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:rgba(255,255,255,.12);font-size:13px;font-weight:800;letter-spacing:.05em}
 .hero h1{margin:22px 0 15px;font-size:clamp(44px,6vw,78px);line-height:1.06;letter-spacing:-.055em}
