@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - "*.html"
-      - "styles.css"
       - "assets/**"
       - "scripts/audit-static-assets.py"
       - "scripts/build-web-images.py"
@@ -20,7 +19,6 @@ on:
       - main
     paths:
       - "*.html"
-      - "styles.css"
       - "assets/**"
       - "scripts/audit-static-assets.py"
       - "scripts/build-web-images.py"
