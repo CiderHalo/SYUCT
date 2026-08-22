@@ -95,7 +95,14 @@ html[data-theme="dark"] .comment-tag{color:#8fe0aa}
 
 .discussion-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:26px;padding-top:20px;border-top:1px solid var(--border)}
 .discussion-footer-note{color:var(--muted);font-size:12px;line-height:1.6}
-.discussion-github-button{flex:0 0 auto}
+/* 按钮区按 7:3 切分：主操作仍是前往 GitHub，右侧留一个就近的收起入口。 */
+.discussion-footer-actions{display:grid;flex:0 0 auto;grid-template-columns:7fr 3fr;gap:8px;min-width:min(100%,340px)}
+.discussion-github-button{justify-content:center;text-align:center;white-space:nowrap}
+.github-button-short{display:none}
+.discussion-collapse{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:42px;padding:6px 10px;border:1px solid color-mix(in srgb,var(--primary) 28%,var(--border));border-radius:12px;background:var(--surface-2);color:var(--primary);font:inherit;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap}
+.discussion-collapse:hover{background:color-mix(in srgb,var(--primary) 9%,var(--surface))}
+.discussion-collapse:focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 32%,transparent);outline-offset:2px}
+.discussion-collapse::after{content:"";width:6px;height:6px;border-left:2px solid currentColor;border-top:2px solid currentColor;transform:rotate(45deg) translate(1px,1px)}
 
 .community-empty{padding:36px;border:1px dashed var(--border);border-radius:18px;background:var(--surface);text-align:center}
 .community-empty strong{font-size:18px}
@@ -121,7 +128,12 @@ html[data-theme="dark"] .comment-tag{color:#8fe0aa}
   .discussion-content{padding:0 16px 16px}
   .discussion-title{font-size:16px}
   .discussion-footer{align-items:stretch;flex-direction:column}
-  .discussion-github-button{width:100%}
+  .discussion-footer-actions{width:100%;min-width:0}
+  /* 窄屏 7 成宽放不下完整文案，换成短文案避免按钮被撑成两行。 */
+  .discussion-github-button{width:auto;padding-left:10px;padding-right:10px}
+  .github-button-long{display:none}
+  .github-button-short{display:inline}
+  .discussion-collapse{padding-left:8px;padding-right:8px}
   .comment-stats{width:100%;margin-left:0}
   .community-source-note{align-items:stretch;flex-direction:column}
   .community-source-note .btn{width:100%}

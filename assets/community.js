@@ -223,7 +223,10 @@
         </div>
         <div class="discussion-footer">
           <span class="discussion-footer-note">本站仅提供静态阅读预览，完整互动以 GitHub 原始讨论为准。</span>
-          <a class="btn btn-blue discussion-github-button" href="${escapeHtml(post.url || SOURCE_URL)}" target="_blank" rel="noopener noreferrer">前往 GitHub 查看完整讨论</a>
+          <div class="discussion-footer-actions">
+            <a class="btn btn-blue discussion-github-button" href="${escapeHtml(post.url || SOURCE_URL)}" target="_blank" rel="noopener noreferrer"><span class="github-button-long">前往 GitHub 查看完整讨论</span><span class="github-button-short">前往 GitHub</span></a>
+            <button class="discussion-collapse" type="button" data-collapse="${id}">收起本帖</button>
+          </div>
         </div>
       </div>
     </article>`;
@@ -335,6 +338,19 @@
         setupCollapse(target.querySelector(".discussion-comments"), {
           expand: "展开全部评论", collapse: "收起评论"
         });
+      });
+    });
+
+    // 长帖读到底部时，回顶部点箭头太远，底部直接给一个收起入口。
+    scope.querySelectorAll(".discussion-collapse").forEach((button) => {
+      button.addEventListener("click", () => {
+        const card = button.closest(".discussion-card");
+        const summary = card?.querySelector(".discussion-summary");
+        const content = document.getElementById(button.dataset.collapse);
+        if (!summary || !content) return;
+        summary.setAttribute("aria-expanded", "false");
+        content.hidden = true;
+        summary.scrollIntoView({ block: "start" });
       });
     });
   }
