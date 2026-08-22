@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "source": "https://github.com/orgs/SYUCT/discussions",
   "repository": "SYUCT/SYUCT-web",
-  "generatedAt": "2026-08-22T05:40:00.395Z",
+  "generatedAt": "2026-08-22T06:57:29.802Z",
   "pinned": [
     {
       "id": "D_kwDOTthdys4Aoonz",
@@ -143,7 +143,7 @@
         "emoji": "💭"
       },
       "labels": [],
-      "bodyHTML": "<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"assets/community-media/5/83813434ef58b137723a.jpg\"><img width=\"1080\" height=\"1606\" alt=\"2739cdbb9770a92f237183cf0e645fa4\" src=\"assets/community-media/5/83813434ef58b137723a.jpg\" style=\"max-width: 100%; height: auto; max-height: 1606px;; aspect-ratio: 1080 / 1606; background-color: var(--bgColor-muted); border-radius: 6px\" class=\"js-gh-image-fallback\"></a>",
+      "bodyHTML": "<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"assets/community-media/5/065fce7f1754d55b1047.jpg\"><img width=\"1080\" height=\"1606\" alt=\"2739cdbb9770a92f237183cf0e645fa4\" src=\"assets/community-media/5/065fce7f1754d55b1047.jpg\" style=\"max-width: 100%; height: auto; max-height: 1606px;; aspect-ratio: 1080 / 1606; background-color: var(--bgColor-muted); border-radius: 6px\" class=\"js-gh-image-fallback\"></a>",
       "createdAt": "2026-08-16T16:18:30Z",
       "updatedAt": "2026-08-16T16:18:30Z",
       "closed": false,
